@@ -197,7 +197,7 @@ neT3 neGeometry::GetTransform() {
 *
 ****************************************************************************/
 
-void neGeometry::SetUserData(u32 userData) {
+void neGeometry::SetUserData(void * userData) {
     CAST_THIS(TConvex, con);
 
     con.userData = userData;
@@ -209,7 +209,7 @@ void neGeometry::SetUserData(u32 userData) {
 *
 ****************************************************************************/
 
-u32 neGeometry::GetUserData() {
+void * neGeometry::GetUserData() {
     CAST_THIS(TConvex, con);
 
     return con.userData;
@@ -549,7 +549,7 @@ s32 neAnimatedBody::GetCollisionID() {
 *
 ****************************************************************************/
 
-void neAnimatedBody::SetUserData(u32 cookies) {
+void neAnimatedBody::SetUserData(void * cookies) {
     CAST_THIS(neCollisionBody_, cb);
 
     cb.cookies = cookies;
@@ -561,7 +561,7 @@ void neAnimatedBody::SetUserData(u32 cookies) {
 *
 ****************************************************************************/
 
-u32 neAnimatedBody::GetUserData() {
+void * neAnimatedBody::GetUserData() {
     CAST_THIS(neCollisionBody_, cb);
 
     return cb.cookies;
@@ -1000,7 +1000,7 @@ s32 neRigidBody::GetCollisionID() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetUserData(u32 cookies) {
+void neRigidBody::SetUserData(void * cookies) {
     CAST_THIS(neRigidBodyBase, rb);
 
     rb.cookies = cookies;
@@ -1012,7 +1012,7 @@ void neRigidBody::SetUserData(u32 cookies) {
 *
 ****************************************************************************/
 
-u32 neRigidBody::GetUserData() {
+void * neRigidBody::GetUserData() {
     CAST_THIS(neRigidBodyBase, rb);
 
     return rb.cookies;
@@ -3068,7 +3068,7 @@ void neSensor::SetLineSensor(const neV3 &pos, const neV3 &lineVector) {
 *
 ****************************************************************************/
 
-void neSensor::SetUserData(u32 cookies) {
+void neSensor::SetUserData(void * cookies) {
     CAST_THIS(neSensor_, sensor);
 
     sensor.cookies = cookies;
@@ -3080,7 +3080,7 @@ void neSensor::SetUserData(u32 cookies) {
 *
 ****************************************************************************/
 
-u32 neSensor::GetUserData() {
+void * neSensor::GetUserData() {
     CAST_THIS(neSensor_, sensor);
 
     return sensor.cookies;

@@ -186,7 +186,7 @@ NEINLINE void neQ::SetupFromMatrix3(const neM3 &Matrix) {
 
     m.SetIdentity();
 
-    u32 i, j;
+    int i, j;
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)

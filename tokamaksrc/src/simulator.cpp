@@ -612,7 +612,7 @@ void neFixedTimeStepSimulator::Advance(nePerformanceReport *_perfReport) {
     UPDATE_PERF_REPORT(UpdateControllerCallback);
 }
 
-void neFixedTimeStepSimulator::Advance(f32 time, u32 nStep, nePerformanceReport *_perfReport) {
+void neFixedTimeStepSimulator::Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport) {
     _currentTimeStep = time / (f32) nStep;
 
     oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
@@ -632,9 +632,7 @@ void neFixedTimeStepSimulator::Advance(f32 time, u32 nStep, nePerformanceReport 
     }
 #endif
 
-    int i;
-
-    for (i = 0; i < (s32) nStep; i++) {
+    for (size_t i = 0; i < nStep; i++) {
         magicNumber = 0;
 
         Advance(perfReport);

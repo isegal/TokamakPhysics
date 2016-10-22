@@ -317,7 +317,7 @@ struct neM4 {
 
     NEINLINE void SetColumns(const neV3 &V1, const neV3 &V2, const neV3 &V3);
 
-    NEINLINE void GetColumn(neV3 &V1, u32 col) const;
+    NEINLINE void GetColumn(neV3 &V1, uint32_t col) const;
 
     NEINLINE void SetTranspose(const neM4 &M);
 

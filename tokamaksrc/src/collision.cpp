@@ -659,7 +659,7 @@ s32 TConvex::GetMaterialId() {
     return matIndex;
 }
 
-u32 TConvex::GetType() {
+uint32_t TConvex::GetType() {
     return type;
 }
 

@@ -343,7 +343,7 @@ public:
 
     void Free(neRigidBodyBase *bb);
 
-    void Advance(f32 time, u32 nStep, nePerformanceReport *_perfReport = NULL);
+    void Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport = NULL);
 
     void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = NULL);
 
@@ -519,11 +519,11 @@ public:
 
 //data
 
-    u32 maxRigidBodies;
+    size_t maxRigidBodies;
 
-    u32 maxAnimBodies;
+    size_t maxAnimBodies;
 
-    u32 maxParticles;
+    size_t maxParticles;
 
     neDLinkList<neRigidBody_> rigidBodyHeap;
 

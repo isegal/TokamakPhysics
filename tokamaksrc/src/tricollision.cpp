@@ -610,7 +610,7 @@ void Box2TerrainTest(neCollisionResult &result, TConvex &convexA, neT3 &transA, 
 
     s32 terrainMatID = 0;
 
-    u32 userData = 0;
+    void * userData = nullptr;
 /*
 	callCnt++;
 

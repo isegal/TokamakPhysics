@@ -235,13 +235,13 @@ public:
 
     neSensorItem *sensorCursor;
 
-    u32 cookies;
+    void * cookies;
 
     neCollision col;
 
-    u32 id;
+    uint32_t id;
 
-    u32 cid;
+    uint32_t cid;
 
     neConstraintHeader *_constraintHeader;
 
@@ -328,7 +328,7 @@ typedef struct neImpulseRecord neImpulseRecord;
 
 struct neImpulseRecord {
     neV3 point;
-    u32 stepCount;
+    uint32_t stepCount;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -516,7 +516,7 @@ public:
     f32 linearDamp;
     f32 angularDamp;
 
-    u32 curState;
+    uint32_t curState;
 
     neRigidBodyState stateBuffer[MAX_RB_STATES];
 

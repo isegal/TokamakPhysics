@@ -186,9 +186,9 @@ public:
 
     neT3 GetTransform();
 
-    void SetUserData(u32 userData);
+    void SetUserData(void * userData);
 
-    u32 GetUserData();
+    void * GetUserData();
 
     /*
         Box
@@ -278,8 +278,8 @@ public:
     };
     s32 indices[3];
     s32 materialID;
-    u32 flag;
-    u32 userData;
+    uint32_t flag;
+    void * userData;
 };
 
 class neTriangleMesh {
@@ -313,9 +313,9 @@ NE_INTERFACE(neSensor)
 public:
     void SetLineSensor(const neV3 &pos, const neV3 &lineVector);
 
-    void SetUserData(u32 userData);
+    void SetUserData(void * userData);
 
-    u32 GetUserData();
+    void * GetUserData();
 
     neV3 GetLineVector();
 
@@ -371,9 +371,9 @@ public:
 
     s32 GetCollisionID();
 
-    void SetUserData(u32 userData);
+    void SetUserData(void * userData);
 
-    u32 GetUserData();
+    void * GetUserData();
 
     s32 GetGeometryCount();
 
@@ -466,9 +466,9 @@ public:
 
     s32 GetCollisionID();
 
-    void SetUserData(u32 userData);
+    void SetUserData(void * userData);
 
-    u32 GetUserData();
+    void * GetUserData();
 
     s32 GetGeometryCount();
 

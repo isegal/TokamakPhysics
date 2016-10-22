@@ -148,9 +148,9 @@ struct TConvex {
     neT3 c2p;    // convex to physics object
     f32 boundingRadius;
     f32 envelope;
-    u32 type;
+    uint32_t type;
     s32 matIndex;
-    u32 userData;
+    void * userData;
     neBreakInfo breakInfo;
     neV3 *vertices;
 
@@ -174,11 +174,11 @@ struct TConvex {
 
     neT3 GetTransform();
 
-    void SetUserData(u32 ud) {
+    void SetUserData(void * ud) {
         userData = ud;
     }
 
-    u32 GetUserData() {
+    void * GetUserData() {
         return userData;
     }
 
@@ -188,7 +188,7 @@ struct TConvex {
 
     f32 GetBoundRadius();
 
-    u32 GetType();
+    uint32_t GetType();
 
     void Initialise();
 
@@ -244,7 +244,7 @@ public:
 
     f32 length;
 
-    u32 cookies;
+    void * cookies;
 
     //results
 
