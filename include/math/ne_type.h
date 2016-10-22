@@ -44,14 +44,10 @@
 // BASIC TYPES
 ///////////////////////////////////////////////////////////////////////////
 
-typedef signed char s8;
-typedef signed short s16;
-typedef signed int s32;
 typedef float f32;
-typedef double f64;
 typedef uint8_t neByte;
-typedef s32 neErr;
-typedef s32 neBool;
+typedef int32_t neErr;
+typedef int32_t neBool;
 
 #if _MSC_VER
 typedef signed   __int64    s64;

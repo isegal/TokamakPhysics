@@ -24,22 +24,22 @@
 #include "message.h"
 #include "dcd.h"
 
-const s32 BOX_NUM_FACES = 6;
+const size_t BOX_NUM_FACES = 6;
 
-const s32 BOX_NUM_VERTS = 8;
+const size_t BOX_NUM_VERTS = 8;
 
-const s32 BOX_NUM_EDGES = 12;
+const size_t BOX_NUM_EDGES = 12;
 
-const s32 TRI_NUM_FACES = 2;
+const size_t TRI_NUM_FACES = 2;
 
-const s32 TRI_NUM_VERTS = 3;
+const size_t TRI_NUM_VERTS = 3;
 
-const s32 TRI_NUM_EDGES = 3;
+const size_t TRI_NUM_EDGES = 3;
 
 
-s32 _num_edge_test;
+int32_t _num_edge_test;
 
-s32 _num_face_test;
+int32_t _num_face_test;
 
 static neByte _boxNeighbourFaces[][4] = {{2, 3, 4, 5},
                                          {2, 3, 4, 5},
@@ -197,15 +197,15 @@ void DCDMesh::SetConvex(const TConvex &convex, neV3 *vertArray) {
     }
 }
 
-neV3 DCDMesh::GetVertOnFace(s32 faceIndex, s32 vertIndex) {
+neV3 DCDMesh::GetVertOnFace(size_t faceIndex, size_t vertIndex) {
     return vertices[faces[faceIndex].neighbourVerts[vertIndex]];
 }
 
-neV3 DCDMesh::GetVert(s32 vertIndex) {
+neV3 DCDMesh::GetVert(size_t vertIndex) {
     return vertices[vertIndex];
 }
 
-neV3 DCDMesh::GetNormal(s32 faceIndex) {
+neV3 DCDMesh::GetNormal(size_t faceIndex) {
     return normals[faceIndex];
 }
 
@@ -213,11 +213,11 @@ neV3 DCDMesh::GetNormal(s32 faceIndex) {
 {
 	return faces[faceIndex].numberFaceNeighbour;
 }
-*/neByte DCDMesh::FaceGetFaceNeighbour(s32 faceIndex, s32 neighbourIndex) {
+*/neByte DCDMesh::FaceGetFaceNeighbour(size_t faceIndex, size_t neighbourIndex) {
     return faces[faceIndex].neighbourFaces[neighbourIndex];
 }
 
-neByte DCDMesh::FaceGetEdgeNeighbour(s32 faceIndex, s32 neighbourIndex) {
+neByte DCDMesh::FaceGetEdgeNeighbour(size_t faceIndex, size_t neighbourIndex) {
     return faces[faceIndex].neighbourEdges[neighbourIndex];
 }
 
@@ -225,19 +225,19 @@ neByte DCDMesh::FaceGetEdgeNeighbour(s32 faceIndex, s32 neighbourIndex) {
 {
 	return verts[vertIndex].numberEdgeNeighbour;
 }
-*/neByte DCDMesh::VertGetEdgeNeighbour(s32 vertIndex, s32 neighbourIndex) {
+*/neByte DCDMesh::VertGetEdgeNeighbour(size_t vertIndex, size_t neighbourIndex) {
     return verts[vertIndex].neighbourEdges[neighbourIndex];
 }
 
-neByte DCDMesh::EdgeGetVert1(s32 edgeIndex) {
+neByte DCDMesh::EdgeGetVert1(size_t edgeIndex) {
     return edges[edgeIndex].v1;
 }
 
-neByte DCDMesh::EdgeGetVert2(s32 edgeIndex) {
+neByte DCDMesh::EdgeGetVert2(size_t edgeIndex) {
     return edges[edgeIndex].v2;
 }
 
-const s32 NUM_STACK_SIZE = 200;
+const size_t NUM_STACK_SIZE = 200;
 
 bool CalcContactEE(const neV3 &edgeA0,
                    const neV3 &edgeA1,
@@ -245,8 +245,8 @@ bool CalcContactEE(const neV3 &edgeA0,
                    const neV3 &edgeB1, neV3 &contactA, neV3 &contactB);
 
 struct EdgeStackRecord {
-    s32 edgeP;
-    s32 edgeQ;
+    int32_t edgeP;
+    int32_t edgeQ;
 };
 
 class EdgeStack {
@@ -255,10 +255,10 @@ public:
         tos = 0;
     }
 
-    void Push(s32 edgeP, s32 edgeQ) {
+    void Push(int32_t edgeP, int32_t edgeQ) {
         ASSERT(tos < NUM_STACK_SIZE);
 
-        for (s32 i = 0; i < tos; i++) {
+        for (size_t i = 0; i < tos; i++) {
             if ((eStack[i].edgeP == edgeP && eStack[i].edgeQ == edgeQ) ||
                 (eStack[i].edgeP == edgeQ && eStack[i].edgeQ == edgeP))
                 return;
@@ -268,7 +268,7 @@ public:
         tos++;
     }
 
-    bool Pop(s32 &edgeP, s32 &edgeQ) {
+    bool Pop(int32_t &edgeP, int32_t &edgeQ) {
         ASSERT(tos > 0);
 
         tos--;
@@ -282,7 +282,7 @@ public:
     }
 
 private:
-    s32 tos;
+    int32_t tos;
     EdgeStackRecord eStack[NUM_STACK_SIZE];
 };
 
@@ -308,7 +308,7 @@ public:
 
     neT3 *trans;
 
-    Face GetFace(s32 faceIndex) {
+    Face GetFace(size_t faceIndex) {
         Face face0;
 
         face0.normal = trans->rot * mesh.normals[faceIndex];
@@ -322,33 +322,33 @@ public:
         return face0;
     }
 
-    neV3 GetVertWorld(s32 vertIndex) {
+    neV3 GetVertWorld(size_t vertIndex) {
         neV3 vert = (*trans) * mesh.vertices[vertIndex];
 
         return vert;
     }
 
-    neV3 GetNegVertWorld(s32 vertIndex) {
+    neV3 GetNegVertWorld(size_t vertIndex) {
         neV3 vert = GetVertWorld(vertIndex) * -1.0f;
 
         return vert;
     }
 
-    NEINLINE neV3 GetWorldNormalByEdge1(s32 edgeIndex) {
+    NEINLINE neV3 GetWorldNormalByEdge1(size_t edgeIndex) {
         neV3 ret;
         ret = trans->rot * mesh.normals[mesh.edges[edgeIndex].f1];
 
         return ret;
     }
 
-    NEINLINE neV3 GetWorldNormalByEdge2(s32 edgeIndex) {
+    NEINLINE neV3 GetWorldNormalByEdge2(size_t edgeIndex) {
         neV3 ret;
         ret = trans->rot * mesh.normals[mesh.edges[edgeIndex].f2];
 
         return ret;
     }
 
-    NEINLINE s32 GetSupportPoint(const neV3 &norm) {
+    NEINLINE int32_t GetSupportPoint(const neV3 &norm) {
         if (isBox)
             return GetSupportPointBox(norm);
 
@@ -358,7 +358,7 @@ public:
         return 0;
     }
 
-    NEINLINE void GetWorldEdgeVerts(s32 edgeIndex, neV3 &av, neV3 &bv) {
+    NEINLINE void GetWorldEdgeVerts(size_t edgeIndex, neV3 &av, neV3 &bv) {
         neV3 tmp;
 
         tmp = mesh.vertices[mesh.edges[edgeIndex].v1];
@@ -370,17 +370,17 @@ public:
         bv = (*trans) * tmp;
     }
 
-    neV3 FaceGetWorldNormal(s32 faceIndex) {
+    neV3 FaceGetWorldNormal(size_t faceIndex) {
         return trans->rot * mesh.GetNormal(faceIndex);
     }
 
 private:
-    s32 GetSupportPointBox(const neV3 &norm) {
+    int32_t GetSupportPointBox(const neV3 &norm) {
         neV3 localNorm = trans->rot.TransposeMulV3(norm);
 
         localNorm *= -1.0f;
 
-        s32 ret = 0;
+        int32_t ret = 0;
 
         if (localNorm[0] >= 0.0f) {
             if (localNorm[1] >= 0.0f) {
@@ -410,12 +410,12 @@ private:
         return ret;
     }
 
-    s32 GetSupportPointMesh(const neV3 &norm) {
+    int32_t GetSupportPointMesh(const neV3 &norm) {
         neV3 localNorm = trans->rot.TransposeMulV3(norm);
 
         localNorm *= -1.0f;
 
-        s32 ret = 0;
+        int32_t ret = 0;
 
         f32 maxd = -1.0e6f;
 
@@ -426,11 +426,11 @@ private:
         do {
             moving = false;
 
-            s32 i = 0;
+            int32_t i = 0;
 
             //while (i < mesh.verts[ret].numberEdgeNeighbour)
             do {
-                s32 currentVert;
+                int32_t currentVert;
 
                 neighbourEdge = mesh.verts[ret].neighbourEdges[i];
 
@@ -538,7 +538,7 @@ public:
         dMax = -1.0e6f;
     }
 
-    neBool TestFace(s32 face0Index, neBool &assigned) {
+    neBool TestFace(size_t face0Index, neBool &assigned) {
         assigned = false;
 
         _visited[face0Index] = true;
@@ -580,31 +580,31 @@ public:
         return true;
     }
 
-    neBool SearchFV(s32 initialFace, neBool &assigned);
+    neBool SearchFV(int32_t initialFace, neBool &assigned);
 
-    neBool SearchEE(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, neBool &assigned);
+    neBool SearchEE(bool flag /*0 or 1*/, int32_t aIndex, int32_t bIndex, neBool &assigned);
 
-    neBool SearchEETri(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, neBool &assigned);
+    neBool SearchEETri(bool flag /*0 or 1*/, int32_t aIndex, int32_t bIndex, neBool &assigned);
 
     DCDObj objA;
 
     Type typeA;
 
-    s32 indexA;
+    int32_t indexA;
 
     DCDObj objB;
 
     Type typeB;
 
-    s32 indexB;
+    int32_t indexB;
 
     Face face;
 
     f32 dMax;
 };
 
-neBool SearchResult::SearchFV(s32 initialFace, neBool &assigned) {
-    for (s32 i = 0; i < objA.mesh.numFaces; i++) {
+neBool SearchResult::SearchFV(int32_t initialFace, neBool &assigned) {
+    for (int32_t i = 0; i < objA.mesh.numFaces; i++) {
         _visited[i] = false;
 
         if (objA.isBox) {
@@ -620,13 +620,13 @@ neBool SearchResult::SearchFV(s32 initialFace, neBool &assigned) {
 
     neBool found = true;
 
-    s32 currentFace = initialFace;
+    int32_t currentFace = initialFace;
 
     while (found) {
         found = false;
 
-        for (s32 ii = 0; ii < objA.mesh.numNeighbour; ii++) {
-            s32 i = objA.mesh.FaceGetFaceNeighbour(currentFace, ii);
+        for (int32_t ii = 0; ii < objA.mesh.numNeighbour; ii++) {
+            int32_t i = objA.mesh.FaceGetFaceNeighbour(currentFace, ii);
 
             if (_visited[i])
                 continue;
@@ -664,7 +664,7 @@ f32 Determinant(const neV3 &a, const neV3 &b, const neV3 &c) {
     return ret;
 }
 
-neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned) {
+neBool SearchResult::SearchEE(int32_t flag, int32_t aIndex, int32_t bIndex, neBool &assigned) {
     assigned = false;
 
     gEdgeStack.Init();
@@ -673,7 +673,7 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
 
     if (flag == 0) //fv
     {
-        for (s32 i = 0; i < objA.mesh.numNeighbour; i++) {
+        for (int32_t i = 0; i < objA.mesh.numNeighbour; i++) {
             int j = 0;
 
             while ((edgeIndex = objB.mesh.VertGetEdgeNeighbour(bIndex, j)) != 0xff) {
@@ -685,10 +685,10 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
         }
     } else //vf
     {
-        s32 i = 0;
+        int32_t i = 0;
 
         while ((edgeIndex = objA.mesh.VertGetEdgeNeighbour(aIndex, i)) != 0xff) {
-            for (s32 j = 0; j < objB.mesh.numNeighbour; j++) {
+            for (int32_t j = 0; j < objB.mesh.numNeighbour; j++) {
                 gEdgeStack.Push(objA.mesh.VertGetEdgeNeighbour(aIndex, i),
                                 objB.mesh.FaceGetEdgeNeighbour(bIndex, j));
             }
@@ -698,7 +698,7 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
     while (!gEdgeStack.IsEmpty()) {
         _num_edge_test++;
 
-        s32 edgeP, edgeQ;
+        int32_t edgeP, edgeQ;
 
         gEdgeStack.Pop(edgeP, edgeQ);
 
@@ -784,9 +784,9 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
         typeB = SearchResult::EDGE;
 
         // push
-        s32 i, j;
+        int32_t i, j;
 
-        s32 vindex;
+        int32_t vindex;
 
         vindex = objB.mesh.EdgeGetVert1(edgeQ);
 
@@ -847,7 +847,7 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
     return true;
 }
 
-neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned) {
+neBool SearchResult::SearchEETri(bool flag, int32_t aIndex, int32_t bIndex, neBool &assigned) {
     assigned = false;
 
     gEdgeStack.Init();
@@ -858,7 +858,7 @@ neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assig
     {
         // face of convex A
         // vertex of triangle B
-        for (s32 i = 0; i < objA.mesh.numNeighbour; i++) // for each edge neighbour of Face aIndex
+        for (int32_t i = 0; i < objA.mesh.numNeighbour; i++) // for each edge neighbour of Face aIndex
         {
             int j = 0;
 
@@ -873,12 +873,12 @@ neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assig
     {
         //vertex of convex A
         //face of triangle B
-        s32 i = 0;
+        int32_t i = 0;
 
         //for each edge neighbour incident to Vertex aIndex
 
         while ((edgeIndex = objA.mesh.VertGetEdgeNeighbour(aIndex, i)) != 0xff) {
-            for (s32 j = 0; j < objB.mesh.numNeighbour; j++) {
+            for (int32_t j = 0; j < objB.mesh.numNeighbour; j++) {
                 gEdgeStack.Push(objA.mesh.VertGetEdgeNeighbour(aIndex, i),
                                 objB.mesh.FaceGetEdgeNeighbour(bIndex, j));
             }
@@ -888,7 +888,7 @@ neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assig
     while (!gEdgeStack.IsEmpty()) {
         _num_edge_test++;
 
-        s32 edgeP, edgeQ;
+        int32_t edgeP, edgeQ;
 
         gEdgeStack.Pop(edgeP, edgeQ);
 
@@ -983,9 +983,9 @@ neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assig
         typeB = SearchResult::EDGE;
 
         // push
-        s32 i, j;
+        int32_t i, j;
 
-        s32 vindex;
+        int32_t vindex;
 
         vindex = objB.mesh.EdgeGetVert1(edgeQ);
 

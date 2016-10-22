@@ -55,7 +55,7 @@ typedef enum {
 
 class neAllocatorAbstract {
 public:
-    virtual neByte *Alloc(s32 size, s32 alignment = 0) = 0;
+    virtual neByte *Alloc(size_t size, size_t alignment = 0) = 0;
 
     virtual void Free(neByte *) = 0;
 };
@@ -77,7 +77,7 @@ public:
         usedMem = 0;
     }
 
-    neByte *Alloc(s32 size, s32 alignment = 0) {
+    neByte *Alloc(size_t size, size_t alignment = 0) {
 
         usedMem += size;
 
@@ -90,7 +90,7 @@ public:
     }
 
 public:
-    s32 usedMem;
+    size_t usedMem;
 };
 
 
@@ -127,19 +127,19 @@ public:
     f32 accTime[NE_PERF_LAST];
 
     void Reset() {
-        for (s32 i = 0; i < NE_PERF_LAST; i++) {
+        for (size_t i = 0; i < NE_PERF_LAST; i++) {
             time[i] = 0.0f;
             accTime[i] = 0.0f;
         }
         numSample = 0;
     }
 
-    void SetReportType(s32 type) {
+    void SetReportType(int32_t type) {
         reportType = type;
     }
 
-    s32 reportType;
-    s32 numSample;
+    int32_t reportType;
+    int32_t numSample;
 };
 
 /****************************************************************************
@@ -180,9 +180,9 @@ public:
 public:
     void SetTransform(neT3 &t);
 
-    void SetMaterialIndex(s32 index);
+    void SetMaterialIndex(int32_t index);
 
-    s32 GetMaterialIndex();
+    int32_t GetMaterialIndex();
 
     neT3 GetTransform();
 
@@ -276,8 +276,8 @@ public:
         NE_TRI_TRIANGLE = 0,
         NE_TRI_HEIGHT_MAP,
     };
-    s32 indices[3];
-    s32 materialID;
+    int32_t indices[3];
+    int32_t materialID;
     uint32_t flag;
     void * userData;
 };
@@ -286,11 +286,11 @@ class neTriangleMesh {
 public:
     neV3 *vertices;
 
-    s32 vertexCount;
+    size_t vertexCount;
 
     neTriangle *triangles;
 
-    s32 triangleCount;
+    size_t triangleCount;
 };
 
 /****************************************************************************
@@ -333,7 +333,7 @@ public:
 
     neAnimatedBody *GetDetectAnimatedBody();
 
-    s32 GetDetectMaterial();
+    int32_t GetDetectMaterial();
 };
 
 /****************************************************************************
@@ -367,15 +367,15 @@ public:
     neT3 GetTransform();
 
 //collision related
-    void SetCollisionID(s32 cid);
+    void SetCollisionID(int32_t cid);
 
-    s32 GetCollisionID();
+    int32_t GetCollisionID();
 
     void SetUserData(void * userData);
 
     void * GetUserData();
 
-    s32 GetGeometryCount();
+    size_t GetGeometryCount();
 
 //collision geometries and sensors
 
@@ -462,15 +462,15 @@ public:
     void SetInertiaTensor(const neV3 &tensor);
 
 //other properties
-    void SetCollisionID(s32 cid);
+    void SetCollisionID(int32_t cid);
 
-    s32 GetCollisionID();
+    int32_t GetCollisionID();
 
     void SetUserData(void * userData);
 
     void * GetUserData();
 
-    s32 GetGeometryCount();
+    size_t GetGeometryCount();
 
     void SetLinearDamping(f32 damp);
 
@@ -508,7 +508,7 @@ public:
 
     neSensor *GetNextSensor();
 
-    neRigidBodyController *AddController(neRigidBodyControllerCallback *controller, s32 period);
+    neRigidBodyController *AddController(neRigidBodyControllerCallback *controller, size_t period);
 
     neBool RemoveController(neRigidBodyController *rbController);
 
@@ -690,15 +690,15 @@ public:
 
     f32 GetEpsilon();
 
-    void SetIteration(s32 i);
+    void SetIteration(int32_t i);
 
-    s32 GetIteration();
+    int32_t GetIteration();
 
     /*
         Constraint controller functions
     */
 
-    neJointController *AddController(neJointControllerCallback *controller, s32 period);
+    neJointController *AddController(neJointControllerCallback *controller, int32_t period);
 
     neBool RemoveController(neJointController *rbController);
 
@@ -810,11 +810,11 @@ public:
         NE_COLLISION_TABLE_MAX = 64,
     };
 
-    void Set(s32 collisionID1, s32 collisionID2, neReponseBitFlag response = RESPONSE_IMPULSE);
+    void Set(int32_t collisionID1, int32_t collisionID2, neReponseBitFlag response = RESPONSE_IMPULSE);
 
-    neReponseBitFlag Get(s32 collisionID1, s32 collisionID2);
+    neReponseBitFlag Get(int32_t collisionID1, int32_t collisionID2);
 
-    s32 GetMaxCollisionID();
+    int32_t GetMaxCollisionID();
 };
 
 /****************************************************************************
@@ -851,28 +851,28 @@ public:
 
 public:
 
-    s32 rigidBodiesCount;        /* Number of rigid bodies in the simulation */
-    s32 animatedBodiesCount;    /* Number of animated bodies in the simulation */
-    s32 rigidParticleCount;        /* Number of rigid particles in the simulation */
+    size_t rigidBodiesCount;        /* Number of rigid bodies in the simulation */
+    size_t animatedBodiesCount;    /* Number of animated bodies in the simulation */
+    size_t rigidParticleCount;        /* Number of rigid particles in the simulation */
 
-    s32 controllersCount;        /* Number of controller instances in the simulation */
+    size_t controllersCount;        /* Number of controller instances in the simulation */
 
-    s32 overlappedPairsCount;    /* Number of possible overlapping pairs.
+    size_t overlappedPairsCount;    /* Number of possible overlapping pairs.
 								   This has the maximum value of (n x (n - 1)) / 2,
 								   where n = rigidBodyCount + animatedBodyCount.
 								   But in practice it rarely reach that high.
 								   You can try to specify a smaller number to save memory.
 								*/
-    s32 geometriesCount;        /* Number of collision geometries in the simulator*/
+    size_t geometriesCount;        /* Number of collision geometries in the simulator*/
 
 
-    s32 constraintsCount;        /* Number of joints in the simulation */
-    s32 constraintSetsCount;    /* Number of joint Sets in the simulation */
-    s32 constraintBufferSize;    /* Size of the buffer use to solve joints */
-    s32 sensorsCount;
+    size_t constraintsCount;        /* Number of joints in the simulation */
+    size_t constraintSetsCount;    /* Number of joint Sets in the simulation */
+    size_t constraintBufferSize;    /* Size of the buffer use to solve joints */
+    size_t sensorsCount;
 
-    s32 terrainNodesStartCount;    /* Number of nodes use to store terrain triangles */
-    s32 terrainNodesGrowByCount;/* Grow by this size if run out of nodes */
+    size_t terrainNodesStartCount;    /* Number of nodes use to store terrain triangles */
+    size_t terrainNodesGrowByCount;/* Grow by this size if run out of nodes */
 
 public:
 
@@ -919,8 +919,8 @@ struct neCollisionInfo {
     neBodyType typeB;
     neGeometry *geometryA;
     neGeometry *geometryB;
-    s32 materialIdA;
-    s32 materialIdB;
+    int32_t materialIdA;
+    int32_t materialIdB;
     neV3 bodyContactPointA;        // contact point A in body space of A
     neV3 bodyContactPointB;        // contact point B in body space of B
     neV3 worldContactPointA;    // contact point A in world space
@@ -934,11 +934,11 @@ typedef void (neLogOutputCallback)(char *logString);
 typedef void (neCollisionCallback)(neCollisionInfo &collisionInfo);
 
 typedef void (neTerrainTriangleQueryCallback)(const neV3 &minBound, const neV3 &maxBound,
-                                              s32 **candidateTriangles,
+                                              int32_t **candidateTriangles,
                                               neTriangle **triangles,
                                               neV3 **vertices,
-                                              s32 *candidateCount,
-                                              s32 *triangleCount,
+                                              int32_t *candidateCount,
+                                              int32_t *triangleCount,
                                               neRigidBody *body);
 
 typedef struct neCustomCDInfo neCustomCDInfo;
@@ -948,8 +948,8 @@ struct neCustomCDInfo {
     neV3 worldContactPointA;
     neV3 worldContactPointB;
     f32 penetrationDepth;
-    s32 materialIdA;
-    s32 materialIdB;
+    int32_t materialIdA;
+    int32_t materialIdB;
 };
 
 typedef neBool (neCustomCDRB2RBCallback)(neRigidBody *bodyA, neRigidBody *bodyB, neCustomCDInfo &cdInfo);
@@ -997,15 +997,15 @@ public:
         Material managment functions
     */
 
-    bool SetMaterial(s32 index, f32 friction, f32 restitution);
+    bool SetMaterial(int32_t index, f32 friction, f32 restitution);
 
-    bool GetMaterial(s32 index, f32 &friction, f32 &restitution);
+    bool GetMaterial(int32_t index, f32 &friction, f32 &restitution);
 
     /*
         Advancing the simulation
     */
 
-    void Advance(f32 sec, s32 nSteps = 1, nePerformanceReport *perfReport = NULL);
+    void Advance(f32 sec, int32_t nSteps = 1, nePerformanceReport *perfReport = NULL);
 
     void Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *perfReport = NULL);
 
@@ -1066,7 +1066,7 @@ public:
 
     neSimulatorSizeInfo GetStartSizeInfo();
 
-    void GetMemoryAllocated(s32 &memoryAllocated);
+    void GetMemoryAllocated(size_t &memoryAllocated);
 };
 
 

@@ -32,8 +32,8 @@
 *
 ****************************************************************************/
 
-static s32 neNextDim1[] = {1, 2, 0};
-static s32 neNextDim2[] = {2, 0, 1};
+static int32_t neNextDim1[] = {1, 2, 0};
+static int32_t neNextDim2[] = {2, 0, 1};
 
 typedef struct neQ neQ;
 
@@ -75,9 +75,9 @@ public:
 
     NEINLINE void Get(f32 val[3]);
 
-    NEINLINE f32 &operator[](s32 I);
+    NEINLINE f32 &operator[](size_t I);
 
-    NEINLINE f32 operator[](s32 I) const;
+    NEINLINE f32 operator[](size_t I) const;
 
     NEINLINE f32 X() const;
 
@@ -185,7 +185,7 @@ struct neV4 {
 
     NEINLINE void Set(f32 x, f32 y, f32 z, f32 w);
 
-    NEINLINE f32 &operator[](s32 I);
+    NEINLINE f32 &operator[](size_t I);
 
     NEINLINE neV4 &operator/=(f32 S);
 
@@ -223,9 +223,9 @@ struct neV4 {
 struct neM3 {
     neV3 M[3];
 
-    NEINLINE neV3 &operator[](s32 I);
+    NEINLINE neV3 &operator[](size_t I);
 
-    NEINLINE neV3 operator[](s32 I) const;
+    NEINLINE neV3 operator[](size_t I) const;
 
     NEINLINE void SetZero(void);
 
@@ -301,7 +301,7 @@ struct neM4 {
 
     NEINLINE void SetScale(const neV3 &V);
 
-    NEINLINE f32 &operator[](s32 I);
+    NEINLINE f32 &operator[](size_t I);
 
     NEINLINE neM4 &operator*=(const neM4 &M);
 

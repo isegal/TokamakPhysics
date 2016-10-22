@@ -25,26 +25,26 @@
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
 
 void Cylinder2TerrainTest(neCollisionResult &result, TConvex &cylinderA, neT3 &transA, TConvex &terrainB) {
-    neSimpleArray<s32> &_triIndex = *terrainB.as.terrain.triIndex;
+    neSimpleArray<int32_t > &_triIndex = *terrainB.as.terrain.triIndex;
 
-    s32 triangleCount = _triIndex.GetUsedCount();
+    auto triangleCount = _triIndex.GetUsedCount();
 
     neArray<neTriangle_> &triangleArray = *terrainB.as.terrain.triangles;
 
     ConvexTestResult res[2];
 
-    s32 finalTriIndex = -1;
-    s32 currentRes = 1;
-    s32 testRes = 0;
+    int32_t finalTriIndex = -1;
+    int32_t currentRes = 1;
+    int32_t testRes = 0;
 
     res[currentRes].depth = -1.0e6f;
     res[currentRes].valid = false;
     res[testRes].depth = 1.0e6f;
 
-    s32 terrainMatID = 0;
+    int32_t terrainMatID = 0;
 
-    for (s32 i = 0; i < triangleCount; i++) {
-        s32 test = _triIndex[i];
+    for (int32_t i = 0; i < triangleCount; i++) {
+        int32_t test = _triIndex[i];
 
         neTriangle_ *t = &triangleArray[_triIndex[i]];
 
@@ -64,7 +64,7 @@ void Cylinder2TerrainTest(neCollisionResult &result, TConvex &cylinderA, neT3 &t
         if (t->flag == neTriangle::NE_TRI_TRIANGLE) {
             if (CylinderTriTest(cylinderA, transA, res[testRes], triParam)) {
                 if (res[testRes].depth > res[currentRes].depth) {
-                    s32 tmp = testRes;
+                    int32_t tmp = testRes;
 
                     testRes = currentRes;
 
@@ -321,7 +321,7 @@ neBool CylinderTriTest(TConvex &cylinder, neT3 &trans, ConvexTestResult &result,
         result.valid = false;
         result.depth = 1.0e6f;
         result.needTransform = false;
-        for (s32 i = 0; i < 3; i++) {
+        for (size_t i = 0; i < 3; i++) {
             CylinderTriTest_Line(cylinder, trans, result, tri.vert[i], tri.vert[neNextDim1[i]]);
         }
     }
@@ -399,7 +399,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
 
     neBool isParallel = neIsConsiderZero(len);
 
-    s32 doVertCheck = 0;
+    int32_t doVertCheck = 0;
 
     ConvexTestResult cr;
 
@@ -438,7 +438,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
     }
     result.depth = -1.0e6f;
 
-    s32 i;
+    size_t i;
 
     for (i = 0; i < 2; i++) {
         //project onto edge b
@@ -580,7 +580,7 @@ void ClosestLine2Box(const neV3 &p1, const neV3 &p2, const neV3 &boxSize, neV3 &
     s = p1;
     v = p2 - p1;
 
-    s32 i;
+    size_t i;
     for (i = 0; i < 3; i++) {
         if (v[i] < 0.0f) {
             s[i] = -s[i];

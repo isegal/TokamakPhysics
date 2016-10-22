@@ -39,8 +39,8 @@ class neController {
 PLACEMENT_MAGIC
 
 public:
-    s32 period;
-    s32 count;
+    int32_t period;
+    size_t count;
     neRigidBodyControllerCallback *rbc;
     neJointControllerCallback *jc;
     _neConstraint *constraint;
@@ -132,7 +132,7 @@ public:
 
         isCustomCD = false;
 
-        for (s32 i = 0; i < 3; i++) {
+        for (size_t i = 0; i < 3; i++) {
             maxCoord[i] = NULL;
             minCoord[i] = NULL;
         }
@@ -156,7 +156,7 @@ public:
     NEINLINE neByte IsAABOverlapped(neRigidBodyBase *b) {
         neByte ret = 0;
 
-        for (s32 i = 0; i < 3; i++) {
+        for (size_t i = 0; i < 3; i++) {
             if (minCoord[i]) {
                 if (!(minCoord[i]->value >= b->maxCoord[i]->value ||
                       maxCoord[i]->value <= b->minCoord[i]->value))
@@ -273,7 +273,7 @@ public:
 
     neCollection<neRestRecord> rbRestingOnMe;
 
-    s32 pendingAddToRegion;
+    int32_t pendingAddToRegion;
 
 //	neV3 debugMinBound;
 //	neM3 dobb;
@@ -383,15 +383,15 @@ public:
     f32 depth;
     f32 normalDiff;
     f32 tangentialDiffSq;
-    s32 material;
-    s32 otherMaterial;
+    int32_t material;
+    int32_t otherMaterial;
 
 private:
     RestOnType rtype;
     neRigidBodyBase *otherBody;
     neRestRecordHandle restOnHandle;
     neRigidBody_ *body;
-    s32 counter;
+    int32_t counter;
 
 public:
     neRestRecord() {
@@ -440,8 +440,8 @@ public:
 
     void Set(neRigidBody_ *thisBody, const neRestRecord &rc);
 
-    void SetTmp(neRigidBodyBase *otherb, const neV3 &contactA, const neV3 &contactB, const neV3 &normalBody, s32 matA,
-                s32 matB);
+    void SetTmp(neRigidBodyBase *otherb, const neV3 &contactA, const neV3 &contactB, const neV3 &normalBody, int32_t matA,
+                int32_t matB);
 };
 
 class neRestHull {
@@ -454,8 +454,8 @@ public:
         QUAD,
     } neRestHullType;
 
-    s32 htype;
-    s32 indices[4];
+    int32_t htype;
+    int32_t indices[4];
     neV3 normal;
 };
 
@@ -504,7 +504,7 @@ public:
     neM3 Ibody;
     neV3 force;
     neV3 torque;
-    s32 status;
+    int32_t status;
     neBool gravityOn;
     neV3 gforce;
     neV3 cforce;
@@ -522,7 +522,7 @@ public:
 
     neRigidBodyDerive derive;
 
-    s32 lowEnergyCounter;
+    int32_t lowEnergyCounter;
 
     // constraints
     neStackInfo *stackInfo;
@@ -549,17 +549,17 @@ public:
 
     neV3 totalTrans;
 
-    s32 rotCount;
+    int32_t rotCount;
 
-    s32 transCount;
+    int32_t transCount;
 
     neQ totalLastRot;
 
-    s32 lastRotCount;
+    int32_t lastRotCount;
 
     neV3 totalLastTrans;
 
-    s32 lastTransCount;
+    int32_t lastTransCount;
 
     neBool needSolveContactDynamic;
 
@@ -567,9 +567,9 @@ public:
 
     neV3 totalDA;
 
-    s32 impulseCount;
+    int32_t impulseCount;
 
-    s32 twistCount;
+    int32_t twistCount;
 
     neV3 dvRecord[NE_RB_MAX_PAST_RECORDS];
     neV3 davRecord[NE_RB_MAX_PAST_RECORDS];
@@ -586,7 +586,7 @@ public:
 
     neV3 oldAngularVelocity;
 
-    s32 oldCounter;
+    int32_t oldCounter;
 
     //////////////////////////////////////////////////
 
@@ -594,7 +594,7 @@ public:
         return (subType == NE_RIGID_PARTICLE);
     }
 
-    NEINLINE neRestRecord &GetRestRecord(s32 index) {
+    NEINLINE neRestRecord &GetRestRecord(size_t index) {
         ASSERT(rbExtra);
         return rbExtra->restOnRecord[index];
     }
@@ -604,12 +604,12 @@ public:
         return rbExtra->restHull;
     }
 
-    NEINLINE neV3 &GetVelRecord(s32 index) {
+    NEINLINE neV3 &GetVelRecord(size_t index) {
         ASSERT(rbExtra);
         return rbExtra->velRecords[index];
     }
 
-    NEINLINE neV3 &GetAngVelRecord(s32 index) {
+    NEINLINE neV3 &GetAngVelRecord(size_t index) {
         ASSERT(rbExtra);
         return rbExtra->angVelRecords[index];
     }
@@ -667,7 +667,7 @@ public:
 
     neBool NewStackInfoTerminator(neStackHeader *header);
 
-    s32 AddContactImpulseRecord(neBool withConstraint);
+    int32_t AddContactImpulseRecord(neBool withConstraint);
 
     neBool IsRestPointStillValid();
 
@@ -679,7 +679,7 @@ public:
 
     neBool IsConstraintNeighbour(neRigidBodyBase *otherBody);
 
-    neController *AddController(neRigidBodyControllerCallback *rbc, s32 period);
+    neController *AddController(neRigidBodyControllerCallback *rbc, int32_t period);
 
     void BeginIterateController();
 
@@ -695,19 +695,19 @@ public:
 
     void UpdateAABB();
 
-    s32 CheckRestHull();
+    int32_t CheckRestHull();
 
     neBool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
 
     neV3 GetCorrectRotation(neRigidBody_ *otherBody, f32 massOther, neV3 &pointThis, neV3 &pointOther);
 
-    void CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast);
+    void CorrectPosition(neV3 &pointThis, neV3 &pointDest, int32_t flag, int32_t changeLast);
 
-    void CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag, s32 changeLast);
+    void CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, int32_t flag, int32_t changeLast);
 
     void CorrectPenetrationDrift();
 
-    void CorrectPenetrationDrift2(s32 index, neBool slide, s32 flag);
+    void CorrectPenetrationDrift2(int32_t index, neBool slide, int32_t flag);
 
     f32 TestImpulse(neV3 &dir, neV3 &pt, f32 &linear, f32 &angular);
 
@@ -719,9 +719,9 @@ public:
 
     void CorrectPenetrationTranslation();
 
-    void CorrectPenetrationRotation2(s32 index, neBool slide);
+    void CorrectPenetrationRotation2(int32_t index, neBool slide);
 
-    void CorrectPenetrationTranslation2(s32 index, neBool slide);
+    void CorrectPenetrationTranslation2(int32_t index, neBool slide);
 
     neBool CheckStillIdle();
 

@@ -13,7 +13,7 @@
 
 //=========================================================================
 
-NEINLINE f32 &neV3::operator[](s32 I) {
+NEINLINE f32 &neV3::operator[](size_t I) {
     ASSERT(I >= 0);
     ASSERT(I <= 2);
     // return ((f32*)this)[I];
@@ -22,7 +22,7 @@ NEINLINE f32 &neV3::operator[](s32 I) {
 
 //=========================================================================
 
-NEINLINE f32 neV3::operator[](s32 I) const {
+NEINLINE f32 neV3::operator[](size_t I) const {
     ASSERT(I >= 0);
     ASSERT(I <= 2);
     return v[I];

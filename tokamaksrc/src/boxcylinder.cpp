@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace) {
+neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, int32_t whichFace) {
     neV3 diff = trans->pos - transB.pos;
 
     neV3 dir = trans->rot[whichFace];
@@ -64,9 +64,9 @@ neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB,
 
     neV3 project = contactPoint - dir * depth;
 
-    s32 otherAxis1 = neNextDim1[whichFace];
+    int32_t otherAxis1 = neNextDim1[whichFace];
 
-    s32 otherAxis2 = neNextDim2[whichFace];
+    int32_t otherAxis2 = neNextDim2[whichFace];
 
     neV3 sub = project - trans->pos;
 
@@ -93,7 +93,7 @@ neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB,
     return true;
 }
 
-neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichEdge) {
+neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, int32_t whichEdge) {
     neV3 diff = trans->pos - transB.pos;
 
     neV3 dir = trans->rot[whichEdge].Cross(transB.rot[1]);
@@ -117,7 +117,7 @@ neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB,
 
     neV3 contactPoint = trans->pos;
 
-    s32 i;
+    size_t i;
 
     for (i = 0; i < 3; i++) {
         if (i == whichEdge)

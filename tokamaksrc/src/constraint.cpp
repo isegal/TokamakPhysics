@@ -359,7 +359,7 @@ void _neConstraint::SetType(neJoint::ConstraintType t) {
     }
 }
 
-neController *_neConstraint::AddController(neJointControllerCallback *jc, s32 period) {
+neController *_neConstraint::AddController(neJointControllerCallback *jc, int32_t period) {
     if (!jc)
         return NULL;
 
@@ -465,7 +465,7 @@ void _neConstraint::UpdateConstraintPoint() {
         cbodyB = bodyB->AsCollisionBody();
     }
 
-    for (s32 i = 0; i < pointCount; i++) {
+    for (size_t i = 0; i < pointCount; i++) {
         if (type == neJoint::NE_JOINT_BALLSOCKET ||
             type == neJoint::NE_JOINT_HINGE) {
             cpointsA[i].PtWorld() = bodyA->State().b2w * cpointsA[i].PtBody();
@@ -507,7 +507,7 @@ void _neConstraint::FindGreatest() {
         case neJoint::NE_JOINT_BALLSOCKET:
         case neJoint::NE_JOINT_HINGE: {
 
-            for (s32 i = 0; i < pointCount; i++) {
+            for (size_t i = 0; i < pointCount; i++) {
                 neCollisionResult *cresult = bodyA->sim->cresultHeap.Alloc(0);
 
                 cresult->contactA = cpointsA[i].PtWorld() - bodyA->GetPos();
@@ -536,7 +536,7 @@ void _neConstraint::FindGreatest() {
             break;
 
         case neJoint::NE_JOINT_SLIDE: {
-            for (s32 i = 0; i < pointCount; i++) {
+            for (size_t i = 0; i < pointCount; i++) {
                 neCollisionResult *cresult = bodyA->sim->cresultHeap.Alloc(0);
 
                 cresult->contactA = cpointsA[i].PtWorld() - bodyA->GetPos();
@@ -1117,10 +1117,9 @@ void neLimitState::CheckLimitPrimarySlider() {
     cresult->PrepareForSolver();
 }
 
-void neConstraintHeader::AddToSolver(f32 &epsilon, s32 &iteration) {
+void neConstraintHeader::AddToSolver(f32 &epsilon, int32_t &iteration) {
     _neConstraint *constraint = head;
 
-    s32 i = 0;
 
     while (constraint) {
         if (constraint->enable) {
@@ -1142,7 +1141,6 @@ void neConstraintHeader::AddToSolver(f32 &epsilon, s32 &iteration) {
 
         constraint = (_neConstraint *) (item->next);
 
-        i++;
     }
 
     solved = true;

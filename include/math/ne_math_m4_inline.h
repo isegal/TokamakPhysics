@@ -49,7 +49,7 @@ NEINLINE void neM4::SetZero(void) {
 
 //=========================================================================
 
-NEINLINE f32 &neM4::operator[](s32 I) {
+NEINLINE f32 &neM4::operator[](size_t I) {
     ASSERT(I >= 0);
     ASSERT(I < 4 * 4);
     return ((f32 *) this)[I];

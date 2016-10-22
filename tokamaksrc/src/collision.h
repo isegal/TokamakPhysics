@@ -60,11 +60,11 @@ typedef struct _neBox {
 } neBox;
 
 struct neTri {
-    s32 indices[3];
+    int32_t indices[3];
 };
 
 struct neTriangleTerrain {
-    neSimpleArray<s32> *triIndex;
+    neSimpleArray<int32_t> *triIndex;
     neArray<neTriangle_> *triangles;
 };
 
@@ -81,14 +81,14 @@ struct neCylinder {
 
 struct neConvexMesh {
     neV3 *vertices;
-    s32 *neighbours;
-    s32 vertexCount;
+    int32_t *neighbours;
+    size_t vertexCount;
 };
 
 struct neConvexDCD {
     neByte *convexData;
     neV3 *vertices;
-    s32 numVerts;
+    size_t numVerts;
 };
 
 #ifdef USE_OPCODE
@@ -149,7 +149,7 @@ struct TConvex {
     f32 boundingRadius;
     f32 envelope;
     uint32_t type;
-    s32 matIndex;
+    int32_t matIndex;
     void * userData;
     neBreakInfo breakInfo;
     neV3 *vertices;
@@ -158,9 +158,9 @@ struct TConvex {
 
     void SetSphere(f32 radius);
 
-    void SetTriangle(s32 a, s32 b, s32 c, neV3 *vertices);
+    void SetTriangle(int32_t a, int32_t b, int32_t c, neV3 *vertices);
 
-    void SetTerrain(neSimpleArray<s32> &triangleIndex, neArray<neTriangle_> &triangles, neV3 *vertices);
+    void SetTerrain(neSimpleArray<int32_t> &triangleIndex, neArray<neTriangle_> &triangles, neV3 *vertices);
 
     void SetConvexMesh(neByte *convexData);
 
@@ -182,9 +182,9 @@ struct TConvex {
         return userData;
     }
 
-    void SetMaterialId(s32 id);
+    void SetMaterialId(int32_t id);
 
-    s32 GetMaterialId();
+    int32_t GetMaterialId();
 
     f32 GetBoundRadius();
 
@@ -197,7 +197,7 @@ struct TConvex {
     void GetExtend(neV3 &minExt, neV3 &maxEnt);
 
     //quick access functions
-    NEINLINE f32 BoxSize(s32 dir) {
+    NEINLINE f32 BoxSize(int32_t dir) {
         ASSERT(type == BOX);
 
         return as.box.boxSize[dir];
@@ -254,7 +254,7 @@ public:
 
     f32 depth;
 
-    s32 materialID;
+    int32_t materialID;
 
     neRigidBodyBase *body;
 
@@ -303,7 +303,7 @@ public:
 public:
     TConvex obb;
     TConvex *convex;
-    s32 convexCount;
+    size_t convexCount;
     f32 boundingRadius;
 };
 
@@ -335,8 +335,8 @@ public:
     neV3 initRelVel;
     neV3 finaltRelVel;
 
-    s32 materialIdA;
-    s32 materialIdB;
+    int32_t materialIdA;
+    int32_t materialIdB;
     f32 depth; //+ve
     neBool penetrate;
 

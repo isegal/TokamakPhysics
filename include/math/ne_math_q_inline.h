@@ -134,7 +134,7 @@ NEINLINE void neQ::SetupFromMatrix(const neM4 &Matrix) {
 
 
     // find maximum magnitude component
-    const s32 i = (qs2 > qx2) ?
+    const int32_t i = (qs2 > qx2) ?
                   ((qs2 > qy2) ? ((qs2 > qz2) ? 0 : 3) : ((qy2 > qz2) ? 2 : 3)) :
                   ((qx2 > qy2) ? ((qx2 > qz2) ? 1 : 3) : ((qy2 > qz2) ? 2 : 3));
 

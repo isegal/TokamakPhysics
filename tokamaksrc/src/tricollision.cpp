@@ -115,9 +115,9 @@ NEINLINE bool TriangleParam::PointInYProjection(neV3 &point) {
 */
 }
 
-s32 TriangleParam::IsPointInside(const neV3 &point) {
+int32_t TriangleParam::IsPointInside(const neV3 &point) {
     //select coordinate
-    s32 dim0, dim1, plane;
+    int32_t dim0, dim1, plane;
     f32 clockness; // 1.0 counter clockwise, -1.0 clockwise
 
     if (neAbs(normal[1]) > neAbs(normal[2])) {
