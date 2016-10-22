@@ -17,7 +17,6 @@ set(SOURCE_FILES
         src/solver.cpp
         src/sphere.cpp
         src/stack.cpp
-        src/test.cpp
         src/tricollision.cpp
         src/useopcode.cpp
         )
