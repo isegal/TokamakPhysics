@@ -27,9 +27,8 @@
 
 #include <sys/time.h>
 
-nePerformanceData * nePerformanceData::Create()
-{
-	return new nePerformanceData;
+nePerformanceData *nePerformanceData::Create() {
+    return new nePerformanceData;
 }
 
 s64 perfFreq;
@@ -44,70 +43,66 @@ timeval counter;
 
 void DunselFunction() { return; }
 
-void nePerformanceData::Init()
-{
-	Reset();
+void nePerformanceData::Init() {
+    Reset();
 
-	void (*pFunc)() = DunselFunction;
+    void (*pFunc)() = DunselFunction;
 
-	gettimeofday(&counter, NULL);
+    gettimeofday(&counter, NULL);
 }
 
-void nePerformanceData::Start()
-{
-	Reset();
+void nePerformanceData::Start() {
+    Reset();
 
-	gettimeofday(&counter, NULL);
+    gettimeofday(&counter, NULL);
 }
 
-f32 nePerformanceData::GetCount()
-{
-	timeval tStart, tStop;
-	f32 start, end;
+f32 nePerformanceData::GetCount() {
+    timeval tStart, tStop;
+    f32 start, end;
 
-	tStart = counter;
+    tStart = counter;
 
-	gettimeofday(&tStop, NULL);
+    gettimeofday(&tStop, NULL);
 
-	start = (tStart.tv_sec * 1000000.0) + tStart.tv_usec;
+    start = (tStart.tv_sec * 1000000.0) + tStart.tv_usec;
     end = (tStop.tv_sec * 1000000.0) + tStop.tv_usec;
 
-	return (end - start) * 0.000001;
+    return (end - start) * 0.000001;
 }
 
-void nePerformanceData::UpdateDynamic()
-{
-	dynamic += GetCount();
+void nePerformanceData::UpdateDynamic() {
+    dynamic += GetCount();
 }
-void nePerformanceData::UpdatePosition()
-{
-	position += GetCount();
+
+void nePerformanceData::UpdatePosition() {
+    position += GetCount();
 }
-void nePerformanceData::UpdateConstrain1()
-{
-	constrain_1 += GetCount();
+
+void nePerformanceData::UpdateConstrain1() {
+    constrain_1 += GetCount();
 }
-void nePerformanceData::UpdateConstrain2()
-{
-	constrain_2 += GetCount();
+
+void nePerformanceData::UpdateConstrain2() {
+    constrain_2 += GetCount();
 }
-void nePerformanceData::UpdateCD()
-{
-	cd += GetCount();
+
+void nePerformanceData::UpdateCD() {
+    cd += GetCount();
 }
-void nePerformanceData::UpdateCDCulling()
-{
-	cdCulling += GetCount();
+
+void nePerformanceData::UpdateCDCulling() {
+    cdCulling += GetCount();
 }
-void nePerformanceData::UpdateTerrain()
-{
-	terrain += GetCount();
+
+void nePerformanceData::UpdateTerrain() {
+    terrain += GetCount();
 }
-void nePerformanceData::UpdateControllerCallback()
-{
-	controllerCallback += GetCount();
+
+void nePerformanceData::UpdateControllerCallback() {
+    controllerCallback += GetCount();
 }
-void nePerformanceData::UpdateTerrainCulling()
-{
-	terrainCulling += GetCount();
+
+void nePerformanceData::UpdateTerrainCulling() {
+    terrainCulling += GetCount();
 }

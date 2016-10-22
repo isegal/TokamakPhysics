@@ -14,10 +14,11 @@
 #ifndef TOKAMAK_H
 #define TOKAMAK_H
 
-#define TOKAMAK_VERSION_MAJOR 1  
-#define TOKAMAK_VERSION_MINOR 0  
-#define TOKAMAK_VERSION_BUGFIX 5 
+#define TOKAMAK_VERSION_MAJOR 1
+#define TOKAMAK_VERSION_MINOR 0
+#define TOKAMAK_VERSION_BUGFIX 5
 #define TOKAMAK_VERSION  (( TOKAMAK_VERSION_MAJOR <<24)+(TOKAMAK_VERSION_MINOR <<16)+(TOKAMAK_VERSION_BUGFIX <<8) + 0)
+
 #include <memory>
 
 #include "math/ne_math.h"
@@ -29,18 +30,17 @@
 #define TOKAMAK_API __declspec(dllimport)
 #endif
 #else
-#define TOKAMAK_API 
+#define TOKAMAK_API
 #endif
 
 #define NE_INTERFACE(n) protected: n(){}; n& operator = (const n & e){return (*this);}
 
 class TOKAMAK_API neRigidBody;
 
-typedef enum
-{
-	NE_TERRAIN = 0, 
-	NE_RIGID_BODY,
-	NE_ANIMATED_BODY,
+typedef enum {
+    NE_TERRAIN = 0,
+    NE_RIGID_BODY,
+    NE_ANIMATED_BODY,
 } neBodyType;
 
 /****************************************************************************
@@ -51,14 +51,13 @@ typedef enum
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neAllocatorAbstract
-{
+class neAllocatorAbstract {
 public:
-	virtual neByte * Alloc(s32 size, s32 alignment = 0) = 0;
+    virtual neByte *Alloc(s32 size, s32 alignment = 0) = 0;
 
-	virtual void   Free(neByte *) = 0;
+    virtual void Free(neByte *) = 0;
 };
 
 
@@ -70,27 +69,28 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neAllocatorDefault: public neAllocatorAbstract
-{
+class neAllocatorDefault : public neAllocatorAbstract {
 public:
-	neAllocatorDefault()
-	{
-		usedMem = 0;
-	}
-	neByte * Alloc(s32 size, s32 alignment = 0) {
-		
-		usedMem += size;
+    neAllocatorDefault() {
+        usedMem = 0;
+    }
 
-		return (neByte *)malloc(size);
-	}
-	void Free(neByte * ptr) {
+    neByte *Alloc(s32 size, s32 alignment = 0) {
 
-		free(ptr);
-	}
+        usedMem += size;
+
+        return (neByte *) malloc(size);
+    }
+
+    void Free(neByte *ptr) {
+
+        free(ptr);
+    }
+
 public:
-	s32 usedMem;
+    s32 usedMem;
 };
 
 
@@ -102,47 +102,44 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class nePerformanceReport
-{
+class nePerformanceReport {
 public:
-	enum{
-		NE_PERF_TOTAL_TIME = 0,
-		NE_PERF_DYNAMIC,
-		NE_PERF_POSITION,
-		NE_PERF_CONTRAIN_SOLVING_1,
-		NE_PERF_CONTRAIN_SOLVING_2,
-		NE_PERF_COLLISION_DETECTION,
-		NE_PERF_COLLISION_CULLING,
-		NE_PERF_TERRAIN_CULLING,
-		NE_PERF_TERRAIN,
-		NE_PERF_CONTROLLER_CALLBACK,
-		NE_PERF_LAST,
-	};
-	enum
-	{
-		NE_PERF_RUNNING_AVERAGE = 0,
-		NE_PERF_SAMPLE,
-	};
-	f32 time[NE_PERF_LAST];
-	f32 accTime[NE_PERF_LAST];
+    enum {
+        NE_PERF_TOTAL_TIME = 0,
+        NE_PERF_DYNAMIC,
+        NE_PERF_POSITION,
+        NE_PERF_CONTRAIN_SOLVING_1,
+        NE_PERF_CONTRAIN_SOLVING_2,
+        NE_PERF_COLLISION_DETECTION,
+        NE_PERF_COLLISION_CULLING,
+        NE_PERF_TERRAIN_CULLING,
+        NE_PERF_TERRAIN,
+        NE_PERF_CONTROLLER_CALLBACK,
+        NE_PERF_LAST,
+    };
+    enum {
+        NE_PERF_RUNNING_AVERAGE = 0,
+        NE_PERF_SAMPLE,
+    };
+    f32 time[NE_PERF_LAST];
+    f32 accTime[NE_PERF_LAST];
 
-	void Reset()
-	{
-		for (s32 i = 0; i < NE_PERF_LAST; i++)
-		{
-			time[i] = 0.0f;
-			accTime[i] = 0.0f;
-		}
-		numSample = 0;
-	}
-	void SetReportType(s32 type)
-	{
-		reportType = type;
-	}
-	s32 reportType;
-	s32 numSample;
+    void Reset() {
+        for (s32 i = 0; i < NE_PERF_LAST; i++) {
+            time[i] = 0.0f;
+            accTime[i] = 0.0f;
+        }
+        numSample = 0;
+    }
+
+    void SetReportType(s32 type) {
+        reportType = type;
+    }
+
+    s32 reportType;
+    s32 numSample;
 };
 
 /****************************************************************************
@@ -153,107 +150,106 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
 class TOKAMAK_API neGeometry;
 
-typedef void (neBreakageCallback)(neByte * originalBody, neBodyType bodyType, neGeometry * brokenGeometry, neRigidBody * newBody);
+typedef void (neBreakageCallback)(neByte *originalBody, neBodyType bodyType, neGeometry *brokenGeometry,
+                                  neRigidBody *newBody);
 
-class TOKAMAK_API neGeometry
-{
+class TOKAMAK_API neGeometry {
 NE_INTERFACE(neGeometry)
 
 public:
 
-typedef enum
-{
-	NE_BREAK_DISABLE,
-	NE_BREAK_NORMAL,
-	NE_BREAK_ALL,
-	NE_BREAK_NEIGHBOUR,
-	
-	/*	the following are the same as above, 
-		except it create a rigid particle instead of a rigid body 
-	*/
+    typedef enum {
+        NE_BREAK_DISABLE,
+        NE_BREAK_NORMAL,
+        NE_BREAK_ALL,
+        NE_BREAK_NEIGHBOUR,
 
-	NE_BREAK_NORMAL_PARTICLE, 
-	NE_BREAK_ALL_PARTICLE,
-	NE_BREAK_NEIGHBOUR_PARTICLE,
-} neBreakFlag;
+        /*	the following are the same as above,
+            except it create a rigid particle instead of a rigid body
+        */
+
+                NE_BREAK_NORMAL_PARTICLE,
+        NE_BREAK_ALL_PARTICLE,
+        NE_BREAK_NEIGHBOUR_PARTICLE,
+    } neBreakFlag;
 
 public:
-	void	SetTransform(neT3 & t);
-	
-	void	SetMaterialIndex(s32 index);
+    void SetTransform(neT3 &t);
 
-	s32		GetMaterialIndex();
+    void SetMaterialIndex(s32 index);
 
-	neT3	GetTransform();
+    s32 GetMaterialIndex();
 
-	void	SetUserData(u32 userData);
+    neT3 GetTransform();
 
-	u32		GetUserData();
+    void SetUserData(u32 userData);
 
-	/*
-		Box
-	*/
-	void	SetBoxSize(f32 width, f32 height, f32 depth);
+    u32 GetUserData();
 
-	void	SetBoxSize(const neV3 & boxSize);
+    /*
+        Box
+    */
+    void SetBoxSize(f32 width, f32 height, f32 depth);
 
-	neBool	GetBoxSize(neV3 & boxSize); // return false if geometry is not a box
+    void SetBoxSize(const neV3 &boxSize);
 
-	/*
-		Sphere
-	*/
-	void	SetSphereDiameter(f32 diameter);
+    neBool GetBoxSize(neV3 &boxSize); // return false if geometry is not a box
 
-	neBool	GetSphereDiameter(f32 & diameter); // return false if geometry is not a sphere
+    /*
+        Sphere
+    */
+    void SetSphereDiameter(f32 diameter);
 
-	/*
-		Cylinder
-	*/
-	void	SetCylinder(f32 diameter, f32 height);
+    neBool GetSphereDiameter(f32 &diameter); // return false if geometry is not a sphere
 
-	neBool	GetCylinder(f32 & diameter, f32 & height); // return false if geometry is not a cylinder
+    /*
+        Cylinder
+    */
+    void SetCylinder(f32 diameter, f32 height);
 
-	/*
-		Convex
-	*/
-	void	SetConvexMesh(neByte * convexData);
+    neBool GetCylinder(f32 &diameter, f32 &height); // return false if geometry is not a cylinder
 
-	neBool	GetConvexMesh(neByte *& convexData);
+    /*
+        Convex
+    */
+    void SetConvexMesh(neByte *convexData);
 
-	/*
-		Breakage functions
-	*/
-	void	SetBreakageFlag(neBreakFlag flag);
+    neBool GetConvexMesh(neByte *&convexData);
 
-	neBreakFlag GetBreakageFlag();
+    /*
+        Breakage functions
+    */
+    void SetBreakageFlag(neBreakFlag flag);
 
-	void	SetBreakageMass(f32 mass);
+    neBreakFlag GetBreakageFlag();
 
-	f32		GetBreakageMass();
-	
-	void	SetBreakageInertiaTensor(const neV3 & tensor);
+    void SetBreakageMass(f32 mass);
 
-	neV3	GetBreakageInertiaTensor();
+    f32 GetBreakageMass();
 
-	void	SetBreakageMagnitude(f32 mag);
+    void SetBreakageInertiaTensor(const neV3 &tensor);
 
-	f32		GetBreakageMagnitude();
+    neV3 GetBreakageInertiaTensor();
 
-	void	SetBreakageAbsorption(f32 absorb);
+    void SetBreakageMagnitude(f32 mag);
 
-	f32		GetBreakageAbsorption();
+    f32 GetBreakageMagnitude();
 
-	void	SetBreakagePlane(const neV3 & planeNormal);
+    void SetBreakageAbsorption(f32 absorb);
 
-	neV3	GetBreakagePlane();
+    f32 GetBreakageAbsorption();
 
-	void	SetBreakageNeighbourRadius(f32 radius);
+    void SetBreakagePlane(const neV3 &planeNormal);
 
-	f32		GetBreakageNeighbourRadius();
+    neV3 GetBreakagePlane();
+
+    void SetBreakageNeighbourRadius(f32 radius);
+
+    f32 GetBreakageNeighbourRadius();
 };
 
 /****************************************************************************
@@ -264,41 +260,37 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
-class neTriangle
-{
+****************************************************************************/
+class neTriangle {
 public:
-	neTriangle()
-	{
-		flag = NE_TRI_TRIANGLE;
-		materialID = 0;
-		indices[0] = -1;
-		indices[1] = -1;
-		indices[2] = -1;
-		userData = 0;
-	}
+    neTriangle() {
+        flag = NE_TRI_TRIANGLE;
+        materialID = 0;
+        indices[0] = -1;
+        indices[1] = -1;
+        indices[2] = -1;
+        userData = 0;
+    }
 
-	enum
-	{
-		NE_TRI_TRIANGLE = 0,
-		NE_TRI_HEIGHT_MAP,
-	};
-	s32 indices[3];
-	s32 materialID;
-	u32 flag;
-	u32 userData;
+    enum {
+        NE_TRI_TRIANGLE = 0,
+        NE_TRI_HEIGHT_MAP,
+    };
+    s32 indices[3];
+    s32 materialID;
+    u32 flag;
+    u32 userData;
 };
 
-class neTriangleMesh
-{
+class neTriangleMesh {
 public:
-	neV3 * vertices;
+    neV3 *vertices;
 
-	s32 vertexCount;
+    s32 vertexCount;
 
-	neTriangle * triangles;
+    neTriangle *triangles;
 
-	s32 triangleCount;
+    s32 triangleCount;
 };
 
 /****************************************************************************
@@ -309,40 +301,39 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
 class TOKAMAK_API neRigidBody;
 
 class TOKAMAK_API neAnimatedBody;
 
-class TOKAMAK_API neSensor
-{
+class TOKAMAK_API neSensor {
 NE_INTERFACE(neSensor)
 
 public:
-	void	SetLineSensor(const neV3 & pos, const neV3 & lineVector);
+    void SetLineSensor(const neV3 &pos, const neV3 &lineVector);
 
-	void	SetUserData(u32 userData);
+    void SetUserData(u32 userData);
 
-	u32		GetUserData();
+    u32 GetUserData();
 
-	neV3	GetLineVector();
+    neV3 GetLineVector();
 
-	neV3	GetLineUnitVector();
+    neV3 GetLineUnitVector();
 
-	neV3	GetLinePos();
+    neV3 GetLinePos();
 
-	f32		GetDetectDepth();
+    f32 GetDetectDepth();
 
-	neV3	GetDetectNormal();
+    neV3 GetDetectNormal();
 
-	neV3	GetDetectContactPoint();
+    neV3 GetDetectContactPoint();
 
-	neRigidBody * GetDetectRigidBody();
+    neRigidBody *GetDetectRigidBody();
 
-	neAnimatedBody * GetDetectAnimatedBody();
+    neAnimatedBody *GetDetectAnimatedBody();
 
-	s32		GetDetectMaterial();
+    s32 GetDetectMaterial();
 };
 
 /****************************************************************************
@@ -353,84 +344,83 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class TOKAMAK_API neAnimatedBody
-{
+class TOKAMAK_API neAnimatedBody {
 NE_INTERFACE(neAnimatedBody)
 
 public:
 
 //spatial states
-	neV3	GetPos();
-	
-	void	SetPos(const neV3 & p);
-	
-	neM3	GetRotationM3();
-	
-	neQ		GetRotationQ();
-	
-	void	SetRotation(const neM3 & m);
-	
-	void	SetRotation(const neQ & q);
-	
-	neT3	GetTransform();
+    neV3 GetPos();
+
+    void SetPos(const neV3 &p);
+
+    neM3 GetRotationM3();
+
+    neQ GetRotationQ();
+
+    void SetRotation(const neM3 &m);
+
+    void SetRotation(const neQ &q);
+
+    neT3 GetTransform();
 
 //collision related
-	void	SetCollisionID(s32 cid);
-	
-	s32		GetCollisionID();
-	
-	void	SetUserData(u32 userData);
-	
-	u32		GetUserData();
-	
-	s32		GetGeometryCount();
-	
+    void SetCollisionID(s32 cid);
+
+    s32 GetCollisionID();
+
+    void SetUserData(u32 userData);
+
+    u32 GetUserData();
+
+    s32 GetGeometryCount();
+
 //collision geometries and sensors
 
-	neGeometry *	AddGeometry();
+    neGeometry *AddGeometry();
 
-	neBool			RemoveGeometry(neGeometry * g);
+    neBool RemoveGeometry(neGeometry *g);
 
-	void			BeginIterateGeometry();
+    void BeginIterateGeometry();
 
-	neGeometry *	GetNextGeometry();
+    neGeometry *GetNextGeometry();
 
-	neRigidBody *	BreakGeometry(neGeometry * g);
+    neRigidBody *BreakGeometry(neGeometry *g);
 
-	neSensor *		AddSensor();
+    neSensor *AddSensor();
 
-	neBool			RemoveSensor(neSensor * s);
+    neBool RemoveSensor(neSensor *s);
 
-	void			BeginIterateSensor();
+    void BeginIterateSensor();
 
-	neSensor *		GetNextSensor();
+    neSensor *GetNextSensor();
 
-	void			UseCustomCollisionDetection(neBool yes, const neT3 * obb, f32 boundingRadius);
+    void UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius);
 
-	neBool			UseCustomCollisionDetection();
+    neBool UseCustomCollisionDetection();
 
 //functions
-	void	UpdateBoundingInfo();
+    void UpdateBoundingInfo();
 
-	// collide with any body which connected to this body indirectly
+    // collide with any body which connected to this body indirectly
 
-	void	CollideConnected(neBool yes);
+    void CollideConnected(neBool yes);
 
-	neBool	CollideConnected();
+    neBool CollideConnected();
 
-	// collide with any body which connected to this body directly
+    // collide with any body which connected to this body directly
 
-	void	CollideDirectlyConnected(neBool yes);
+    void CollideDirectlyConnected(neBool yes);
 
-	neBool	CollideDirectlyConnected();
+    neBool CollideDirectlyConnected();
 
-	void	Active(neBool yes, neRigidBody * hint = NULL);
+    void Active(neBool yes, neRigidBody *hint = NULL);
 
-	void	Active(neBool yes, neAnimatedBody * hint = NULL);
+    void Active(neBool yes, neAnimatedBody *hint = NULL);
 
-	neBool	Active();
+    neBool Active();
 };
 
 /****************************************************************************
@@ -441,166 +431,163 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
 class TOKAMAK_API neRigidBodyController;
 
 class TOKAMAK_API neJointController;
 
-class neRigidBodyControllerCallback
-{
+class neRigidBodyControllerCallback {
 public:
-	virtual void RigidBodyControllerCallback(neRigidBodyController * controller, float timeStep) = 0;
+    virtual void RigidBodyControllerCallback(neRigidBodyController *controller, float timeStep) = 0;
 };
 
-class neJointControllerCallback
-{
+class neJointControllerCallback {
 public:
-	virtual void ConstraintControllerCallback(neJointController * controller, float timeStep) = 0;
+    virtual void ConstraintControllerCallback(neJointController *controller, float timeStep) = 0;
 };
 
-class TOKAMAK_API neRigidBody
-{
+class TOKAMAK_API neRigidBody {
 NE_INTERFACE(neRigidBody)
 
 public:
 
 //physical properties
-	f32		GetMass();
-	
-	void	SetMass(f32 mass);
-	
-	void	SetInertiaTensor(const neM3 & tensor);
+    f32 GetMass();
 
-	void	SetInertiaTensor(const neV3 & tensor);
+    void SetMass(f32 mass);
+
+    void SetInertiaTensor(const neM3 &tensor);
+
+    void SetInertiaTensor(const neV3 &tensor);
 
 //other properties
-	void	SetCollisionID(s32 cid);
-	
-	s32		GetCollisionID();
-	
-	void	SetUserData(u32 userData);
-	
-	u32		GetUserData();
-	
-	s32		GetGeometryCount();
+    void SetCollisionID(s32 cid);
 
-	void	SetLinearDamping(f32 damp);	
+    s32 GetCollisionID();
 
-	f32		GetLinearDamping();
+    void SetUserData(u32 userData);
 
-	void	SetAngularDamping(f32 damp);	
+    u32 GetUserData();
 
-	f32		GetAngularDamping();
+    s32 GetGeometryCount();
 
-	void	SetSleepingParameter(f32 sleepingParam);
+    void SetLinearDamping(f32 damp);
 
-	f32		GetSleepingParameter();
+    f32 GetLinearDamping();
+
+    void SetAngularDamping(f32 damp);
+
+    f32 GetAngularDamping();
+
+    void SetSleepingParameter(f32 sleepingParam);
+
+    f32 GetSleepingParameter();
 
 //collision geometries, sensors and controllers
-	
-	neGeometry *	AddGeometry();
 
-	neBool			RemoveGeometry(neGeometry * g);
+    neGeometry *AddGeometry();
 
-	void			BeginIterateGeometry();
+    neBool RemoveGeometry(neGeometry *g);
 
-	neGeometry *	GetNextGeometry();
+    void BeginIterateGeometry();
 
-	neRigidBody *	BreakGeometry(neGeometry * g);
+    neGeometry *GetNextGeometry();
 
-	void			UseCustomCollisionDetection(neBool yes,  const neT3 * obb, f32 boundingRadius);
-	
-	neBool			UseCustomCollisionDetection();
+    neRigidBody *BreakGeometry(neGeometry *g);
 
-	neSensor *		AddSensor();
+    void UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius);
 
-	neBool			RemoveSensor(neSensor * s);
-	
-	void			BeginIterateSensor();
+    neBool UseCustomCollisionDetection();
 
-	neSensor *		GetNextSensor();
+    neSensor *AddSensor();
 
-	neRigidBodyController * AddController(neRigidBodyControllerCallback * controller, s32 period);
+    neBool RemoveSensor(neSensor *s);
 
-	neBool			RemoveController(neRigidBodyController * rbController);
+    void BeginIterateSensor();
 
-	void			BeginIterateController();
+    neSensor *GetNextSensor();
 
-	neRigidBodyController * GetNextController();
+    neRigidBodyController *AddController(neRigidBodyControllerCallback *controller, s32 period);
+
+    neBool RemoveController(neRigidBodyController *rbController);
+
+    void BeginIterateController();
+
+    neRigidBodyController *GetNextController();
 
 //spatial states
-	neV3	GetPos();
-	
-	void	SetPos(const neV3 & p);
-	
-	neM3	GetRotationM3();
-	
-	neQ		GetRotationQ();
-	
-	void	SetRotation(const neM3 & m);
-	
-	void	SetRotation(const neQ & q);
-	
-	neT3	GetTransform();
+    neV3 GetPos();
+
+    void SetPos(const neV3 &p);
+
+    neM3 GetRotationM3();
+
+    neQ GetRotationQ();
+
+    void SetRotation(const neM3 &m);
+
+    void SetRotation(const neQ &q);
+
+    neT3 GetTransform();
 
 //dynamic states
-	neV3	GetVelocity();
-	
-	void	SetVelocity(const neV3 & v);
-	
-	neV3	GetAngularVelocity();
-	
-	neV3	GetAngularMomentum();
-	
-	void	SetAngularMomentum(const neV3& am);
+    neV3 GetVelocity();
 
-	neV3	GetVelocityAtPoint(const neV3 & pt);
+    void SetVelocity(const neV3 &v);
+
+    neV3 GetAngularVelocity();
+
+    neV3 GetAngularMomentum();
+
+    void SetAngularMomentum(const neV3 &am);
+
+    neV3 GetVelocityAtPoint(const neV3 &pt);
 
 //functions
-	void	UpdateBoundingInfo();
-	
-	void	UpdateInertiaTensor();
-	
-	void	SetForce(const neV3 & force);
+    void UpdateBoundingInfo();
 
-	void	SetTorque(const neV3 & torque);
-	
-	void	SetForce(const neV3 & force, const neV3 & pos);
+    void UpdateInertiaTensor();
 
-	neV3	GetForce();
+    void SetForce(const neV3 &force);
 
-	neV3	GetTorque();
+    void SetTorque(const neV3 &torque);
 
-	void	ApplyImpulse(const neV3 & impulse);
+    void SetForce(const neV3 &force, const neV3 &pos);
 
-	void	ApplyImpulse(const neV3 & impulse, const neV3 & pos);
+    neV3 GetForce();
 
-	void	ApplyTwist(const neV3 & twist);
+    neV3 GetTorque();
 
-	void	GravityEnable(neBool yes);
+    void ApplyImpulse(const neV3 &impulse);
 
-	neBool	GravityEnable();
+    void ApplyImpulse(const neV3 &impulse, const neV3 &pos);
 
-	// collide with any body which connected to this body indirectly
-	
-	void	CollideConnected(neBool yes); 
+    void ApplyTwist(const neV3 &twist);
 
-	neBool	CollideConnected();
+    void GravityEnable(neBool yes);
 
-	// collide with any body which connected to this body directly
+    neBool GravityEnable();
 
-	void	CollideDirectlyConnected(neBool yes);
+    // collide with any body which connected to this body indirectly
 
-	neBool	CollideDirectlyConnected();
+    void CollideConnected(neBool yes);
 
-	void	Active(neBool yes, neRigidBody * hint = NULL);
+    neBool CollideConnected();
 
-	void	Active(neBool yes, neAnimatedBody * hint = NULL);
+    // collide with any body which connected to this body directly
 
-	neBool	Active();
+    void CollideDirectlyConnected(neBool yes);
 
-	neBool	IsIdle();
+    neBool CollideDirectlyConnected();
+
+    void Active(neBool yes, neRigidBody *hint = NULL);
+
+    void Active(neBool yes, neAnimatedBody *hint = NULL);
+
+    neBool Active();
+
+    neBool IsIdle();
 };
 
 /****************************************************************************
@@ -611,139 +598,137 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class TOKAMAK_API neJoint
-{
+class TOKAMAK_API neJoint {
 NE_INTERFACE(neJoint)
 
 public:
-	typedef enum
-	{
-		NE_JOINT_BALLSOCKET,
-		NE_JOINT_BALLSOCKET2,
-		NE_JOINT_HINGE,
-		NE_JOINT_SLIDE,
+    typedef enum {
+        NE_JOINT_BALLSOCKET,
+        NE_JOINT_BALLSOCKET2,
+        NE_JOINT_HINGE,
+        NE_JOINT_SLIDE,
 
-	}ConstraintType;
+    } ConstraintType;
 
-	void SetType(ConstraintType t);
+    void SetType(ConstraintType t);
 
-	ConstraintType GetType();
+    ConstraintType GetType();
 
-	void SetJointFrameA(const neT3 & frameA);
+    void SetJointFrameA(const neT3 &frameA);
 
-	void SetJointFrameB(const neT3 & frameB);
+    void SetJointFrameB(const neT3 &frameB);
 
-	void SetJointFrameWorld(const neT3 & frame);
+    void SetJointFrameWorld(const neT3 &frame);
 
-	neT3 GetJointFrameA();
+    neT3 GetJointFrameA();
 
-	neT3 GetJointFrameB();
+    neT3 GetJointFrameB();
 
-	void SetJointLength(f32 length);
+    void SetJointLength(f32 length);
 
-	f32 GetJointLength();
+    f32 GetJointLength();
 
-	neRigidBody * GetRigidBodyA();
+    neRigidBody *GetRigidBodyA();
 
-	neRigidBody * GetRigidBodyB();
+    neRigidBody *GetRigidBodyB();
 
-	neAnimatedBody * GetAnimatedBodyB();
+    neAnimatedBody *GetAnimatedBodyB();
 
-	void Enable(neBool yes);
+    void Enable(neBool yes);
 
-	neBool Enable();
+    neBool Enable();
 
-	void SetDampingFactor(f32 damp);
+    void SetDampingFactor(f32 damp);
 
-	f32 GetDampingFactor();
+    f32 GetDampingFactor();
 
-	/*
-		Query Joint position
-	*/
+    /*
+        Query Joint position
+    */
 
-	f32 GetPosition();
+    f32 GetPosition();
 
-	f32 GetPosition2();
+    f32 GetPosition2();
 
-	/*
-		Constraint primary limit functions
-	*/
-	neBool EnableLimit();
+    /*
+        Constraint primary limit functions
+    */
+    neBool EnableLimit();
 
-	void EnableLimit(neBool yes);
+    void EnableLimit(neBool yes);
 
-	f32 GetUpperLimit();
+    f32 GetUpperLimit();
 
-	void SetUpperLimit(f32 upperLimit);
+    void SetUpperLimit(f32 upperLimit);
 
-	f32 GetLowerLimit();
+    f32 GetLowerLimit();
 
-	void SetLowerLimit(f32 lowerLimit);
+    void SetLowerLimit(f32 lowerLimit);
 
-	/*
-		Constraint secondary limit functions (only apply to some Constraint types)
-	*/
+    /*
+        Constraint secondary limit functions (only apply to some Constraint types)
+    */
 
-	neBool EnableLimit2();
+    neBool EnableLimit2();
 
-	void EnableLimit2(neBool yes);
+    void EnableLimit2(neBool yes);
 
-	f32 GetUpperLimit2();
+    f32 GetUpperLimit2();
 
-	void SetUpperLimit2(f32 upperLimit);
+    void SetUpperLimit2(f32 upperLimit);
 
-	f32 GetLowerLimit2();
+    f32 GetLowerLimit2();
 
-	void SetLowerLimit2(f32 lowerLimit);
+    void SetLowerLimit2(f32 lowerLimit);
 
-	/*
-		relates to accuracy and speed of the joint solver
-	*/
-	void SetEpsilon(f32 e);
+    /*
+        relates to accuracy and speed of the joint solver
+    */
+    void SetEpsilon(f32 e);
 
-	f32 GetEpsilon();
+    f32 GetEpsilon();
 
-	void SetIteration(s32 i);
+    void SetIteration(s32 i);
 
-	s32 GetIteration();
+    s32 GetIteration();
 
-	/*
-		Constraint controller functions
-	*/
+    /*
+        Constraint controller functions
+    */
 
-	neJointController * AddController(neJointControllerCallback * controller, s32 period);
+    neJointController *AddController(neJointControllerCallback *controller, s32 period);
 
-	neBool	RemoveController(neJointController * rbController);
+    neBool RemoveController(neJointController *rbController);
 
-	void	BeginIterateController();
+    void BeginIterateController();
 
-	neJointController * GetNextController();
-	
-	/*
-	 	Constraint primary motor function, currently only implemented for hinge Constraint
-	 */
-	enum MotorType
-	{
-		NE_MOTOR_SPEED,
-		NE_MOTOR_POSITION, //not implemented
-	};
-	neBool EnableMotor();
+    neJointController *GetNextController();
 
-	void EnableMotor(neBool yes);
+    /*
+         Constraint primary motor function, currently only implemented for hinge Constraint
+     */
+    enum MotorType {
+        NE_MOTOR_SPEED,
+        NE_MOTOR_POSITION, //not implemented
+    };
 
-	void SetMotor(MotorType motorType, f32 desireValue, f32 maxForce);
+    neBool EnableMotor();
 
-	void GetMotor(MotorType & motorType, f32 & desireValue, f32 & maxForce);
+    void EnableMotor(neBool yes);
 
-	neBool EnableMotor2();
+    void SetMotor(MotorType motorType, f32 desireValue, f32 maxForce);
 
-	void EnableMotor2(neBool yes);
+    void GetMotor(MotorType &motorType, f32 &desireValue, f32 &maxForce);
 
-	void SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce);
+    neBool EnableMotor2();
 
-	void GetMotor2(MotorType & motorType, f32 & desireValue, f32 & maxForce);
+    void EnableMotor2(neBool yes);
+
+    void SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce);
+
+    void GetMotor2(MotorType &motorType, f32 &desireValue, f32 &maxForce);
 };
 
 /****************************************************************************
@@ -754,53 +739,52 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class TOKAMAK_API neRigidBodyController
-{
+class TOKAMAK_API neRigidBodyController {
 NE_INTERFACE(neRigidBodyController);
 
 public:
-	neRigidBody * GetRigidBody();
+    neRigidBody *GetRigidBody();
 
-	neV3 GetControllerForce();
+    neV3 GetControllerForce();
 
-	neV3 GetControllerTorque();
-	
-	void SetControllerForce(const neV3 & force);
+    neV3 GetControllerTorque();
 
-	void SetControllerTorque(const neV3 & torque);
+    void SetControllerForce(const neV3 &force);
 
-	void SetControllerForceWithTorque(const neV3 & force, const neV3 & pos);
+    void SetControllerTorque(const neV3 &torque);
+
+    void SetControllerForceWithTorque(const neV3 &force, const neV3 &pos);
 };
 
-class TOKAMAK_API neJointController
-{
+class TOKAMAK_API neJointController {
 NE_INTERFACE(neJointController);
 
 public:
-	neJoint * GetJoint();
+    neJoint *GetJoint();
 
-	neV3 GetControllerForceBodyA();
+    neV3 GetControllerForceBodyA();
 
-	neV3 GetControllerForceBodyB();
+    neV3 GetControllerForceBodyB();
 
-	neV3 GetControllerTorqueBodyA();
+    neV3 GetControllerTorqueBodyA();
 
-	neV3 GetControllerTorqueBodyB();
+    neV3 GetControllerTorqueBodyB();
 
-	void SetControllerForceBodyA(const neV3 & force);
+    void SetControllerForceBodyA(const neV3 &force);
 
-	void SetControllerForceBodyB(const neV3 & force);
+    void SetControllerForceBodyB(const neV3 &force);
 
-	void SetControllerForceWithTorqueBodyA(const neV3 & force, const neV3 & pos);
+    void SetControllerForceWithTorqueBodyA(const neV3 &force, const neV3 &pos);
 
-	void SetControllerForceWithTorqueBodyB(const neV3 & force, const neV3 & pos);
+    void SetControllerForceWithTorqueBodyB(const neV3 &force, const neV3 &pos);
 
-	void SetControllerTorqueBodyA(const neV3 & torque);
+    void SetControllerTorqueBodyA(const neV3 &torque);
 
-	void SetControllerTorqueBodyB(const neV3 & torque);
+    void SetControllerTorqueBodyB(const neV3 &torque);
 };
+
 /****************************************************************************
 *
 *	Tokamak Game Physics SDK 
@@ -809,30 +793,28 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class TOKAMAK_API neCollisionTable
-{
+class TOKAMAK_API neCollisionTable {
 NE_INTERFACE(neCollisionTable)
 
 public:
-	enum neReponseBitFlag
-	{
-		RESPONSE_IGNORE = 0,
-		RESPONSE_IMPULSE = 1,
-		RESPONSE_CALLBACK = 2,
-		RESPONSE_IMPULSE_CALLBACK = 3,
-	};
+    enum neReponseBitFlag {
+        RESPONSE_IGNORE = 0,
+        RESPONSE_IMPULSE = 1,
+        RESPONSE_CALLBACK = 2,
+        RESPONSE_IMPULSE_CALLBACK = 3,
+    };
 
-	enum
-	{
-		NE_COLLISION_TABLE_MAX = 64,
-	};
-	void Set(s32 collisionID1, s32 collisionID2, neReponseBitFlag response = RESPONSE_IMPULSE);
+    enum {
+        NE_COLLISION_TABLE_MAX = 64,
+    };
 
-	neReponseBitFlag Get(s32 collisionID1, s32 collisionID2);
+    void Set(s32 collisionID1, s32 collisionID2, neReponseBitFlag response = RESPONSE_IMPULSE);
 
-	s32 GetMaxCollisionID();
+    neReponseBitFlag Get(s32 collisionID1, s32 collisionID2);
+
+    s32 GetMaxCollisionID();
 };
 
 /****************************************************************************
@@ -843,82 +825,80 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
 
-class neSimulatorSizeInfo
-{
+class neSimulatorSizeInfo {
 public:
-	enum
-	{
-		DEFAULT_RIGIDBODIES_COUNT = 50,
-		DEFAULT_ANIMATEDBODIES_COUNT = 50, 
-		DEFAULT_RIGIDPARTICLES_COUNT = 50,
+    enum {
+        DEFAULT_RIGIDBODIES_COUNT = 50,
+        DEFAULT_ANIMATEDBODIES_COUNT = 50,
+        DEFAULT_RIGIDPARTICLES_COUNT = 50,
 
-		DEFAULT_CONTROLLERS_COUNT = 50,
-		DEFAULT_OVERLAPPED_PAIRS_COUNT = 1225,
+        DEFAULT_CONTROLLERS_COUNT = 50,
+        DEFAULT_OVERLAPPED_PAIRS_COUNT = 1225,
 
-		DEFAULT_GEOMETRIES_COUNT = 50,
-		
-		DEFAULT_CONSTRAINTS_COUNT = 100,
-		DEFAULT_CONTRAINT_SETS_COUNT = 100,
-		DEFAULT_SOLVER_BUFFER_SIZE = 2000,
-		DEFAULT_SENSORS_COUNT = 100,
+        DEFAULT_GEOMETRIES_COUNT = 50,
 
-		DEFAULT_TERRAIN_NODES_START_COUNT = 200,
-		DEFAULT_TERRAIN_NODES_GROWBY_COUNT = -1,
-	};
+        DEFAULT_CONSTRAINTS_COUNT = 100,
+        DEFAULT_CONTRAINT_SETS_COUNT = 100,
+        DEFAULT_SOLVER_BUFFER_SIZE = 2000,
+        DEFAULT_SENSORS_COUNT = 100,
+
+        DEFAULT_TERRAIN_NODES_START_COUNT = 200,
+        DEFAULT_TERRAIN_NODES_GROWBY_COUNT = -1,
+    };
 
 public:
-	
-	s32 rigidBodiesCount;		/* Number of rigid bodies in the simulation */
-	s32 animatedBodiesCount;	/* Number of animated bodies in the simulation */
-	s32 rigidParticleCount;		/* Number of rigid particles in the simulation */
 
-	s32 controllersCount;		/* Number of controller instances in the simulation */
-	
-	s32 overlappedPairsCount;	/* Number of possible overlapping pairs.
+    s32 rigidBodiesCount;        /* Number of rigid bodies in the simulation */
+    s32 animatedBodiesCount;    /* Number of animated bodies in the simulation */
+    s32 rigidParticleCount;        /* Number of rigid particles in the simulation */
+
+    s32 controllersCount;        /* Number of controller instances in the simulation */
+
+    s32 overlappedPairsCount;    /* Number of possible overlapping pairs.
 								   This has the maximum value of (n x (n - 1)) / 2,
 								   where n = rigidBodyCount + animatedBodyCount.
 								   But in practice it rarely reach that high.
 								   You can try to specify a smaller number to save memory.
 								*/
-	s32 geometriesCount;		/* Number of collision geometries in the simulator*/
+    s32 geometriesCount;        /* Number of collision geometries in the simulator*/
 
 
-	s32 constraintsCount;		/* Number of joints in the simulation */
-	s32 constraintSetsCount;	/* Number of joint Sets in the simulation */
-	s32 constraintBufferSize;	/* Size of the buffer use to solve joints */
-	s32 sensorsCount;
+    s32 constraintsCount;        /* Number of joints in the simulation */
+    s32 constraintSetsCount;    /* Number of joint Sets in the simulation */
+    s32 constraintBufferSize;    /* Size of the buffer use to solve joints */
+    s32 sensorsCount;
 
-	s32 terrainNodesStartCount;	/* Number of nodes use to store terrain triangles */
-	s32 terrainNodesGrowByCount;/* Grow by this size if run out of nodes */
+    s32 terrainNodesStartCount;    /* Number of nodes use to store terrain triangles */
+    s32 terrainNodesGrowByCount;/* Grow by this size if run out of nodes */
 
 public:
-	
-	neSimulatorSizeInfo()		/* Fill with default size values */
-	{
-		rigidBodiesCount = DEFAULT_RIGIDBODIES_COUNT;
-		animatedBodiesCount = DEFAULT_ANIMATEDBODIES_COUNT;
-		rigidParticleCount = DEFAULT_RIGIDPARTICLES_COUNT;
 
-		controllersCount = DEFAULT_CONTROLLERS_COUNT;
+    neSimulatorSizeInfo()        /* Fill with default size values */
+    {
+        rigidBodiesCount = DEFAULT_RIGIDBODIES_COUNT;
+        animatedBodiesCount = DEFAULT_ANIMATEDBODIES_COUNT;
+        rigidParticleCount = DEFAULT_RIGIDPARTICLES_COUNT;
 
-		overlappedPairsCount = DEFAULT_OVERLAPPED_PAIRS_COUNT;
+        controllersCount = DEFAULT_CONTROLLERS_COUNT;
 
-		geometriesCount = DEFAULT_GEOMETRIES_COUNT;
+        overlappedPairsCount = DEFAULT_OVERLAPPED_PAIRS_COUNT;
 
-		constraintsCount = DEFAULT_CONSTRAINTS_COUNT;
-		constraintSetsCount = DEFAULT_CONTRAINT_SETS_COUNT;
-		constraintBufferSize = DEFAULT_SOLVER_BUFFER_SIZE;
-		sensorsCount = DEFAULT_SENSORS_COUNT;
+        geometriesCount = DEFAULT_GEOMETRIES_COUNT;
 
-		terrainNodesStartCount = DEFAULT_TERRAIN_NODES_START_COUNT;
-		terrainNodesGrowByCount = DEFAULT_TERRAIN_NODES_GROWBY_COUNT;	
-										/* -1 signify double the number of terrainNode, whenever the 
-										   it reach full capacity.
-										*/
-	}
+        constraintsCount = DEFAULT_CONSTRAINTS_COUNT;
+        constraintSetsCount = DEFAULT_CONTRAINT_SETS_COUNT;
+        constraintBufferSize = DEFAULT_SOLVER_BUFFER_SIZE;
+        sensorsCount = DEFAULT_SENSORS_COUNT;
+
+        terrainNodesStartCount = DEFAULT_TERRAIN_NODES_START_COUNT;
+        terrainNodesGrowByCount = DEFAULT_TERRAIN_NODES_GROWBY_COUNT;
+        /* -1 signify double the number of terrainNode, whenever the
+           it reach full capacity.
+        */
+    }
 };
 
 /****************************************************************************
@@ -929,168 +909,164 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 typedef struct neCollisionInfo neCollisionInfo;
 
-struct neCollisionInfo
-{
-	neByte * bodyA;
-	neByte * bodyB;
-	neBodyType typeA;
-	neBodyType typeB;
-	neGeometry * geometryA;
-	neGeometry * geometryB;
-	s32 materialIdA;
-	s32 materialIdB;
-	neV3 bodyContactPointA;		// contact point A in body space of A
-	neV3 bodyContactPointB;		// contact point B in body space of B
-	neV3 worldContactPointA;	// contact point A in world space
-	neV3 worldContactPointB;	// contact point B in world space
-	neV3 relativeVelocity;
-	neV3 collisionNormal;
+struct neCollisionInfo {
+    neByte *bodyA;
+    neByte *bodyB;
+    neBodyType typeA;
+    neBodyType typeB;
+    neGeometry *geometryA;
+    neGeometry *geometryB;
+    s32 materialIdA;
+    s32 materialIdB;
+    neV3 bodyContactPointA;        // contact point A in body space of A
+    neV3 bodyContactPointB;        // contact point B in body space of B
+    neV3 worldContactPointA;    // contact point A in world space
+    neV3 worldContactPointB;    // contact point B in world space
+    neV3 relativeVelocity;
+    neV3 collisionNormal;
 };
 
-typedef void (neLogOutputCallback)(char * logString);
+typedef void (neLogOutputCallback)(char *logString);
 
-typedef void (neCollisionCallback)(neCollisionInfo & collisionInfo);
+typedef void (neCollisionCallback)(neCollisionInfo &collisionInfo);
 
-typedef void (neTerrainTriangleQueryCallback)(const neV3 & minBound, const neV3 & maxBound, 
-											  s32 ** candidateTriangles,
-												neTriangle ** triangles,
-												neV3 ** vertices,
-												s32 * candidateCount,
-												s32 * triangleCount,
-												neRigidBody * body);
+typedef void (neTerrainTriangleQueryCallback)(const neV3 &minBound, const neV3 &maxBound,
+                                              s32 **candidateTriangles,
+                                              neTriangle **triangles,
+                                              neV3 **vertices,
+                                              s32 *candidateCount,
+                                              s32 *triangleCount,
+                                              neRigidBody *body);
 
 typedef struct neCustomCDInfo neCustomCDInfo;
 
-struct neCustomCDInfo
-{
-	neV3 collisionNormal;
-	neV3 worldContactPointA;
-	neV3 worldContactPointB;
-	f32 penetrationDepth;
-	s32 materialIdA;
-	s32 materialIdB;
+struct neCustomCDInfo {
+    neV3 collisionNormal;
+    neV3 worldContactPointA;
+    neV3 worldContactPointB;
+    f32 penetrationDepth;
+    s32 materialIdA;
+    s32 materialIdB;
 };
 
-typedef neBool (neCustomCDRB2RBCallback)(neRigidBody * bodyA, neRigidBody * bodyB, neCustomCDInfo & cdInfo);
+typedef neBool (neCustomCDRB2RBCallback)(neRigidBody *bodyA, neRigidBody *bodyB, neCustomCDInfo &cdInfo);
 
-typedef neBool (neCustomCDRB2ABCallback)(neRigidBody * bodyA, neAnimatedBody * bodyB, neCustomCDInfo & cdInfo);
+typedef neBool (neCustomCDRB2ABCallback)(neRigidBody *bodyA, neAnimatedBody *bodyB, neCustomCDInfo &cdInfo);
 
-class TOKAMAK_API neSimulator
-{
+class TOKAMAK_API neSimulator {
 NE_INTERFACE(neSimulator)
 
 public:
-	typedef enum
-	{
-		LOG_OUTPUT_LEVEL_NONE = 0,
-		LOG_OUTPUT_LEVEL_ONE,
-		LOG_OUTPUT_LEVEL_FULL,
-	} LOG_OUTPUT_LEVEL;
-	
+    typedef enum {
+        LOG_OUTPUT_LEVEL_NONE = 0,
+        LOG_OUTPUT_LEVEL_ONE,
+        LOG_OUTPUT_LEVEL_FULL,
+    } LOG_OUTPUT_LEVEL;
+
 public:
-	/* 
-		Static factory functions  
-	*/
+    /*
+        Static factory functions
+    */
 
-	static neSimulator * CreateSimulator(const neSimulatorSizeInfo & sizeInfo, 
-										neAllocatorAbstract * alloc = NULL, 
-										const neV3 * gravity = NULL);
-	
-	static void DestroySimulator(neSimulator * sim);
-	
-	/* 
-		Rigid body managment functions 
-	*/
+    static neSimulator *CreateSimulator(const neSimulatorSizeInfo &sizeInfo,
+                                        neAllocatorAbstract *alloc = NULL,
+                                        const neV3 *gravity = NULL);
 
-	neRigidBody * CreateRigidBody();
+    static void DestroySimulator(neSimulator *sim);
 
-	neRigidBody * CreateRigidParticle();
-	
-	neAnimatedBody * CreateAnimatedBody();
-	
-	void FreeRigidBody(neRigidBody * body);
+    /*
+        Rigid body managment functions
+    */
 
-	void FreeAnimatedBody(neAnimatedBody * body);
+    neRigidBody *CreateRigidBody();
 
-	neCollisionTable * GetCollisionTable();
+    neRigidBody *CreateRigidParticle();
 
-	/*
-		Material managment functions
-	*/
+    neAnimatedBody *CreateAnimatedBody();
 
-	bool SetMaterial(s32 index, f32 friction, f32 restitution);
+    void FreeRigidBody(neRigidBody *body);
 
-	bool GetMaterial(s32 index, f32& friction, f32& restitution);
+    void FreeAnimatedBody(neAnimatedBody *body);
 
-	/*
-		Advancing the simulation
-	*/
+    neCollisionTable *GetCollisionTable();
 
-	void Advance(f32 sec, s32 nSteps = 1, nePerformanceReport * perfReport = NULL);
+    /*
+        Material managment functions
+    */
 
-	void Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport * perfReport = NULL);
+    bool SetMaterial(s32 index, f32 friction, f32 restitution);
 
-	/*
-		Terrain setup function
-	*/
+    bool GetMaterial(s32 index, f32 &friction, f32 &restitution);
 
-	void SetTerrainMesh(neTriangleMesh * tris);
+    /*
+        Advancing the simulation
+    */
 
-	void FreeTerrainMesh();
+    void Advance(f32 sec, s32 nSteps = 1, nePerformanceReport *perfReport = NULL);
 
-	/*
-		Constraint related
-	*/
+    void Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *perfReport = NULL);
 
-	neJoint * CreateJoint(neRigidBody * bodyA);
+    /*
+        Terrain setup function
+    */
 
-	neJoint * CreateJoint(neRigidBody * bodyA, neRigidBody * bodyB);
+    void SetTerrainMesh(neTriangleMesh *tris);
 
-	neJoint * CreateJoint(neRigidBody * bodyA, neAnimatedBody * bodyB);
+    void FreeTerrainMesh();
 
-	void FreeJoint(neJoint * joint);
+    /*
+        Constraint related
+    */
 
-	/*
-		Others
-	*/
-	neV3 Gravity();
+    neJoint *CreateJoint(neRigidBody *bodyA);
 
-	void Gravity(const neV3 & gravity);
+    neJoint *CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB);
 
-	void SetBreakageCallback(neBreakageCallback * cb);
+    neJoint *CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB);
 
-	neBreakageCallback * GetBreakageCallback();
+    void FreeJoint(neJoint *joint);
 
-	void SetCollisionCallback(neCollisionCallback * cb);
+    /*
+        Others
+    */
+    neV3 Gravity();
 
-	neCollisionCallback * GetCollisionCallback();
+    void Gravity(const neV3 &gravity);
 
-	void SetTerrainTriangleQueryCallback(neTerrainTriangleQueryCallback * cb);
-		
-	neTerrainTriangleQueryCallback * GetTerrainTriangleQueryCallback();
+    void SetBreakageCallback(neBreakageCallback *cb);
 
-	void SetCustomCDRB2RBCallback(neCustomCDRB2RBCallback * cb);
+    neBreakageCallback *GetBreakageCallback();
 
-	neCustomCDRB2RBCallback * GetCustomCDRB2RBCallback();
+    void SetCollisionCallback(neCollisionCallback *cb);
 
-	void SetCustomCDRB2ABCallback(neCustomCDRB2ABCallback * cb);
+    neCollisionCallback *GetCollisionCallback();
 
-	neCustomCDRB2ABCallback * GetCustomCDRB2ABCallback();
+    void SetTerrainTriangleQueryCallback(neTerrainTriangleQueryCallback *cb);
 
-	void SetLogOutputCallback(neLogOutputCallback * cb);
+    neTerrainTriangleQueryCallback *GetTerrainTriangleQueryCallback();
 
-	neLogOutputCallback * GetLogOutputCallback();
+    void SetCustomCDRB2RBCallback(neCustomCDRB2RBCallback *cb);
 
-	void SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl = LOG_OUTPUT_LEVEL_FULL);
+    neCustomCDRB2RBCallback *GetCustomCDRB2RBCallback();
 
-	neSimulatorSizeInfo GetCurrentSizeInfo();
+    void SetCustomCDRB2ABCallback(neCustomCDRB2ABCallback *cb);
 
-	neSimulatorSizeInfo GetStartSizeInfo();
+    neCustomCDRB2ABCallback *GetCustomCDRB2ABCallback();
 
-	void GetMemoryAllocated(s32 & memoryAllocated);
+    void SetLogOutputCallback(neLogOutputCallback *cb);
+
+    neLogOutputCallback *GetLogOutputCallback();
+
+    void SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl = LOG_OUTPUT_LEVEL_FULL);
+
+    neSimulatorSizeInfo GetCurrentSizeInfo();
+
+    neSimulatorSizeInfo GetStartSizeInfo();
+
+    void GetMemoryAllocated(s32 &memoryAllocated);
 };
 
 
@@ -1102,11 +1078,11 @@ public:
 *
 *	
 *
-****************************************************************************/ 
+****************************************************************************/
 
 neV3 TOKAMAK_API neBoxInertiaTensor(f32 width, f32 height, f32 depth, f32 mass);
 
-neV3 TOKAMAK_API neBoxInertiaTensor(const neV3 & boxSize, f32 mass);
+neV3 TOKAMAK_API neBoxInertiaTensor(const neV3 &boxSize, f32 mass);
 
 neV3 TOKAMAK_API neSphereInertiaTensor(f32 diameter, f32 mass);
 

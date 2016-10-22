@@ -28,118 +28,109 @@
 #include "simulator.h"
 #include "message.h"
 
-void CollisionTestSensor(TConvex * obbA, neSensor_ * sensorsA, neT3 & transA, neCollision & colB, neT3 & transB, neRigidBodyBase * body)
-{
-	neT3 convex2WorldB;
+void CollisionTestSensor(TConvex *obbA, neSensor_ *sensorsA, neT3 &transA, neCollision &colB, neT3 &transB,
+                         neRigidBodyBase *body) {
+    neT3 convex2WorldB;
 
-	convex2WorldB = transB * colB.obb.c2p;
-	
-	neT3 world2convexB;
+    convex2WorldB = transB * colB.obb.c2p;
 
-	world2convexB = convex2WorldB.FastInverse();
+    neT3 world2convexB;
 
-	neT3 AtoB;
+    world2convexB = convex2WorldB.FastInverse();
 
-	AtoB = world2convexB * transA;
+    neT3 AtoB;
 
-	if (colB.convexCount == 1)
-	{
-		neSensorItem * si = (neSensorItem *)sensorsA;
+    AtoB = world2convexB * transA;
 
-		while (si)
-		{
-			neSensor_ * s = (neSensor_ *) si;
+    if (colB.convexCount == 1) {
+        neSensorItem *si = (neSensorItem *) sensorsA;
 
-			si = si->next;
+        while (si) {
+            neSensor_ *s = (neSensor_ *) si;
 
-			neSensor_ tmp = *s;
+            si = si->next;
 
-			tmp.depth = 0.0f;
-			
-			tmp.pos = AtoB * s->pos;
+            neSensor_ tmp = *s;
 
-			tmp.dir = AtoB.rot * s->dir;
+            tmp.depth = 0.0f;
 
-			tmp.length = s->length;
+            tmp.pos = AtoB * s->pos;
 
-			SensorTest(tmp, colB.obb, convex2WorldB);
+            tmp.dir = AtoB.rot * s->dir;
 
-			if (tmp.depth > 0.0f && tmp.depth > s->depth)
-			{
-				s->depth = tmp.depth;
-				s->body = tmp.body;
-				s->materialID = tmp.materialID;
-				s->normal = tmp.normal;
-				s->contactPoint = convex2WorldB * tmp.contactPoint;
-				s->body = body;
+            tmp.length = s->length;
+
+            SensorTest(tmp, colB.obb, convex2WorldB);
+
+            if (tmp.depth > 0.0f && tmp.depth > s->depth) {
+                s->depth = tmp.depth;
+                s->body = tmp.body;
+                s->materialID = tmp.materialID;
+                s->normal = tmp.normal;
+                s->contactPoint = convex2WorldB * tmp.contactPoint;
+                s->body = body;
 /*
 				char ss[256];
 
 				sprintf(ss, "normal = %f, %f, %f \n", s->normal[0], s->normal[1], s->normal[2]);
 				OutputDebugString(ss);
-*/			}
-		}
-	}
-	else
-	{
-		neSensorItem * si = (neSensorItem *)sensorsA;
+*/            }
+        }
+    } else {
+        neSensorItem *si = (neSensorItem *) sensorsA;
 
-		while (si)
-		{
-			neSensor_ * s = (neSensor_ *) si;
+        while (si) {
+            neSensor_ *s = (neSensor_ *) si;
 
-			si = si->next;
+            si = si->next;
 
-			neSensor_ tmp = *s;
+            neSensor_ tmp = *s;
 
-			tmp.depth = 0.0f;
+            tmp.depth = 0.0f;
 
-			TConvexItem * ti = (TConvexItem *)colB.convex;
+            TConvexItem *ti = (TConvexItem *) colB.convex;
 
-			while (ti)
-			{
-				TConvex * t = (TConvex *)ti;
+            while (ti) {
+                TConvex *t = (TConvex *) ti;
 
-				ti = ti->next;
+                ti = ti->next;
 
-				convex2WorldB = transB * t->c2p;
+                convex2WorldB = transB * t->c2p;
 
-				world2convexB = convex2WorldB.FastInverse();
+                world2convexB = convex2WorldB.FastInverse();
 
-				AtoB = world2convexB * transA;
+                AtoB = world2convexB * transA;
 
-				tmp.pos = AtoB * s->pos;
+                tmp.pos = AtoB * s->pos;
 
-				tmp.dir = AtoB.rot * s->dir;
+                tmp.dir = AtoB.rot * s->dir;
 
-				tmp.length = s->length;
+                tmp.length = s->length;
 
-				//SensorTest(tmp, colB.obb, convex2WorldB);
-				SensorTest(tmp, *t, convex2WorldB);
+                //SensorTest(tmp, colB.obb, convex2WorldB);
+                SensorTest(tmp, *t, convex2WorldB);
 
-				if (tmp.depth > 0.0f && tmp.depth > s->depth)
-				{
-					s->depth = tmp.depth;
-					s->body = tmp.body;
-					s->materialID = tmp.materialID;
-					s->normal = tmp.normal;
-					s->contactPoint = convex2WorldB * tmp.contactPoint;
-					s->body = body;
-				}
-			}
-		}
-	}
+                if (tmp.depth > 0.0f && tmp.depth > s->depth) {
+                    s->depth = tmp.depth;
+                    s->body = tmp.body;
+                    s->materialID = tmp.materialID;
+                    s->normal = tmp.normal;
+                    s->contactPoint = convex2WorldB * tmp.contactPoint;
+                    s->body = body;
+                }
+            }
+        }
+    }
 }
 
-NEINLINE neBool SameSide(const neV3 & p1, const neV3 & p2, const neV3 & a, const neV3 & edge)
-{
-	neV3 cp1 = edge.Cross(p1 - a);
-	
-	neV3 cp2 = edge.Cross(p2 - a);
+NEINLINE neBool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const neV3 &edge) {
+    neV3 cp1 = edge.Cross(p1 - a);
 
-	f32 dot = cp1.Dot(cp2);
+    neV3 cp2 = edge.Cross(p2 - a);
 
-	return (dot >= 0.0f);
+    f32 dot = cp1.Dot(cp2);
+
+    return (dot >= 0.0f);
 }
 
 /*
@@ -216,12 +207,10 @@ NEINLINE neBool SameSide(const neV3 & p1, const neV3 & p2, const neV3 & a, const
 		}
 
  */
-void SensorTest(neSensor_ & sensorA, TConvex & convexB, neT3 & transB)
-{
-	if (convexB.type == TConvex::BOX)
-	{
-		int nearDim = -1;
-		int farDim = -1;
+void SensorTest(neSensor_ &sensorA, TConvex &convexB, neT3 &transB) {
+    if (convexB.type == TConvex::BOX) {
+        int nearDim = -1;
+        int farDim = -1;
 
 //	set Tnear = - infinity, Tfar = infinity
 //	For each pair of planes P associated with X, Y, and Z do:
@@ -240,145 +229,134 @@ void SensorTest(neSensor_ & sensorA, TConvex & convexB, neT3 & transB)
 //	If Tfar < 0 box is behind ray return false end
 
 
-		float tNear = -1.0e6;
-		float tFar = 1.0e6;
+        float tNear = -1.0e6;
+        float tFar = 1.0e6;
 
-		for (int i = 0; i < 3; i++)
-		{
-			if (neIsConsiderZero(sensorA.dir[i]))
-			{
-				if (sensorA.pos[i] < -convexB.as.box.boxSize[i] ||
-					sensorA.pos[i] > convexB.as.box.boxSize[i])
-				{
-					return;
-				}
-			}
-			float t1 = (-convexB.as.box.boxSize[i] - sensorA.pos[i]) / sensorA.dir[i];
-			
-			float t2 = (convexB.as.box.boxSize[i] - sensorA.pos[i]) / sensorA.dir[i];
+        for (int i = 0; i < 3; i++) {
+            if (neIsConsiderZero(sensorA.dir[i])) {
+                if (sensorA.pos[i] < -convexB.as.box.boxSize[i] ||
+                    sensorA.pos[i] > convexB.as.box.boxSize[i]) {
+                    return;
+                }
+            }
+            float t1 = (-convexB.as.box.boxSize[i] - sensorA.pos[i]) / sensorA.dir[i];
 
-			float tt;
+            float t2 = (convexB.as.box.boxSize[i] - sensorA.pos[i]) / sensorA.dir[i];
 
-			if (t1 > t2)
-			{
-				tt = t1;
-				t1 = t2;
-				t2 = tt;
-			}
+            float tt;
 
-			if (t1 > tNear)
-			{
-				tNear = t1;
-				nearDim = i;
-			}
+            if (t1 > t2) {
+                tt = t1;
+                t1 = t2;
+                t2 = tt;
+            }
 
-			if (t2 < tFar)
-			{
-				tFar = t2;
-				farDim = i;
-			}
+            if (t1 > tNear) {
+                tNear = t1;
+                nearDim = i;
+            }
 
-			if (tNear > tFar)
-				return;
+            if (t2 < tFar) {
+                tFar = t2;
+                farDim = i;
+            }
 
-			if (tFar < 0)
-				return;
+            if (tNear > tFar)
+                return;
 
-		}
-		//assert(nearDim != -1);
-		//assert(farDim != -1);
+            if (tFar < 0)
+                return;
 
-		if (tNear > 1.0f)
-			return;
+        }
+        //assert(nearDim != -1);
+        //assert(farDim != -1);
 
-		neV3 contact = sensorA.pos + tNear * sensorA.dir;
+        if (tNear > 1.0f)
+            return;
 
-		neV3 sensorEnd = sensorA.pos + sensorA.dir;
+        neV3 contact = sensorA.pos + tNear * sensorA.dir;
 
-		f32 depth = (sensorEnd - contact).Length();
+        neV3 sensorEnd = sensorA.pos + sensorA.dir;
 
-		sensorA.depth = depth;
+        f32 depth = (sensorEnd - contact).Length();
 
-		f32 factor = (sensorA.dir[nearDim] >= 0) ? -1.0f : 1.0f;
-		sensorA.normal = transB.rot[nearDim] * factor;
+        sensorA.depth = depth;
 
-		sensorA.contactPoint = contact;
+        f32 factor = (sensorA.dir[nearDim] >= 0) ? -1.0f : 1.0f;
+        sensorA.normal = transB.rot[nearDim] * factor;
 
-		sensorA.materialID = convexB.matIndex;
-	}
-	else if (convexB.type == TConvex::TERRAIN)
-	{
-		neSimpleArray<s32> & _triIndex = *convexB.as.terrain.triIndex;
+        sensorA.contactPoint = contact;
 
-		s32 triangleCount = _triIndex.GetUsedCount();
+        sensorA.materialID = convexB.matIndex;
+    } else if (convexB.type == TConvex::TERRAIN) {
+        neSimpleArray<s32> &_triIndex = *convexB.as.terrain.triIndex;
 
-		neArray<neTriangle_> & triangleArray = *convexB.as.terrain.triangles;
-		
-		for (s32 i = 0; i < triangleCount; i++)
-		{
-			s32 test = _triIndex[i];
+        s32 triangleCount = _triIndex.GetUsedCount();
 
-			neTriangle_ * t = &triangleArray[_triIndex[i]];
+        neArray<neTriangle_> &triangleArray = *convexB.as.terrain.triangles;
 
-			neV3 * vert[3];
+        for (s32 i = 0; i < triangleCount; i++) {
+            s32 test = _triIndex[i];
 
-			neV3 edges[3];
+            neTriangle_ *t = &triangleArray[_triIndex[i]];
 
-			neV3 normal;
+            neV3 * vert[3];
 
-			f32 d;
+            neV3 edges[3];
 
-			vert[0] = &convexB.vertices[t->indices[0]];
-			vert[1] = &convexB.vertices[t->indices[1]];
-			vert[2] = &convexB.vertices[t->indices[2]];
+            neV3 normal;
 
-			edges[0] = *vert[1] - *vert[0];
-			edges[1] = *vert[2] - *vert[1];
-			edges[2] = *vert[0] - *vert[2];
-			normal = edges[0].Cross(edges[1]);
+            f32 d;
 
-			normal.Normalize();
+            vert[0] = &convexB.vertices[t->indices[0]];
+            vert[1] = &convexB.vertices[t->indices[1]];
+            vert[2] = &convexB.vertices[t->indices[2]];
 
-			d = normal.Dot(*vert[0]);
+            edges[0] = *vert[1] - *vert[0];
+            edges[1] = *vert[2] - *vert[1];
+            edges[2] = *vert[0] - *vert[2];
+            normal = edges[0].Cross(edges[1]);
 
-			f32 nd = normal.Dot(sensorA.dir);
+            normal.Normalize();
 
-			f32 np = normal.Dot(sensorA.pos);
+            d = normal.Dot(*vert[0]);
 
-			f32 t1;
+            f32 nd = normal.Dot(sensorA.dir);
 
-			t1 = (d - np) / nd;
+            f32 np = normal.Dot(sensorA.pos);
 
-			if (t1 > 1.0f || t1 < 0.0f)
-				continue;
+            f32 t1;
 
-			neV3 contactPoint = sensorA.pos + sensorA.dir * t1;
+            t1 = (d - np) / nd;
 
-			if (!SameSide(contactPoint, *vert[2], *vert[0], edges[0]))
-				continue;
+            if (t1 > 1.0f || t1 < 0.0f)
+                continue;
 
-			if (!SameSide(contactPoint, *vert[0], *vert[1], edges[1]))
-				continue;
+            neV3 contactPoint = sensorA.pos + sensorA.dir * t1;
 
-			if (!SameSide(contactPoint, *vert[1], *vert[2], edges[2]))
-				continue;
+            if (!SameSide(contactPoint, *vert[2], *vert[0], edges[0]))
+                continue;
 
-			sensorA.depth = (1.0f - t1) * sensorA.length;
+            if (!SameSide(contactPoint, *vert[0], *vert[1], edges[1]))
+                continue;
 
-			if (nd > 0.0)
-				sensorA.normal = normal * -1.0f;
-			else
-				sensorA.normal = normal;
+            if (!SameSide(contactPoint, *vert[1], *vert[2], edges[2]))
+                continue;
 
-			sensorA.contactPoint = contactPoint;
+            sensorA.depth = (1.0f - t1) * sensorA.length;
 
-			sensorA.materialID = t->materialID;
-		}
-	}
-	else
-	{
-		// other primitives to do
-	}
+            if (nd > 0.0)
+                sensorA.normal = normal * -1.0f;
+            else
+                sensorA.normal = normal;
+
+            sensorA.contactPoint = contactPoint;
+
+            sensorA.materialID = t->materialID;
+        }
+    } else {
+        // other primitives to do
+    }
 }
 
 

@@ -27,219 +27,205 @@
 #include "stack.h"
 #include "simulator.h"
 #include "scenery.h"
+
 /*
 #include <algorithm>
 #include <assert.h>
 */
 s32 neStackHeader::golbalTime = 0;
 
-void neRestRecord::Update()
-{
-	worldThisBody = body->State().b2w * bodyPoint;
+void neRestRecord::Update() {
+    worldThisBody = body->State().b2w * bodyPoint;
 
-	neRigidBody_ * rb = otherBody->AsRigidBody();
+    neRigidBody_ *rb = otherBody->AsRigidBody();
 
-	neCollisionBody_ * cb = otherBody->AsCollisionBody();
+    neCollisionBody_ *cb = otherBody->AsCollisionBody();
 
-	if (cb)
-	{
-		normalWorld = cb->b2w.rot * normalBody;
+    if (cb) {
+        normalWorld = cb->b2w.rot * normalBody;
 
-		worldOtherBody = cb->b2w * otherBodyPoint;
-	}
-	else
-	{
-		normalWorld = rb->State().b2w.rot * normalBody;
+        worldOtherBody = cb->b2w * otherBodyPoint;
+    } else {
+        normalWorld = rb->State().b2w.rot * normalBody;
 
-		worldOtherBody = rb->State().b2w * otherBodyPoint;
-	}
-	worldDiff = worldThisBody - worldOtherBody;
-	
-	normalDiff = worldDiff.Dot(normalWorld); // < 0.0f means penetration
+        worldOtherBody = rb->State().b2w * otherBodyPoint;
+    }
+    worldDiff = worldThisBody - worldOtherBody;
 
-	neV3 v = worldDiff;
+    normalDiff = worldDiff.Dot(normalWorld); // < 0.0f means penetration
 
-	v.RemoveComponent(normalWorld); 
+    neV3 v = worldDiff;
 
-	tangentialDiffSq = v.Dot(v);
+    v.RemoveComponent(normalWorld);
+
+    tangentialDiffSq = v.Dot(v);
 }
 
-void neStackInfo::Resolve()
-{
-	isResolved = true;
+void neStackInfo::Resolve() {
+    isResolved = true;
 
-	if (isTerminator)
-		return;
+    if (isTerminator)
+        return;
 
-	ASSERT(body);
+    ASSERT(body);
 
-	for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		if (body->GetRestRecord(i).IsValid())
-		{
-			neRigidBody_ * rb = body->GetRestRecord(i).GetOtherRigidBody();
+    for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        if (body->GetRestRecord(i).IsValid()) {
+            neRigidBody_ *rb = body->GetRestRecord(i).GetOtherRigidBody();
 
-			if (rb && rb->stackInfo)
-			{
-				if (!rb->stackInfo->isResolved)
-					rb->stackInfo->Resolve();
-			}
-		}
-	}
-	//body->ResolveRestingPenetration();
+            if (rb && rb->stackInfo) {
+                if (!rb->stackInfo->isResolved)
+                    rb->stackInfo->Resolve();
+            }
+        }
+    }
+    //body->ResolveRestingPenetration();
 }
 
-void neStackInfo::CheckHeader(neStackHeader * sh)
-{
-	ASSERT(stackHeader == sh);
+void neStackInfo::CheckHeader(neStackHeader *sh) {
+    ASSERT(stackHeader == sh);
 
-	neRigidBody_ * b = body->AsRigidBody();
+    neRigidBody_ *b = body->AsRigidBody();
 
-	if (!b)
-		return;
+    if (!b)
+        return;
 
-	for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		if (b->GetRestRecord(i).GetOtherRigidBody())
-		{
-			neRigidBody_ * otherBody = b->GetRestRecord(i).GetOtherRigidBody();
-			
-			if (otherBody)
-			{
-				ASSERT(otherBody->stackInfo);
+    for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        if (b->GetRestRecord(i).GetOtherRigidBody()) {
+            neRigidBody_ *otherBody = b->GetRestRecord(i).GetOtherRigidBody();
 
-				ASSERT(otherBody->stackInfo->stackHeader == sh);
+            if (otherBody) {
+                ASSERT(otherBody->stackInfo);
 
-				if (!otherBody->stackInfo->isTerminator)
-				{
-					otherBody->stackInfo->CheckHeader(sh);
-				}
-			}
-		}
-	}
+                ASSERT(otherBody->stackInfo->stackHeader == sh);
+
+                if (!otherBody->stackInfo->isTerminator) {
+                    otherBody->stackInfo->CheckHeader(sh);
+                }
+            }
+        }
+    }
 }
 
 #if 0
 void neStackInfo::Break()
 {
 /*	char ss [256];
-	sprintf(ss, "break %d\n", body->id);
-	OutputDebugString(ss);
-*/	
-	if (stackHeader->isHeaderX)
-	{
-		stackHeader->Remove(this);
+    sprintf(ss, "break %d\n", body->id);
+    OutputDebugString(ss);
+*/
+    if (stackHeader->isHeaderX)
+    {
+        stackHeader->Remove(this);
 
-		body->FreeStackInfo();
+        body->FreeStackInfo();
 
-		return;
-	}
-	stackHeader->CheckHeader();
+        return;
+    }
+    stackHeader->CheckHeader();
 
-	neStackHeader * newHeader = body->sim->NewStackHeader(NULL);
+    neStackHeader * newHeader = body->sim->NewStackHeader(NULL);
 
-	for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		if (body->GetRestRecord(i).otherBody)
-		{
-			neRigidBody_* b = (neRigidBody_*)body->GetRestRecord(i).otherBody;
+    for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
+    {
+        if (body->GetRestRecord(i).otherBody)
+        {
+            neRigidBody_* b = (neRigidBody_*)body->GetRestRecord(i).otherBody;
 
-			if (b)
-			{
-				if (!b->stackInfo) //remove from previous iteration
-					continue;
-				
-				if (b->stackInfo->stackHeader == newHeader) //migrate from previous iteration
-					continue;
-				
-				if (b->stackInfo->isTerminator)
-				{
-					stackHeader->Remove(b->stackInfo);
-					
-					b->FreeStackInfo();
+            if (b)
+            {
+                if (!b->stackInfo) //remove from previous iteration
+                    continue;
 
-					b->ResetRestOnRecords();
-				}
-				else
-				{
-					ASSERT(b->stackInfo->stackHeader == stackHeader);
+                if (b->stackInfo->stackHeader == newHeader) //migrate from previous iteration
+                    continue;
 
-					b->MigrateNewHeader(newHeader, stackHeader);
+                if (b->stackInfo->isTerminator)
+                {
+                    stackHeader->Remove(b->stackInfo);
 
-					body->GetRestRecord(i).Init();
-				}
-			}
-		}
-	}
-	if (newHeader->infoCount == 0)
-	{
-		body->sim->stackHeaderHeap.Dealloc(newHeader);
-	}
-	else
-	{
-		newHeader->CheckHeader();
-	}
-	if (stackHeader->infoCount == 1)
-	{
-		ASSERT(stackHeader->head == this);
+                    b->FreeStackInfo();
 
-		stackHeader->infoCount = 0;
+                    b->ResetRestOnRecords();
+                }
+                else
+                {
+                    ASSERT(b->stackInfo->stackHeader == stackHeader);
 
-		neStackHeader * h = stackHeader;
-		
-		h->Remove(this);
+                    b->MigrateNewHeader(newHeader, stackHeader);
 
-		body->sim->stackHeaderHeap.Dealloc(h);
+                    body->GetRestRecord(i).Init();
+                }
+            }
+        }
+    }
+    if (newHeader->infoCount == 0)
+    {
+        body->sim->stackHeaderHeap.Dealloc(newHeader);
+    }
+    else
+    {
+        newHeader->CheckHeader();
+    }
+    if (stackHeader->infoCount == 1)
+    {
+        ASSERT(stackHeader->head == this);
 
-		body->FreeStackInfo();
-	}
-	else
-	{
-		body->stackInfo->isTerminator = true;
+        stackHeader->infoCount = 0;
 
-		stackHeader->CheckHeader();
-	}
+        neStackHeader * h = stackHeader;
+
+        h->Remove(this);
+
+        body->sim->stackHeaderHeap.Dealloc(h);
+
+        body->FreeStackInfo();
+    }
+    else
+    {
+        body->stackInfo->isTerminator = true;
+
+        stackHeader->CheckHeader();
+    }
 }
 #endif
 
-void neStackHeader::Resolve()
-{
-	// resolve all penetration under this header
+void neStackHeader::Resolve() {
+    // resolve all penetration under this header
 
 //	ASSERT(head);
 
 //	if (head == NULL)
 //		return;
 
-	s32 c = 0;
+    s32 c = 0;
 
-	neStackInfoItem * item = (neStackInfoItem *) head;
+    neStackInfoItem *item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		ASSERT(sinfo->stackHeader == this);
+        ASSERT(sinfo->stackHeader == this);
 
-		sinfo->isResolved = false;
+        sinfo->isResolved = false;
 
-		item = item->next;
+        item = item->next;
 
-		c++;
-	}
+        c++;
+    }
 
-	item = (neStackInfoItem *) head;
+    item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		item = item->next;
+        item = item->next;
 
-		if (!sinfo->isResolved)
-			sinfo->Resolve();
-	}
+        if (!sinfo->isResolved)
+            sinfo->Resolve();
+    }
 }
+
 /*
 void neStackHeader::Purge()
 {
@@ -259,148 +245,127 @@ void neStackHeader::Purge()
 	Null();
 }
 */
-void neStackHeader::ChangeHeader(neStackHeader * newHeader)
-{
-	if (!head)
-	{
-		ASSERT(0);
-	}
-	neStackInfoItem * item = (neStackInfoItem *) head;
+void neStackHeader::ChangeHeader(neStackHeader *newHeader) {
+    if (!head) {
+        ASSERT(0);
+    }
+    neStackInfoItem *item = (neStackInfoItem *) head;
 
-	s32 c = 0;
+    s32 c = 0;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
-		
-		item = item->next;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		sinfo->stackHeader = newHeader;
+        item = item->next;
 
-		c++;
-	}
+        sinfo->stackHeader = newHeader;
 
-	ASSERT(c == infoCount);
-	
-	ASSERT(newHeader->tail);
-	
-	neStackInfoItem * newTailItem = (neStackInfoItem *) newHeader->tail;
-	
-	newTailItem->Concat((neStackInfoItem *)head);
+        c++;
+    }
 
-	newHeader->tail = tail;
+    ASSERT(c == infoCount);
 
-	newHeader->infoCount += c;
+    ASSERT(newHeader->tail);
+
+    neStackInfoItem *newTailItem = (neStackInfoItem *) newHeader->tail;
+
+    newTailItem->Concat((neStackInfoItem *) head);
+
+    newHeader->tail = tail;
+
+    newHeader->infoCount += c;
 }
+
 /*
 s32 pop = 0;
 
 neStackHeader * hell[256];
 */
-neBool neStackHeader::CheckStackDisconnected()
-{
+neBool neStackHeader::CheckStackDisconnected() {
 //	OutputDebugString("start\n");
-	//neSimpleArray<neStackInfo*, 1000> stackInfoBuffer;
+    //neSimpleArray<neStackInfo*, 1000> stackInfoBuffer;
 
-	neSimpleArray<neByte *> & stackInfoBuffer = sim->pointerBuffer2;
+    neSimpleArray<neByte *> &stackInfoBuffer = sim->pointerBuffer2;
 
-	stackInfoBuffer.Clear();
+    stackInfoBuffer.Clear();
 
-	neStackInfoItem * item = (neStackInfoItem *) head;
+    neStackInfoItem *item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		sinfo->startTime = 0;
-		sinfo->endTime = 0;
+        sinfo->startTime = 0;
+        sinfo->endTime = 0;
 
-		item = item->next;
+        item = item->next;
 
-		ASSERT(sinfo->stackHeader == this);
+        ASSERT(sinfo->stackHeader == this);
 
-		Remove(sinfo, 1);
+        Remove(sinfo, 1);
 
-		*stackInfoBuffer.Alloc() = (neByte *)sinfo;
-	}
+        *stackInfoBuffer.Alloc() = (neByte *) sinfo;
+    }
 
-	s32 i;
+    s32 i;
 
-	for (i = 0; i < stackInfoBuffer.GetUsedCount(); i++)
-	{
-		neStackInfo * sinfo = (neStackInfo *)stackInfoBuffer[i];
+    for (i = 0; i < stackInfoBuffer.GetUsedCount(); i++) {
+        neStackInfo *sinfo = (neStackInfo *) stackInfoBuffer[i];
 
-		if (sinfo->isBroken)
-			continue;
+        if (sinfo->isBroken)
+            continue;
 
-		neRigidBody_ * rb = sinfo->body;
+        neRigidBody_ *rb = sinfo->body;
 
-		for (s32 j = 0; j < NE_RB_MAX_RESTON_RECORDS; j++)
-		{
-			if (rb->GetRestRecord(j).IsValid())
-			{
-				neRigidBody_ * otherbody = rb->GetRestRecord(j).GetOtherRigidBody();
+        for (s32 j = 0; j < NE_RB_MAX_RESTON_RECORDS; j++) {
+            if (rb->GetRestRecord(j).IsValid()) {
+                neRigidBody_ *otherbody = rb->GetRestRecord(j).GetOtherRigidBody();
 
-				if (otherbody)
-				{
-					if (otherbody->stackInfo->stackHeader)
-					{
-						if (sinfo->stackHeader)
-						{
-							if (sinfo->stackHeader != otherbody->stackInfo->stackHeader)
-							{
-								// merge
-								neStackHeader * otherHeader = otherbody->stackInfo->stackHeader;
+                if (otherbody) {
+                    if (otherbody->stackInfo->stackHeader) {
+                        if (sinfo->stackHeader) {
+                            if (sinfo->stackHeader != otherbody->stackInfo->stackHeader) {
+                                // merge
+                                neStackHeader *otherHeader = otherbody->stackInfo->stackHeader;
 
-								otherHeader->ChangeHeader(sinfo->stackHeader);
+                                otherHeader->ChangeHeader(sinfo->stackHeader);
 
-								sim->stackHeaderHeap.Dealloc(otherHeader);
-							}
-						}
-						else
-						{
-							otherbody->stackInfo->stackHeader->Add(sinfo);
-						}
-					}
-					else
-					{
-						if (sinfo->stackHeader)
-						{
-							sinfo->stackHeader->Add(otherbody->stackInfo);
-						}
-						else
-						{
-							neStackHeader * newStackHeader = sim->NewStackHeader(NULL);
+                                sim->stackHeaderHeap.Dealloc(otherHeader);
+                            }
+                        } else {
+                            otherbody->stackInfo->stackHeader->Add(sinfo);
+                        }
+                    } else {
+                        if (sinfo->stackHeader) {
+                            sinfo->stackHeader->Add(otherbody->stackInfo);
+                        } else {
+                            neStackHeader *newStackHeader = sim->NewStackHeader(NULL);
 
-							newStackHeader->dynamicSolved = dynamicSolved;
+                            newStackHeader->dynamicSolved = dynamicSolved;
 
-							newStackHeader->Add(sinfo);
+                            newStackHeader->Add(sinfo);
 
-							newStackHeader->Add(otherbody->stackInfo);
-						}
-					}
-				}
-			}
-		}
-	}
-	for (i = 0; i < stackInfoBuffer.GetUsedCount(); i++)
-	{
-		neStackInfo * sinfo = (neStackInfo *)stackInfoBuffer[i];
+                            newStackHeader->Add(otherbody->stackInfo);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (i = 0; i < stackInfoBuffer.GetUsedCount(); i++) {
+        neStackInfo *sinfo = (neStackInfo *) stackInfoBuffer[i];
 
-		if (!sinfo->stackHeader)
-		{
-			neRigidBody_ * rb = sinfo->body;
+        if (!sinfo->stackHeader) {
+            neRigidBody_ *rb = sinfo->body;
 
-			sim->stackInfoHeap.Dealloc(sinfo, 1);
+            sim->stackInfoHeap.Dealloc(sinfo, 1);
 
-			for (s32 i = 0; i < NE_MAX_REST_ON; i++)
-			{
-				rb->GetRestRecord(i).SetInvalid();
-			}
+            for (s32 i = 0; i < NE_MAX_REST_ON; i++) {
+                rb->GetRestRecord(i).SetInvalid();
+            }
 
-			rb->stackInfo = NULL;
-		}
-	}
+            rb->stackInfo = NULL;
+        }
+    }
 
 /*
 	item = (neStackInfoItem *) head;
@@ -447,102 +412,93 @@ neBool neStackHeader::CheckStackDisconnected()
 
 //	sim->stackHeaderHeap.Dealloc(this);
 //	sim->CheckStackHeader();
-*/	
-	return true; // always dealloc this header
+*/
+    return true; // always dealloc this header
 }
 
 #if 0
 
 void neStackHeader::AddToSolver()
 {
-	neStackInfoItem * sitem = (neStackInfoItem *)head;
+    neStackInfoItem * sitem = (neStackInfoItem *)head;
 
-	while (sitem)
-	{
-		neStackInfo * sinfo = (neStackInfo*) sitem;
+    while (sitem)
+    {
+        neStackInfo * sinfo = (neStackInfo*) sitem;
 
-		sitem = sitem->next;
+        sitem = sitem->next;
 
-		if (!sinfo->isTerminator)
-			sinfo->body->AddContactImpulseRecord(true);
+        if (!sinfo->isTerminator)
+            sinfo->body->AddContactImpulseRecord(true);
 
-		sinfo->body->needRecalc = true;
+        sinfo->body->needRecalc = true;
 
-		if (!sinfo->body->GetConstraintHeader())
-		{
-			sinfo->body->SetConstraintHeader(&sinfo->body->sim->contactConstraintHeader);
+        if (!sinfo->body->GetConstraintHeader())
+        {
+            sinfo->body->SetConstraintHeader(&sinfo->body->sim->contactConstraintHeader);
 
-			sinfo->body->sim->contactConstraintHeader.bodies.Add(&sinfo->body->constraintHeaderItem);
-		}
-	}
+            sinfo->body->sim->contactConstraintHeader.bodies.Add(&sinfo->body->constraintHeaderItem);
+        }
+    }
 }
 
 #else
 
-void neStackHeader::AddToSolver()
-{
-	neStackInfoItem * item = (neStackInfoItem *) head;
+void neStackHeader::AddToSolver() {
+    neStackInfoItem *item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		ASSERT(sinfo->stackHeader == this);
+        ASSERT(sinfo->stackHeader == this);
 
-		sinfo->isResolved = false;
+        sinfo->isResolved = false;
 
-		item = item->next;
-	}
-	item = (neStackInfoItem *) head;
+        item = item->next;
+    }
+    item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		item = item->next;
+        item = item->next;
 
-		if (!sinfo->isResolved)
-		{
-			if (!sinfo->body->GetConstraintHeader())
-			{
-				sinfo->body->SetConstraintHeader(&sinfo->body->sim->contactConstraintHeader);
+        if (!sinfo->isResolved) {
+            if (!sinfo->body->GetConstraintHeader()) {
+                sinfo->body->SetConstraintHeader(&sinfo->body->sim->contactConstraintHeader);
 
-				sinfo->body->sim->contactConstraintHeader.bodies.Add(&sinfo->body->constraintHeaderItem);
-			}
-			if (!sinfo->isTerminator)
-				sinfo->AddToSolver(true);
-		}
-	}
+                sinfo->body->sim->contactConstraintHeader.bodies.Add(&sinfo->body->constraintHeaderItem);
+            }
+            if (!sinfo->isTerminator)
+                sinfo->AddToSolver(true);
+        }
+    }
 }
 
-void neStackHeader::AddToSolverNoConstraintHeader()
-{
-	neStackInfoItem * item = (neStackInfoItem *) head;
+void neStackHeader::AddToSolverNoConstraintHeader() {
+    neStackInfoItem *item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		ASSERT(sinfo->stackHeader == this);
+        ASSERT(sinfo->stackHeader == this);
 
-		sinfo->isResolved = false;
+        sinfo->isResolved = false;
 
-		item = item->next;
-	}
-	item = (neStackInfoItem *) head;
+        item = item->next;
+    }
+    item = (neStackInfoItem *) head;
 
-	while (item)
-	{
-		neStackInfo * sinfo = (neStackInfo *) item;
+    while (item) {
+        neStackInfo *sinfo = (neStackInfo *) item;
 
-		item = item->next;
+        item = item->next;
 
-		if (!sinfo->isResolved)
-		{
-			if (!sinfo->isTerminator)
-				sinfo->AddToSolver(false);
-		}
-	}
+        if (!sinfo->isResolved) {
+            if (!sinfo->isTerminator)
+                sinfo->AddToSolver(false);
+        }
+    }
 /*	
 	neStackInfoItem * sitem = (neStackInfoItem *)head;
 
@@ -557,205 +513,178 @@ void neStackHeader::AddToSolverNoConstraintHeader()
 
 		sinfo->body->needRecalc = true;
 	}
-*/	
+*/
 }
 
 #endif
 
-void neStackInfo::AddToSolver(neBool addCHeader)
-{
-	isResolved = true;
+void neStackInfo::AddToSolver(neBool addCHeader) {
+    isResolved = true;
 
-	ASSERT (!isTerminator);
+    ASSERT (!isTerminator);
 
-	ASSERT(body);
+    ASSERT(body);
 
 //	body->AddContactImpulseRecord(addCHeader);
 
-	for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		if (!body->GetRestRecord(i).IsValid())
-		{
-			continue;
-		}
-		neRigidBody_ * rb = body->GetRestRecord(i).GetOtherRigidBody();
+    for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        if (!body->GetRestRecord(i).IsValid()) {
+            continue;
+        }
+        neRigidBody_ *rb = body->GetRestRecord(i).GetOtherRigidBody();
 
-		if (!rb || !rb->stackInfo)
-		{
-			continue;
-		}
-		if (rb->stackInfo->isResolved)
-		{
-			continue;
-		}
-		if (!rb->GetConstraintHeader() && addCHeader)
-		{
-			rb->SetConstraintHeader(&rb->sim->contactConstraintHeader);
+        if (!rb || !rb->stackInfo) {
+            continue;
+        }
+        if (rb->stackInfo->isResolved) {
+            continue;
+        }
+        if (!rb->GetConstraintHeader() && addCHeader) {
+            rb->SetConstraintHeader(&rb->sim->contactConstraintHeader);
 
-			rb->sim->contactConstraintHeader.bodies.Add(&rb->constraintHeaderItem);
-		}
-		if (!rb->stackInfo->isTerminator)
-			rb->stackInfo->AddToSolver(addCHeader);
-	}
-	body->AddContactImpulseRecord(addCHeader);
+            rb->sim->contactConstraintHeader.bodies.Add(&rb->constraintHeaderItem);
+        }
+        if (!rb->stackInfo->isTerminator)
+            rb->stackInfo->AddToSolver(addCHeader);
+    }
+    body->AddContactImpulseRecord(addCHeader);
 }
 
-void neStackHeader::ResetRigidBodyFlag()
-{
-	neStackInfoItem * sitem = (neStackInfoItem *)head;
+void neStackHeader::ResetRigidBodyFlag() {
+    neStackInfoItem *sitem = (neStackInfoItem *) head;
 
-	while (sitem)
-	{
-		neStackInfo * sinfo = (neStackInfo*) sitem;
+    while (sitem) {
+        neStackInfo *sinfo = (neStackInfo *) sitem;
 
-		sitem = sitem->next;
+        sitem = sitem->next;
 
-		sinfo->body->needRecalc = false;
-	}		
+        sinfo->body->needRecalc = false;
+    }
 }
 
-neStackHeader * neStackInfo::CheckAcceptNewHeader(neStackHeader * newHeader)
-{
-	// this function is for diagnostic only
+neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
+    // this function is for diagnostic only
 
-	if (startTime > 0) // already visited
-	{
-		return NULL;
-	}
+    if (startTime > 0) // already visited
+    {
+        return NULL;
+    }
 
-	startTime = ++neStackHeader::golbalTime;
+    startTime = ++neStackHeader::golbalTime;
 
-	if (stackHeader) //already visited
-	{
-		if (stackHeader != newHeader)
-		{
-			return stackHeader;
-		}
-		else
-		{
-			return NULL;
-		}
-	}
-	if (isTerminator)
-	{
-		newHeader->Add(this);
+    if (stackHeader) //already visited
+    {
+        if (stackHeader != newHeader) {
+            return stackHeader;
+        } else {
+            return NULL;
+        }
+    }
+    if (isTerminator) {
+        newHeader->Add(this);
 
-		return NULL;
-	}
-	if (isBroken)
-	{
-		newHeader->Add(this);
+        return NULL;
+    }
+    if (isBroken) {
+        newHeader->Add(this);
 
-		isTerminator = true;
+        isTerminator = true;
 
-		return NULL;
-	}
-	neBool anotherHeaderFound = false;
+        return NULL;
+    }
+    neBool anotherHeaderFound = false;
 
-	neStackHeader * anotherHeader = NULL;
+    neStackHeader *anotherHeader = NULL;
 
-	neRigidBody_ * foundBody;
+    neRigidBody_ *foundBody;
 
-	s32 i;
+    s32 i;
 
-	for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		neRigidBody_* otherBody = (neRigidBody_*)body->GetRestRecord(i).GetOtherRigidBody();
+    for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
 
-		if (!otherBody)
-			continue;
+        if (!otherBody)
+            continue;
 /*
 		if (otherBody->AsCollisionBody())
 		{
 			continue;
 		}
-*/		ASSERT(otherBody->stackInfo);
+*/        ASSERT(otherBody->stackInfo);
 
-		anotherHeader = otherBody->stackInfo->CheckAcceptNewHeader(newHeader);
+        anotherHeader = otherBody->stackInfo->CheckAcceptNewHeader(newHeader);
 
-		ASSERT(anotherHeader != newHeader);
+        ASSERT(anotherHeader != newHeader);
 
-		if (anotherHeader != NULL)
-		{
-			anotherHeaderFound = true;
-			foundBody = otherBody;
-			break;
-		}
-	}
-	if (anotherHeaderFound)
-	{
-		anotherHeader->Add(this);
+        if (anotherHeader != NULL) {
+            anotherHeaderFound = true;
+            foundBody = otherBody;
+            break;
+        }
+    }
+    if (anotherHeaderFound) {
+        anotherHeader->Add(this);
 
-		for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-		{
-			neRigidBody_* otherBody = (neRigidBody_*)body->GetRestRecord(i).GetOtherRigidBody();
+        for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+            neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
 
-			if (!otherBody)
-				continue;
+            if (!otherBody)
+                continue;
 /*
 			if (otherBody->AsCollisionBody())
 				continue;
 */
-			if (otherBody != foundBody)
-			{
-				if (otherBody->stackInfo->stackHeader != anotherHeader)
-					otherBody->stackInfo->ForceAcceptNewHeader(anotherHeader);
-			}
-		}
-		return stackHeader;
-	}
-	else
-	{
-		newHeader->Add(this);
+            if (otherBody != foundBody) {
+                if (otherBody->stackInfo->stackHeader != anotherHeader)
+                    otherBody->stackInfo->ForceAcceptNewHeader(anotherHeader);
+            }
+        }
+        return stackHeader;
+    } else {
+        newHeader->Add(this);
 
-		return NULL;
-	}
+        return NULL;
+    }
 }
 
-void neStackInfo::ForceAcceptNewHeader(neStackHeader * newHeader)
-{
-	if (isTerminator)
-	{
-		if (stackHeader)
-			stackHeader->Remove(this);
+void neStackInfo::ForceAcceptNewHeader(neStackHeader *newHeader) {
+    if (isTerminator) {
+        if (stackHeader)
+            stackHeader->Remove(this);
 
-		newHeader->Add(this);
+        newHeader->Add(this);
 
-		return;
-	}
-	if (isBroken)
-	{
-		if (stackHeader)
-			stackHeader->Remove(this);
+        return;
+    }
+    if (isBroken) {
+        if (stackHeader)
+            stackHeader->Remove(this);
 
-		newHeader->Add(this);
+        newHeader->Add(this);
 
-		return;
-	}
-	if (stackHeader)
-	{
-		if (stackHeader == newHeader)
-		{
-			return;
-		}
-		stackHeader->Remove(this);
-	}
-	newHeader->Add(this);
+        return;
+    }
+    if (stackHeader) {
+        if (stackHeader == newHeader) {
+            return;
+        }
+        stackHeader->Remove(this);
+    }
+    newHeader->Add(this);
 
-	for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		neRigidBody_* otherBody = (neRigidBody_*)body->GetRestRecord(i).GetOtherRigidBody();
+    for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
 
-		if (!otherBody)
-			continue;
+        if (!otherBody)
+            continue;
 /*
 		if (otherBody->AsCollisionBody())
 		{
 			continue;
 		}
-*/		ASSERT(otherBody->stackInfo);
-		
-		otherBody->stackInfo->ForceAcceptNewHeader(newHeader);
-	}
+*/        ASSERT(otherBody->stackInfo);
+
+        otherBody->stackInfo->ForceAcceptNewHeader(newHeader);
+    }
 }
 

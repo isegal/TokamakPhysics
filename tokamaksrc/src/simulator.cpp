@@ -26,6 +26,7 @@
 
 //#include <assert.h>
 #include <stdio.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -38,562 +39,513 @@ extern s32 currentMicroStep;
 
 #define NE_HIGH_ENERGY 1.0f
 
-void ChooseAxis(neV3 & x, neV3 & y, const neV3 & normal);
+void ChooseAxis(neV3 &x, neV3 &y, const neV3 &normal);
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::neFixedTimeStepSimulator(
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo & _sizeInfo, neAllocatorAbstract * alloc, const neV3 * grav)
-{
-	sizeInfo = _sizeInfo;
-	
-	if (alloc)
-	{
-		allocator = alloc;
-	}
-	else
-	{
-		allocator = &allocDef;
-	}
-	neV3 g;
+neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc,
+                                                   const neV3 *grav) {
+    sizeInfo = _sizeInfo;
 
-	if (grav)
-		g = *grav;
-	else
-		g.SetZero();
+    if (alloc) {
+        allocator = alloc;
+    } else {
+        allocator = &allocDef;
+    }
+    neV3 g;
 
-	neFixedTimeStepSimulator::Initialise(g);
+    if (grav)
+        g = *grav;
+    else
+        g.SetZero();
 
-	for (int i=0; i < MAX_MATERIAL; i++)
-	{
-		materials[i].density = 1.0f;
-		materials[i].friction = .5f;
-		materials[i].resititution = 0.4f;
-	}
-	perfReport = NULL;
+    neFixedTimeStepSimulator::Initialise(g);
 
-	treeNodes.Reserve(100, allocator, 100);
+    for (int i = 0; i < MAX_MATERIAL; i++) {
+        materials[i].density = 1.0f;
+        materials[i].friction = .5f;
+        materials[i].resititution = 0.4f;
+    }
+    perfReport = NULL;
 
-	triangleIndex.Reserve(200, allocator, 200);
+    treeNodes.Reserve(100, allocator, 100);
 
-	constraintHeap.Reserve(sizeInfo.constraintsCount , allocator);
+    triangleIndex.Reserve(200, allocator, 200);
 
-	constraintHeaders.Reserve(sizeInfo.constraintSetsCount , allocator);
+    constraintHeap.Reserve(sizeInfo.constraintsCount, allocator);
 
-	//miniConstraintHeap.Reserve(sizeInfo.constraintBufferSize, allocator);
+    constraintHeaders.Reserve(sizeInfo.constraintSetsCount, allocator);
 
-	stackInfoHeap.Reserve(sizeInfo.rigidBodiesCount + sizeInfo.rigidParticleCount , allocator);
+    //miniConstraintHeap.Reserve(sizeInfo.constraintBufferSize, allocator);
 
-	stackHeaderHeap.Reserve(sizeInfo.rigidBodiesCount  + sizeInfo.rigidParticleCount + 100, allocator);
+    stackInfoHeap.Reserve(sizeInfo.rigidBodiesCount + sizeInfo.rigidParticleCount, allocator);
 
-	controllerHeap.Reserve(sizeInfo.controllersCount, allocator);
+    stackHeaderHeap.Reserve(sizeInfo.rigidBodiesCount + sizeInfo.rigidParticleCount + 100, allocator);
 
-	sensorHeap.Reserve(sizeInfo.sensorsCount, allocator);
+    controllerHeap.Reserve(sizeInfo.controllersCount, allocator);
 
-	geometryHeap.Reserve(sizeInfo.geometriesCount, allocator);
+    sensorHeap.Reserve(sizeInfo.sensorsCount, allocator);
 
-	pointerBuffer1.Reserve(1000, allocator, 100);
+    geometryHeap.Reserve(sizeInfo.geometriesCount, allocator);
 
-	pointerBuffer2.Reserve(1000, allocator, 100);
+    pointerBuffer1.Reserve(1000, allocator, 100);
 
-	cresultHeap.Reserve(100, allocator, 100);
+    pointerBuffer2.Reserve(1000, allocator, 100);
 
-	cresultHeap2.Reserve(100, allocator, 100);
+    cresultHeap.Reserve(100, allocator, 100);
 
-	//fastImpulseHeap.Reserve(500, allocator);
+    cresultHeap2.Reserve(100, allocator, 100);
 
-	logCallback = NULL;
+    //fastImpulseHeap.Reserve(500, allocator);
 
-	collisionCallback = NULL;
+    logCallback = NULL;
 
-	breakageCallback = NULL;
+    collisionCallback = NULL;
 
-	terrainQueryCallback = NULL;
+    breakageCallback = NULL;
 
-	customCDRB2RBCallback = NULL;
+    terrainQueryCallback = NULL;
 
-	customCDRB2ABCallback = NULL;
+    customCDRB2RBCallback = NULL;
 
-	logLevel = neSimulator::LOG_OUTPUT_LEVEL_NONE;
+    customCDRB2ABCallback = NULL;
+
+    logLevel = neSimulator::LOG_OUTPUT_LEVEL_NONE;
 
 //	solver.sim = this;
 
-	fakeCollisionBody.moved = false;
+    fakeCollisionBody.moved = false;
 
-	fakeCollisionBody.sim = this;
+    fakeCollisionBody.sim = this;
 
-	fakeCollisionBody.id = -1;
+    fakeCollisionBody.id = -1;
 
-	fakeCollisionBody.cookies = 0;
+    fakeCollisionBody.cookies = 0;
 
-	fakeCollisionBody.isActive = true;
+    fakeCollisionBody.isActive = true;
 
-	highEnergy = NE_HIGH_ENERGY;
+    highEnergy = NE_HIGH_ENERGY;
 
 #ifdef _WIN32
-	perf = nePerformanceData::Create();
+    perf = nePerformanceData::Create();
 
-	perf->Init();
+    perf->Init();
 #else
-	perf = NULL;
+    perf = NULL;
 #endif
 
-	timeFromLastFrame = 0.0f;
+    timeFromLastFrame = 0.0f;
 
-	lastTimeStep = 0;
+    lastTimeStep = 0;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::Initialise
 *
-****************************************************************************/ 
-void neFixedTimeStepSimulator::SetGravity(const neV3 & g)
-{
-	gravity = g;
+****************************************************************************/
+void neFixedTimeStepSimulator::SetGravity(const neV3 &g) {
+    gravity = g;
 
-	gravityVector = gravity;
+    gravityVector = gravity;
 
-	gravityVector.Normalize();
+    gravityVector.Normalize();
 
-	restingSpeed = sqrtf(gravity.Dot(gravity));
+    restingSpeed = sqrtf(gravity.Dot(gravity));
 
-	//restingSpeed = sqrtf(restingSpeed * 2.0e-2f) * 4.0f;
+    //restingSpeed = sqrtf(restingSpeed * 2.0e-2f) * 4.0f;
 
-	restingSpeed = restingSpeed * 0.3f;
+    restingSpeed = restingSpeed * 0.3f;
 
-	gravityMag = g.Length();
+    gravityMag = g.Length();
 
-	if (!neIsFinite(gravityMag))
-	{
-		gravityMag = 0.0f;
-	}
+    if (!neIsFinite(gravityMag)) {
+        gravityMag = 0.0f;
+    }
 }
 
-void neFixedTimeStepSimulator::Initialise(const neV3& _gravity)
-{
-	buildCoordList = true;
+void neFixedTimeStepSimulator::Initialise(const neV3 &_gravity) {
+    buildCoordList = true;
 
-	SetGravity(_gravity);
+    SetGravity(_gravity);
 
-	maxRigidBodies = sizeInfo.rigidBodiesCount;
+    maxRigidBodies = sizeInfo.rigidBodiesCount;
 
-	maxAnimBodies = sizeInfo.animatedBodiesCount;
+    maxAnimBodies = sizeInfo.animatedBodiesCount;
 
-	maxParticles = sizeInfo.rigidParticleCount;
+    maxParticles = sizeInfo.rigidParticleCount;
 
-	if (!rigidBodyHeap.Reserve(maxRigidBodies, allocator))
-	{
-		sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
+    if (!rigidBodyHeap.Reserve(maxRigidBodies, allocator)) {
+        sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
 
-		LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+        LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		return;
-	}
+        return;
+    }
 
-	if (!collisionBodyHeap.Reserve(maxAnimBodies, allocator))
-	{
-		sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
+    if (!collisionBodyHeap.Reserve(maxAnimBodies, allocator)) {
+        sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
 
-		LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+        LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		return;
-	}
+        return;
+    }
 
-	if (!rigidParticleHeap.Reserve(maxParticles, allocator))
-	{
-		sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
+    if (!rigidParticleHeap.Reserve(maxParticles, allocator)) {
+        sprintf(logBuffer, MSG_MEMORY_ALLOC_FAILED);
 
-		LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+        LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		return;
-	}
+        return;
+    }
 
-	region.Initialise(this, neRegion::SORT_DIMENSION_X | neRegion::SORT_DIMENSION_Y | neRegion::SORT_DIMENSION_Z);
+    region.Initialise(this, neRegion::SORT_DIMENSION_X | neRegion::SORT_DIMENSION_Y | neRegion::SORT_DIMENSION_Z);
 
-	stepSoFar = 0;
+    stepSoFar = 0;
 
-	stackHeaderX.Null();
+    stackHeaderX.Null();
 
-	stackHeaderX.isHeaderX = true;
+    stackHeaderX.isHeaderX = true;
 
-	stackHeaderX.sim = this;
+    stackHeaderX.sim = this;
 
-	fakeCollisionBody.b2w.SetIdentity();
+    fakeCollisionBody.b2w.SetIdentity();
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SetCollisionCallback
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neCollisionCallback * neFixedTimeStepSimulator::SetCollisionCallback(neCollisionCallback * fn)
-{
-	neCollisionCallback * ret = collisionCallback;
+neCollisionCallback *neFixedTimeStepSimulator::SetCollisionCallback(neCollisionCallback *fn) {
+    neCollisionCallback *ret = collisionCallback;
 
-	collisionCallback = fn;
+    collisionCallback = fn;
 
-	return ret;
+    return ret;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SetLogOutputCallback
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neLogOutputCallback * neFixedTimeStepSimulator::SetLogOutputCallback(neLogOutputCallback * fn)
-{
-	neLogOutputCallback * ret = logCallback;
+neLogOutputCallback *neFixedTimeStepSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
+    neLogOutputCallback *ret = logCallback;
 
-	logCallback = fn;
+    logCallback = fn;
 
-	return ret;
+    return ret;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SetLogOutputLevel
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl)
-{
-	logLevel = lvl;
+void neFixedTimeStepSimulator::SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl) {
+    logLevel = lvl;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::LogOutput
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl)
-{
-	if (!logCallback)
-		return;
+void neFixedTimeStepSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl) {
+    if (!logCallback)
+        return;
 
-	if (lvl <= logLevel)
-		logCallback(logBuffer);
+    if (lvl <= logLevel)
+        logCallback(logBuffer);
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SetMaterial
 *
-****************************************************************************/ 
+****************************************************************************/
 
-bool neFixedTimeStepSimulator::SetMaterial(s32 index, f32 friction, f32 restitution, f32 density)
-{
-	if (index < 0)
-		return false;
+bool neFixedTimeStepSimulator::SetMaterial(s32 index, f32 friction, f32 restitution, f32 density) {
+    if (index < 0)
+        return false;
 
-	if (index >= MAX_MATERIAL)
-		return false;
+    if (index >= MAX_MATERIAL)
+        return false;
 
-	materials[index].density = density;
-	materials[index].friction = friction;
-	materials[index].resititution = restitution;
+    materials[index].density = density;
+    materials[index].friction = friction;
+    materials[index].resititution = restitution;
 
-	return true;
+    return true;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::GetMaterial
 *
-****************************************************************************/ 
+****************************************************************************/
 
-bool neFixedTimeStepSimulator::GetMaterial(s32 index, f32& friction, f32& restitution, f32& density)
-{
-	if (index < 0)
-		return false;
+bool neFixedTimeStepSimulator::GetMaterial(s32 index, f32 &friction, f32 &restitution, f32 &density) {
+    if (index < 0)
+        return false;
 
-	if (index >= MAX_MATERIAL)
-		return false;
+    if (index >= MAX_MATERIAL)
+        return false;
 
-	density = materials[index].density;
-	friction = materials[index].friction;
-	restitution = materials[index].resititution;
+    density = materials[index].density;
+    friction = materials[index].friction;
+    restitution = materials[index].resititution;
 
-	return true;	
+    return true;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::CreateRigidBody
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neRigidBody_* neFixedTimeStepSimulator::CreateRigidBody(neBool isParticle)
-{
-	neRigidBody_ * ret;
+neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBody(neBool isParticle) {
+    neRigidBody_ *ret;
 
-	if (!isParticle)
-	{
-		ret = rigidBodyHeap.Alloc(1);
+    if (!isParticle) {
+        ret = rigidBodyHeap.Alloc(1);
 
-		if (!ret)
-		{
-			sprintf(logBuffer, MSG_RUN_OUT_RIDIGBODY);
+        if (!ret) {
+            sprintf(logBuffer, MSG_RUN_OUT_RIDIGBODY);
 
-			LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+            LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-			return NULL;
-		}
+            return NULL;
+        }
 
-		//ASSERT(ret);
+        //ASSERT(ret);
 
-		new (ret) neRigidBody_;
+        new(ret) neRigidBody_;
 
-		activeRB.Add(ret);
+        activeRB.Add(ret);
 
-		ret->id = rigidBodyHeap.GetID(ret);
+        ret->id = rigidBodyHeap.GetID(ret);
 
-		ret->subType = NE_RIGID_NORMAL;
-	}
-	else
-	{
-		ret = rigidParticleHeap.Alloc(1);
+        ret->subType = NE_RIGID_NORMAL;
+    } else {
+        ret = rigidParticleHeap.Alloc(1);
 
-		if (!ret)
-		{
-			sprintf(logBuffer, MSG_RUN_OUT_RIDIGPARTICLE);
+        if (!ret) {
+            sprintf(logBuffer, MSG_RUN_OUT_RIDIGPARTICLE);
 
-			LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+            LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-			return NULL;
-		}
-		//ASSERT(ret);
+            return NULL;
+        }
+        //ASSERT(ret);
 
-		new (ret) neRigidBody_;
+        new(ret) neRigidBody_;
 
-		activeRP.Add(ret);
+        activeRP.Add(ret);
 
-		ret->id = rigidParticleHeap.GetID(ret) + rigidBodyHeap.Size() + collisionBodyHeap.Size();
+        ret->id = rigidParticleHeap.GetID(ret) + rigidBodyHeap.Size() + collisionBodyHeap.Size();
 
-		ret->subType = NE_RIGID_PARTICLE;
-	}
+        ret->subType = NE_RIGID_PARTICLE;
+    }
 
-	ret->col.convexCount = 0;
+    ret->col.convexCount = 0;
 
-	ret->col.obb.Initialise();
+    ret->col.obb.Initialise();
 
-	ret->sim = this;
-	
-	return ret;
+    ret->sim = this;
+
+    return ret;
 }
 
-neRigidBody_ * neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex * convex, neRigidBodyBase * originalBody)
-{
-	//make sure convex belong to this body and
-	//this convex is not the only convex on this body
+neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody) {
+    //make sure convex belong to this body and
+    //this convex is not the only convex on this body
 
-	originalBody->BeginIterateGeometry();
+    originalBody->BeginIterateGeometry();
 
-	TConvex * con;
+    TConvex *con;
 
-	s32 ccount = 0;
+    s32 ccount = 0;
 
-	neBool found = false;
+    neBool found = false;
 
-	while (con = originalBody->GetNextGeometry())
-	{
-		if (con == convex)
-		{
-			found = true;
-		}
-		ccount++;
-	}
+    while (con = originalBody->GetNextGeometry()) {
+        if (con == convex) {
+            found = true;
+        }
+        ccount++;
+    }
 
-	if (ccount == 1 || !found)
-	{
-		return NULL;
-	}
-	neBool isParticle = false;
+    if (ccount == 1 || !found) {
+        return NULL;
+    }
+    neBool isParticle = false;
 
-	if (convex->breakInfo.flag == neGeometry::NE_BREAK_ALL_PARTICLE ||
-		convex->breakInfo.flag == neGeometry::NE_BREAK_NORMAL_PARTICLE ||
-		convex->breakInfo.flag == neGeometry::NE_BREAK_NEIGHBOUR_PARTICLE)
-	{
-		isParticle = true;
-	}
+    if (convex->breakInfo.flag == neGeometry::NE_BREAK_ALL_PARTICLE ||
+        convex->breakInfo.flag == neGeometry::NE_BREAK_NORMAL_PARTICLE ||
+        convex->breakInfo.flag == neGeometry::NE_BREAK_NEIGHBOUR_PARTICLE) {
+        isParticle = true;
+    }
 
-	neRigidBody_ * newBody = CreateRigidBody(false);
+    neRigidBody_ *newBody = CreateRigidBody(false);
 
-	if (!newBody)
-	{
-		return NULL;
-	}
+    if (!newBody) {
+        return NULL;
+    }
 
-	newBody->mass = convex->breakInfo.mass;
+    newBody->mass = convex->breakInfo.mass;
 
-	newBody->oneOnMass = 1.0f / convex->breakInfo.mass;
+    newBody->oneOnMass = 1.0f / convex->breakInfo.mass;
 
-	newBody->Ibody.SetIdentity();
+    newBody->Ibody.SetIdentity();
 
-	for (s32 i = 0; i < 3; i++)
-		newBody->Ibody[i][i] = convex->breakInfo.inertiaTensor[i];
+    for (s32 i = 0; i < 3; i++)
+        newBody->Ibody[i][i] = convex->breakInfo.inertiaTensor[i];
 
-	newBody->IbodyInv.SetInvert(newBody->Ibody);
+    newBody->IbodyInv.SetInvert(newBody->Ibody);
 
-	convex->breakInfo.flag = neGeometry::NE_BREAK_DISABLE;
+    convex->breakInfo.flag = neGeometry::NE_BREAK_DISABLE;
 
-	newBody->State().b2w = originalBody->GetB2W() * convex->c2p;
+    newBody->State().b2w = originalBody->GetB2W() * convex->c2p;
 
-	newBody->State().q.SetupFromMatrix3(newBody->State().rot()); 
+    newBody->State().q.SetupFromMatrix3(newBody->State().rot());
 
-	originalBody->col.convexCount--;
+    originalBody->col.convexCount--;
 
-	if (originalBody->col.convex == convex)
-		originalBody->col.convex = (TConvex*)((TConvexItem *)convex)->next;
+    if (originalBody->col.convex == convex)
+        originalBody->col.convex = (TConvex *) ((TConvexItem *) convex)->next;
 
-	if (originalBody->col.convexCount == 0 && originalBody->isActive)
-	{
-		region.RemoveBody(originalBody);
-	}
-	else if (originalBody->col.convexCount == 1)
-	{
-		originalBody->RecalcBB();
-	}
+    if (originalBody->col.convexCount == 0 && originalBody->isActive) {
+        region.RemoveBody(originalBody);
+    } else if (originalBody->col.convexCount == 1) {
+        originalBody->RecalcBB();
+    }
 
-	((TConvexItem *)convex)->Remove();
+    ((TConvexItem *) convex)->Remove();
 
-	convex->c2p.SetIdentity();
+    convex->c2p.SetIdentity();
 
-	newBody->col.convex = convex;
-	
-	newBody->col.convexCount++;
+    newBody->col.convex = convex;
 
-	newBody->RecalcBB();
+    newBody->col.convexCount++;
 
-	region.AddBody(newBody, originalBody);
+    newBody->RecalcBB();
 
-	return newBody;
+    region.AddBody(newBody, originalBody);
+
+    return newBody;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::CreateAnimateBody
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neCollisionBody_* neFixedTimeStepSimulator::CreateCollisionBody()
-{
-	neCollisionBody_ * ret =  collisionBodyHeap.Alloc(1);
+neCollisionBody_ *neFixedTimeStepSimulator::CreateCollisionBody() {
+    neCollisionBody_ *ret = collisionBodyHeap.Alloc(1);
 
-	//ASSERT(ret);
+    //ASSERT(ret);
 
-	new (ret) neCollisionBody_;
+    new(ret) neCollisionBody_;
 
-	activeCB.Add(ret);
+    activeCB.Add(ret);
 
-	ret->id = collisionBodyHeap.GetID(ret) + rigidBodyHeap.Size();
+    ret->id = collisionBodyHeap.GetID(ret) + rigidBodyHeap.Size();
 
-	ret->col.convexCount = 0;
+    ret->col.convexCount = 0;
 
-	ret->col.obb.Initialise();
+    ret->col.obb.Initialise();
 
-	ret->sim = this;
+    ret->sim = this;
 
-	ret->b2w.SetIdentity();
-	
-	//region.AddBody(ret);
+    ret->b2w.SetIdentity();
 
-	return ret;
+    //region.AddBody(ret);
+
+    return ret;
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::Free
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::Free(neRigidBodyBase * bb)
-{
-	if (bb->AsCollisionBody())
-	{
-		neCollisionBody_* cb = reinterpret_cast<neCollisionBody_*>(bb);
+void neFixedTimeStepSimulator::Free(neRigidBodyBase *bb) {
+    if (bb->AsCollisionBody()) {
+        neCollisionBody_ *cb = reinterpret_cast<neCollisionBody_ *>(bb);
 
-		if (collisionBodyHeap.CheckBelongAndInUse(cb))
-		{
-			((neCollisionBody_*)bb)->Free();
+        if (collisionBodyHeap.CheckBelongAndInUse(cb)) {
+            ((neCollisionBody_ *) bb)->Free();
 
-			if (bb->isActive)
-				activeCB.Remove(cb);
-			else
-				inactiveCB.Remove(cb);
+            if (bb->isActive)
+                activeCB.Remove(cb);
+            else
+                inactiveCB.Remove(cb);
 
-			collisionBodyHeap.Dealloc(cb, 1);
-		}
-		else
-		{
-			sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_CB);
+            collisionBodyHeap.Dealloc(cb, 1);
+        } else {
+            sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_CB);
 
-			LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-		}
-	}
-	else
-	{
-		neRigidBody_* rb = reinterpret_cast<neRigidBody_*>(bb);
+            LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+        }
+    } else {
+        neRigidBody_ *rb = reinterpret_cast<neRigidBody_ *>(bb);
 
-		rb->Free();
+        rb->Free();
 
-		if (rb->IsParticle())
-		{
-			if (rigidParticleHeap.CheckBelongAndInUse(rb))
-			{
-				if (rb->isActive)
-					activeRP.Remove(rb);
-				else
-					inactiveRP.Remove(rb);
+        if (rb->IsParticle()) {
+            if (rigidParticleHeap.CheckBelongAndInUse(rb)) {
+                if (rb->isActive)
+                    activeRP.Remove(rb);
+                else
+                    inactiveRP.Remove(rb);
 
-				rigidParticleHeap.Dealloc(rb, 1);
-			}
-			else
-			{
-				sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_RP);
+                rigidParticleHeap.Dealloc(rb, 1);
+            } else {
+                sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_RP);
 
-				LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-			}
-		}
-		else
-		{
-			if (rigidBodyHeap.CheckBelongAndInUse(rb))
-			{
-				if (rb->isActive)
-					activeRB.Remove(rb);
-				else
-					inactiveRB.Remove(rb);
+                LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+            }
+        } else {
+            if (rigidBodyHeap.CheckBelongAndInUse(rb)) {
+                if (rb->isActive)
+                    activeRB.Remove(rb);
+                else
+                    inactiveRB.Remove(rb);
 
-				rigidBodyHeap.Dealloc(rb, 1);
-			}
-			else
-			{
-				sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_RB);
+                rigidBodyHeap.Dealloc(rb, 1);
+            } else {
+                sprintf(logBuffer, MSG_TRYING_TO_FREE_INVALID_RB);
 
-				LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-			}
-		}
-	}
+                LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+            }
+        }
+    }
 }
 
 /****************************************************************************
 *
 *	~neFixedTimeStepSimulator::neFixedTimeStepSimulator
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neFixedTimeStepSimulator::~neFixedTimeStepSimulator()
-{
-	FreeAllBodies();
+neFixedTimeStepSimulator::~neFixedTimeStepSimulator() {
+    FreeAllBodies();
 
-	if (perf)
-		delete perf;
+    if (perf)
+        delete perf;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -606,980 +558,873 @@ neFixedTimeStepSimulator::~neFixedTimeStepSimulator()
 #define UPDATE_PERF_REPORT(n)
 #endif
 
-void neFixedTimeStepSimulator::Advance(nePerformanceReport * _perfReport)
-{
-	ClearCollisionBodySensors();
-		
-	UpdateAABB();
+void neFixedTimeStepSimulator::Advance(nePerformanceReport *_perfReport) {
+    ClearCollisionBodySensors();
 
-	region.Update();
+    UpdateAABB();
 
-UPDATE_PERF_REPORT(UpdateCDCulling)
+    region.Update();
 
-	CheckCollision();
+    UPDATE_PERF_REPORT(UpdateCDCulling)
 
-UPDATE_PERF_REPORT(UpdateCD);
+    CheckCollision();
 
-	CheckTerrainCollision();
+    UPDATE_PERF_REPORT(UpdateCD);
 
-UPDATE_PERF_REPORT(UpdateTerrain);
+    CheckTerrainCollision();
 
-	ResetTotalForce();
-		
-	ApplyJointDamping();
-	
-	//Advance Rigid Body Dynamic
-	AdvanceDynamicRigidBodies();
-		
-	//Advance Rigid Particle Dynamic
-	AdvanceDynamicParticles();
+    UPDATE_PERF_REPORT(UpdateTerrain);
 
-UPDATE_PERF_REPORT(UpdateDynamic);
+    ResetTotalForce();
 
-	ResetStackHeaderFlag();
+    ApplyJointDamping();
 
-	SolveAllConstrain();	
+    //Advance Rigid Body Dynamic
+    AdvanceDynamicRigidBodies();
+
+    //Advance Rigid Particle Dynamic
+    AdvanceDynamicParticles();
+
+    UPDATE_PERF_REPORT(UpdateDynamic);
+
+    ResetStackHeaderFlag();
+
+    SolveAllConstrain();
 
 //UPDATE_PERF_REPORT(UpdateConstrain1);
 
-	ResolvePenetration();
+    ResolvePenetration();
 
-	SolveContactConstrain();
+    SolveContactConstrain();
 
-UPDATE_PERF_REPORT(UpdateConstrain2);
+    UPDATE_PERF_REPORT(UpdateConstrain2);
 
-	//Advance Position
+    //Advance Position
 
-	AdvancePositionRigidBodies();
+    AdvancePositionRigidBodies();
 
-	AdvancePositionParticles();
+    AdvancePositionParticles();
 
-UPDATE_PERF_REPORT(UpdatePosition);
+    UPDATE_PERF_REPORT(UpdatePosition);
 
-	UpdateConstraintControllers();
+    UpdateConstraintControllers();
 
-UPDATE_PERF_REPORT(UpdateControllerCallback);
+    UPDATE_PERF_REPORT(UpdateControllerCallback);
 }
 
-void neFixedTimeStepSimulator::Advance(f32 time, u32 nStep, nePerformanceReport * _perfReport)
-{
-	_currentTimeStep = time / (f32)nStep;
+void neFixedTimeStepSimulator::Advance(f32 time, u32 nStep, nePerformanceReport *_perfReport) {
+    _currentTimeStep = time / (f32) nStep;
 
-	oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
+    oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
 
-	perfReport = _perfReport;
+    perfReport = _perfReport;
 
-	currentRecord = stepSoFar % NE_RB_MAX_PAST_RECORDS;
+    currentRecord = stepSoFar % NE_RB_MAX_PAST_RECORDS;
 
 #ifdef _WIN32
-	if (perfReport)
-	{
-		for (s32 j = 0; j < nePerformanceReport::NE_PERF_LAST; j++)
-		{
-			perfReport->time[j] = 0.0f;
-		}
-		perf->Start();
-	}
+    if (perfReport)
+    {
+        for (s32 j = 0; j < nePerformanceReport::NE_PERF_LAST; j++)
+        {
+            perfReport->time[j] = 0.0f;
+        }
+        perf->Start();
+    }
 #endif
 
-	int i;
+    int i;
 
-	for (i = 0; i < (s32)nStep; i++)
-	{
-		magicNumber = 0;
+    for (i = 0; i < (s32) nStep; i++) {
+        magicNumber = 0;
 
-		Advance(perfReport);
-	}
+        Advance(perfReport);
+    }
 
-	neCollisionBody_ * cb = activeCB.GetHead();
+    neCollisionBody_ *cb = activeCB.GetHead();
 
-	while (cb)
-	{
-		cb->moved = false;
+    while (cb) {
+        cb->moved = false;
 
-		cb = activeCB.GetNext(cb);
-	}
-	if (perfReport)
-	{
-		if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE)
-		{
-			f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
+        cb = activeCB.GetNext(cb);
+    }
+    if (perfReport) {
+        if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
+            f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
 
 #ifdef DETAIL_PERF_REPORTING
 
-			perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perf->dynamic / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perf->position / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perf->cd / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perf->cdCulling / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perf->terrain / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perf->terrainCulling / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perf->constrain_1 / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perf->constrain_2 / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
+            perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perf->dynamic / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perf->position / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perf->cd / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perf->cdCulling / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perf->terrain / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perf->terrainCulling / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perf->constrain_1 / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perf->constrain_2 / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
 #endif
-		}
-		else
-		{
-			f32 totalTime = perf->GetTotalTime();
+        } else {
+            f32 totalTime = perf->GetTotalTime();
 
-			if (totalTime < 100.0f)
-			{
-				perfReport->numSample ++;
+            if (totalTime < 100.0f) {
+                perfReport->numSample++;
 
-				perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] += totalTime;
+                perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] += totalTime;
 
-#ifdef DETAIL_PERF_REPORTING				
-				perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] += (perf->dynamic / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] += (perf->position / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] += (perf->cd / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] += (perf->cdCulling / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] += (perf->terrain / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] += (perf->terrainCulling / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] += (perf->controllerCallback / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] += (perf->constrain_1 / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] += (perf->constrain_2 / totalTime * 100.0f);
-#endif
-				perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] / perfReport->numSample;
 #ifdef DETAIL_PERF_REPORTING
-				perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] / perfReport->numSample;
+                perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] += (perf->dynamic / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] += (perf->position / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] += (perf->cd / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] += (perf->cdCulling / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] += (perf->terrain / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] += (perf->terrainCulling / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] += (perf->controllerCallback / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] += (perf->constrain_1 / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] += (perf->constrain_2 / totalTime * 100.0f);
 #endif
-			}
-		}
-	}
+                perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] =
+                        perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] / perfReport->numSample;
+#ifdef DETAIL_PERF_REPORTING
+                perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] / perfReport->numSample;
+#endif
+            }
+        }
+    }
 
-	stepSoFar++;
+    stepSoFar++;
 }
 
-void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport * _perfReport)
-{
-	perfReport = _perfReport;
+void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport) {
+    perfReport = _perfReport;
 
 #ifdef _WIN32
-	if (perfReport)
-	{
-		for (s32 j = 0; j < nePerformanceReport::NE_PERF_LAST; j++)
-		{
-			perfReport->time[j] = 0.0f;
-		}
-		perf->Start();
-	}
+    if (perfReport)
+    {
+        for (s32 j = 0; j < nePerformanceReport::NE_PERF_LAST; j++)
+        {
+            perfReport->time[j] = 0.0f;
+        }
+        perf->Start();
+    }
 #endif
 
-	const f32 frameDiffTolerance = 0.2f;
-	
-	f32 timeLeft = sec + timeFromLastFrame;
-	
-	f32 currentTimeStep = maxTimeStep;
+    const f32 frameDiffTolerance = 0.2f;
 
-	while (minTimeStep <= timeLeft)
-	{
-		while (currentTimeStep <= timeLeft)
-		{
-			if ((lastTimeStep > 0.0f) && neIsFinite(lastTimeStep))
-			{
-				f32 diffPercent = neAbs((currentTimeStep - lastTimeStep) / lastTimeStep);
+    f32 timeLeft = sec + timeFromLastFrame;
 
-				if (diffPercent > frameDiffTolerance) // more than 20% different
-				{
-					if (currentTimeStep > lastTimeStep)
-					{
-						currentTimeStep = lastTimeStep * (1.0f + frameDiffTolerance);
-					}
-					else
-					{
-						currentTimeStep = lastTimeStep * (1.0f - frameDiffTolerance);
-					}
-				}
-			}
+    f32 currentTimeStep = maxTimeStep;
 
-			_currentTimeStep = currentTimeStep;
+    while (minTimeStep <= timeLeft) {
+        while (currentTimeStep <= timeLeft) {
+            if ((lastTimeStep > 0.0f) && neIsFinite(lastTimeStep)) {
+                f32 diffPercent = neAbs((currentTimeStep - lastTimeStep) / lastTimeStep);
 
-			oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
+                if (diffPercent > frameDiffTolerance) // more than 20% different
+                {
+                    if (currentTimeStep > lastTimeStep) {
+                        currentTimeStep = lastTimeStep * (1.0f + frameDiffTolerance);
+                    } else {
+                        currentTimeStep = lastTimeStep * (1.0f - frameDiffTolerance);
+                    }
+                }
+            }
 
-			currentRecord = stepSoFar % NE_RB_MAX_PAST_RECORDS;
+            _currentTimeStep = currentTimeStep;
 
-			Advance(perfReport);
+            oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
 
-			stepSoFar++;
-			
-			timeLeft -= currentTimeStep;
+            currentRecord = stepSoFar % NE_RB_MAX_PAST_RECORDS;
 
-			lastTimeStep = currentTimeStep;
-		}
-		currentTimeStep = neMin(timeLeft, maxTimeStep);
-	}
-	timeFromLastFrame = timeLeft;
+            Advance(perfReport);
 
-	neCollisionBody_ * cb = activeCB.GetHead();
+            stepSoFar++;
 
-	while (cb)
-	{
-		cb->moved = false;
+            timeLeft -= currentTimeStep;
 
-		cb = activeCB.GetNext(cb);
-	}
-	if (perfReport)
-	{
-		if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE)
-		{
-			f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
+            lastTimeStep = currentTimeStep;
+        }
+        currentTimeStep = neMin(timeLeft, maxTimeStep);
+    }
+    timeFromLastFrame = timeLeft;
+
+    neCollisionBody_ *cb = activeCB.GetHead();
+
+    while (cb) {
+        cb->moved = false;
+
+        cb = activeCB.GetNext(cb);
+    }
+    if (perfReport) {
+        if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
+            f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
 
 #ifdef DETAIL_PERF_REPORTING
 
-			perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perf->dynamic / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perf->position / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perf->cd / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perf->cdCulling / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perf->terrain / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perf->terrainCulling / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perf->constrain_1 / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perf->constrain_2 / totalTime * 100.0f;
-			perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
+            perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perf->dynamic / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perf->position / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perf->cd / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perf->cdCulling / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perf->terrain / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perf->terrainCulling / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perf->constrain_1 / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perf->constrain_2 / totalTime * 100.0f;
+            perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
 #endif
-		}
-		else
-		{
-			f32 totalTime = perf->GetTotalTime();
+        } else {
+            f32 totalTime = perf->GetTotalTime();
 
-			if (totalTime < 100.0f)
-			{
-				perfReport->numSample ++;
+            if (totalTime < 100.0f) {
+                perfReport->numSample++;
 
-				perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] += totalTime;
+                perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] += totalTime;
 
-#ifdef DETAIL_PERF_REPORTING				
-				perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] += (perf->dynamic / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] += (perf->position / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] += (perf->cd / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] += (perf->cdCulling / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] += (perf->terrain / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] += (perf->terrainCulling / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] += (perf->controllerCallback / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] += (perf->constrain_1 / totalTime * 100.0f);
-				perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] += (perf->constrain_2 / totalTime * 100.0f);
-#endif
-				perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] / perfReport->numSample;
 #ifdef DETAIL_PERF_REPORTING
-				perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] / perfReport->numSample;
-				perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] / perfReport->numSample;
+                perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] += (perf->dynamic / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] += (perf->position / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] += (perf->cd / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] += (perf->cdCulling / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] += (perf->terrain / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] += (perf->terrainCulling / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] += (perf->controllerCallback / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] += (perf->constrain_1 / totalTime * 100.0f);
+                perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] += (perf->constrain_2 / totalTime * 100.0f);
 #endif
-			}
-		}
-	}
+                perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] =
+                        perfReport->accTime[nePerformanceReport::NE_PERF_TOTAL_TIME] / perfReport->numSample;
+#ifdef DETAIL_PERF_REPORTING
+                perfReport->time[nePerformanceReport::NE_PERF_DYNAMIC] = perfReport->accTime[nePerformanceReport::NE_PERF_DYNAMIC] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_POSITION] = perfReport->accTime[nePerformanceReport::NE_PERF_POSITION] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_COLLISION_DETECTION] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_DETECTION] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_COLLISION_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_COLLISION_CULLING] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_TERRAIN] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_TERRAIN_CULLING] = perfReport->accTime[nePerformanceReport::NE_PERF_TERRAIN_CULLING] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_1] / perfReport->numSample;
+                perfReport->time[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] = perfReport->accTime[nePerformanceReport::NE_PERF_CONTRAIN_SOLVING_2] / perfReport->numSample;
+#endif
+            }
+        }
+    }
 }
 
-void neFixedTimeStepSimulator::ResetTotalForce()
-{
-	neRigidBody_ * rb = activeRB.GetHead();
+void neFixedTimeStepSimulator::ResetTotalForce() {
+    neRigidBody_ *rb = activeRB.GetHead();
 
-	while (rb)
-	{
-		rb->totalForce.SetZero();
+    while (rb) {
+        rb->totalForce.SetZero();
 
-		rb->totalTorque.SetZero();
+        rb->totalTorque.SetZero();
 
-		rb = activeRB.GetNext(rb);
-	}
-	rb = activeRP.GetHead();
+        rb = activeRB.GetNext(rb);
+    }
+    rb = activeRP.GetHead();
 
-	while (rb)
-	{
-		rb->totalForce.SetZero();
+    while (rb) {
+        rb->totalForce.SetZero();
 
-		rb->totalTorque.SetZero();
+        rb->totalTorque.SetZero();
 
-		rb = activeRP.GetNext(rb);
-	}
+        rb = activeRP.GetNext(rb);
+    }
 }
 
-void neFixedTimeStepSimulator::AdvanceDynamicRigidBodies()
-{
-	neRigidBody_ * rb = activeRB.GetHead();
+void neFixedTimeStepSimulator::AdvanceDynamicRigidBodies() {
+    neRigidBody_ *rb = activeRB.GetHead();
 
-	idleBodyCount = 0;
+    idleBodyCount = 0;
 
-	while (rb)
-	{
-		rb->AdvanceDynamic(_currentTimeStep);
+    while (rb) {
+        rb->AdvanceDynamic(_currentTimeStep);
 
-		rb = activeRB.GetNext(rb);
-	}
-}		
-
-void neFixedTimeStepSimulator::AdvanceDynamicParticles()
-{
-	neRigidBody_ * rp = activeRP.GetHead();
-
-	while (rp)
-	{
-		rp->AdvanceDynamic(_currentTimeStep);
-
-		rp = activeRP.GetNext(rp);
-	}
+        rb = activeRB.GetNext(rb);
+    }
 }
 
-void neFixedTimeStepSimulator::AdvancePositionRigidBodies()
-{
-	neRigidBody_ * rb = activeRB.GetHead();
+void neFixedTimeStepSimulator::AdvanceDynamicParticles() {
+    neRigidBody_ *rp = activeRP.GetHead();
 
-	while (rb)
-	{
-		rb->needSolveContactDynamic = true;
+    while (rp) {
+        rp->AdvanceDynamic(_currentTimeStep);
 
-		if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
-		{
-			if (!rb->_constraintHeader)
-			{
-				rb->CheckForIdle();
-			}
-
-			if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
-				rb->AdvancePosition(_currentTimeStep);
-		}
-
-		rb = activeRB.GetNext(rb);
-	}
-}
-	
-void neFixedTimeStepSimulator::AdvancePositionParticles()
-{
-	neRigidBody_ * rp = activeRP.GetHead();
-
-	while (rp)
-	{
-		rp->needSolveContactDynamic = true;
-
-		if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE)
-		{
-			if (!rp->_constraintHeader)
-			{
-				rp->CheckForIdle();
-			}
-
-			if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE)
-				rp->AdvancePosition(_currentTimeStep);
-		}
-
-		rp = activeRP.GetNext(rp);
-	}
+        rp = activeRP.GetNext(rp);
+    }
 }
 
-void neFixedTimeStepSimulator::ApplyJointDamping()
-{
-	neFreeListItem<neConstraintHeader> * hitem = (neFreeListItem<neConstraintHeader> *)(*constraintHeaders.BeginUsed());
+void neFixedTimeStepSimulator::AdvancePositionRigidBodies() {
+    neRigidBody_ *rb = activeRB.GetHead();
 
-	while (hitem)
-	{
-		neConstraintHeader * h = (neConstraintHeader *)hitem;
+    while (rb) {
+        rb->needSolveContactDynamic = true;
 
-		hitem = hitem->next;
+        if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (!rb->_constraintHeader) {
+                rb->CheckForIdle();
+            }
 
-		neFreeListItem<_neConstraint> * citem = (neFreeListItem<_neConstraint> *) h->head;
-		
-		while (citem)
-		{
-			_neConstraint * c = (_neConstraint *)citem;	
+            if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
+                rb->AdvancePosition(_currentTimeStep);
+        }
 
-			citem = citem->next;
-
-			if (c->enable)
-				c->ApplyDamping();
-		}
-	}
+        rb = activeRB.GetNext(rb);
+    }
 }
 
-void neFixedTimeStepSimulator::ClearCollisionBodySensors()
-{
-	neCollisionBody_ * cb = activeCB.GetHead();
+void neFixedTimeStepSimulator::AdvancePositionParticles() {
+    neRigidBody_ *rp = activeRP.GetHead();
 
-	while (cb)
-	{
-		if (cb->sensors)
-			cb->ClearSensor();
+    while (rp) {
+        rp->needSolveContactDynamic = true;
 
-		cb = activeCB.GetNext(cb);
-	}
+        if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (!rp->_constraintHeader) {
+                rp->CheckForIdle();
+            }
 
-	neRigidBody_ * rp = activeRP.GetHead();
+            if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE)
+                rp->AdvancePosition(_currentTimeStep);
+        }
 
-	while (rp)
-	{
-		if (rp->sensors)
-			rp->ClearSensor();
-
-		rp = activeRP.GetNext(rp);
-	}
-
-	rp = activeRB.GetHead();
-
-	while (rp)
-	{
-		if (rp->sensors)
-			rp->ClearSensor();
-
-		rp = activeRP.GetNext(rp);
-	}
+        rp = activeRP.GetNext(rp);
+    }
 }
 
-void neFixedTimeStepSimulator::UpdateAABB()
-{
-	neRigidBody_ * rb = activeRB.GetHead();
+void neFixedTimeStepSimulator::ApplyJointDamping() {
+    neFreeListItem<neConstraintHeader> *hitem = (neFreeListItem<neConstraintHeader> *) (*constraintHeaders.BeginUsed());
 
-	while (rb)
-	{
-		rb->UpdateAABB();
+    while (hitem) {
+        neConstraintHeader *h = (neConstraintHeader *) hitem;
 
-		rb = activeRB.GetNext(rb);
-	}
-	neRigidBody_ * rp = activeRP.GetHead();
+        hitem = hitem->next;
 
-	while (rp)
-	{
-		rp->UpdateAABB();
+        neFreeListItem<_neConstraint> *citem = (neFreeListItem<_neConstraint> *) h->head;
 
-		rp = activeRP.GetNext(rp);
-	}
-	neCollisionBody_ * cb = activeCB.GetHead();
+        while (citem) {
+            _neConstraint *c = (_neConstraint *) citem;
 
-	while (cb)
-	{
-		if (cb->moved)
-			cb->UpdateAABB();
+            citem = citem->next;
 
-		cb = activeCB.GetNext(cb);
-	}
+            if (c->enable)
+                c->ApplyDamping();
+        }
+    }
+}
+
+void neFixedTimeStepSimulator::ClearCollisionBodySensors() {
+    neCollisionBody_ *cb = activeCB.GetHead();
+
+    while (cb) {
+        if (cb->sensors)
+            cb->ClearSensor();
+
+        cb = activeCB.GetNext(cb);
+    }
+
+    neRigidBody_ *rp = activeRP.GetHead();
+
+    while (rp) {
+        if (rp->sensors)
+            rp->ClearSensor();
+
+        rp = activeRP.GetNext(rp);
+    }
+
+    rp = activeRB.GetHead();
+
+    while (rp) {
+        if (rp->sensors)
+            rp->ClearSensor();
+
+        rp = activeRP.GetNext(rp);
+    }
+}
+
+void neFixedTimeStepSimulator::UpdateAABB() {
+    neRigidBody_ *rb = activeRB.GetHead();
+
+    while (rb) {
+        rb->UpdateAABB();
+
+        rb = activeRB.GetNext(rb);
+    }
+    neRigidBody_ *rp = activeRP.GetHead();
+
+    while (rp) {
+        rp->UpdateAABB();
+
+        rp = activeRP.GetNext(rp);
+    }
+    neCollisionBody_ *cb = activeCB.GetHead();
+
+    while (cb) {
+        if (cb->moved)
+            cb->UpdateAABB();
+
+        cb = activeCB.GetNext(cb);
+    }
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::CheckCollision
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::CheckCollision()
-{
-	//OutputDebugString("region.Update\n");/////////////////////////////////
+void neFixedTimeStepSimulator::CheckCollision() {
+    //OutputDebugString("region.Update\n");/////////////////////////////////
 
-	neDLinkList<neOverlappedPair>::iterator oiter;
+    neDLinkList<neOverlappedPair>::iterator oiter;
 
-	neCollisionResult result;
+    neCollisionResult result;
 
-	neV3 backupVector;
-	//OutputDebugString("obj 2 obj test\n");/////////////////////////////////
+    neV3 backupVector;
+    //OutputDebugString("obj 2 obj test\n");/////////////////////////////////
 
-	for (oiter = region.overlappedPairs.BeginUsed(); oiter.Valid(); oiter++)
-	{
-		//ASSERT((*oiter)->bodyA);
-		//ASSERT((*oiter)->bodyB);
-		
-		neRigidBodyBase * bodyA;
-		neRigidBodyBase * bodyB;
+    for (oiter = region.overlappedPairs.BeginUsed(); oiter.Valid(); oiter++) {
+        //ASSERT((*oiter)->bodyA);
+        //ASSERT((*oiter)->bodyB);
 
-		bodyA = (*oiter)->bodyA;
-		bodyB = (*oiter)->bodyB;
+        neRigidBodyBase *bodyA;
+        neRigidBodyBase *bodyB;
 
-		neRigidBody_* ra = bodyA->AsRigidBody();
-		neRigidBody_* rb = bodyB->AsRigidBody();
+        bodyA = (*oiter)->bodyA;
+        bodyB = (*oiter)->bodyB;
 
-		neCollisionBody_* ca = bodyA->AsCollisionBody();
-		neCollisionBody_* cb = bodyB->AsCollisionBody();
-		
-		if (ca && cb)
-			continue;
+        neRigidBody_ *ra = bodyA->AsRigidBody();
+        neRigidBody_ *rb = bodyB->AsRigidBody();
 
-		neCollisionTable::neReponseBitFlag collisionflag = colTable.Get(bodyA->cid, bodyB->cid);
+        neCollisionBody_ *ca = bodyA->AsCollisionBody();
+        neCollisionBody_ *cb = bodyB->AsCollisionBody();
 
-		if (collisionflag == neCollisionTable::RESPONSE_IGNORE)
-			continue;
-		
-		neBool isCustomeCD = false;
+        if (ca && cb)
+            continue;
 
-		result.penetrate = false;
+        neCollisionTable::neReponseBitFlag collisionflag = colTable.Get(bodyA->cid, bodyB->cid);
 
-		if (ca)
-		{
-			if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-				rb->isShifted ||
-				ca->moved)
-			{
-				if ((rb->isCustomCD || ca->isCustomCD))
-				{
-					if (customCDRB2ABCallback)
-					{
-						isCustomeCD = true;
+        if (collisionflag == neCollisionTable::RESPONSE_IGNORE)
+            continue;
 
-						neCustomCDInfo cdInfo;
+        neBool isCustomeCD = false;
 
-						memset(&cdInfo, 0, sizeof(cdInfo));
+        result.penetrate = false;
 
-						if (customCDRB2ABCallback((neRigidBody*)rb, (neAnimatedBody*)ca, cdInfo))
-						{
-							result.penetrate = true;
-							result.bodyA = ca;
-							result.bodyB = rb;
-							result.collisionFrame[2] = -cdInfo.collisionNormal;
-							result.materialIdA = cdInfo.materialIdB;
-							result.materialIdB = cdInfo.materialIdA;
-							result.contactA = cdInfo.worldContactPointB - ca->GetB2W().pos;
-							result.contactB = cdInfo.worldContactPointA - rb->GetB2W().pos;
-							result.contactAWorld = cdInfo.worldContactPointB;
-							result.contactBWorld = cdInfo.worldContactPointA;
-							result.contactABody = ca->GetB2W().rot.TransposeMulV3(result.contactA);
-							result.contactBBody = rb->GetB2W().rot.TransposeMulV3(result.contactB);
-							result.depth = cdInfo.penetrationDepth;
-							ChooseAxis(result.collisionFrame[0], result.collisionFrame[1], result.collisionFrame[2]);
-						}
-					}
-				}
-				else
-				{
-					backupVector = rb->backupVector - ca->backupVector;
+        if (ca) {
+            if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                rb->isShifted ||
+                ca->moved) {
+                if ((rb->isCustomCD || ca->isCustomCD)) {
+                    if (customCDRB2ABCallback) {
+                        isCustomeCD = true;
 
-					CollisionTest(result, ca->col, ca->b2w, 
-											rb->col, rb->State().b2w, backupVector);
+                        neCustomCDInfo cdInfo;
 
-					if (rb->sensors)
-					{
-						CollisionTestSensor(&rb->col.obb,
-											rb->sensors,
-											rb->State().b2w,
-											ca->col,
-											ca->b2w,
-											ca);
-					}
-				}
-			}
-		}
-		else
-		{
-			if (cb)
-			{
-				if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-					ra->isShifted ||
-					cb->moved)
-				{
-					if ((ra->isCustomCD || cb->isCustomCD))
-					{
-						if (customCDRB2ABCallback)
-						{
-							isCustomeCD = true;
+                        memset(&cdInfo, 0, sizeof(cdInfo));
 
-							neCustomCDInfo cdInfo;
+                        if (customCDRB2ABCallback((neRigidBody *) rb, (neAnimatedBody *) ca, cdInfo)) {
+                            result.penetrate = true;
+                            result.bodyA = ca;
+                            result.bodyB = rb;
+                            result.collisionFrame[2] = -cdInfo.collisionNormal;
+                            result.materialIdA = cdInfo.materialIdB;
+                            result.materialIdB = cdInfo.materialIdA;
+                            result.contactA = cdInfo.worldContactPointB - ca->GetB2W().pos;
+                            result.contactB = cdInfo.worldContactPointA - rb->GetB2W().pos;
+                            result.contactAWorld = cdInfo.worldContactPointB;
+                            result.contactBWorld = cdInfo.worldContactPointA;
+                            result.contactABody = ca->GetB2W().rot.TransposeMulV3(result.contactA);
+                            result.contactBBody = rb->GetB2W().rot.TransposeMulV3(result.contactB);
+                            result.depth = cdInfo.penetrationDepth;
+                            ChooseAxis(result.collisionFrame[0], result.collisionFrame[1], result.collisionFrame[2]);
+                        }
+                    }
+                } else {
+                    backupVector = rb->backupVector - ca->backupVector;
 
-							memset(&cdInfo, 0, sizeof(cdInfo));
+                    CollisionTest(result, ca->col, ca->b2w,
+                                  rb->col, rb->State().b2w, backupVector);
 
-							if (customCDRB2ABCallback((neRigidBody*)ra, (neAnimatedBody*)cb, cdInfo))
-							{
-								result.penetrate = true;
-								result.bodyA = ra;
-								result.bodyB = cb;
-								result.collisionFrame[2] = cdInfo.collisionNormal;
-								result.materialIdA = cdInfo.materialIdA;
-								result.materialIdB = cdInfo.materialIdB;
-								result.contactA = cdInfo.worldContactPointA - ra->GetB2W().pos;
-								result.contactB = cdInfo.worldContactPointB - cb->GetB2W().pos;
-								result.contactAWorld = cdInfo.worldContactPointA;
-								result.contactBWorld = cdInfo.worldContactPointB;
-								result.contactABody = ra->GetB2W().rot.TransposeMulV3(result.contactA);
-								result.contactBBody = cb->GetB2W().rot.TransposeMulV3(result.contactB);
-								result.depth = cdInfo.penetrationDepth;
-								ChooseAxis(result.collisionFrame[0], result.collisionFrame[1], result.collisionFrame[2]);
-							}
-						}
-					}
-					else
-					{
-						backupVector = cb->backupVector - ra->backupVector;
+                    if (rb->sensors) {
+                        CollisionTestSensor(&rb->col.obb,
+                                            rb->sensors,
+                                            rb->State().b2w,
+                                            ca->col,
+                                            ca->b2w,
+                                            ca);
+                    }
+                }
+            }
+        } else {
+            if (cb) {
+                if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                    ra->isShifted ||
+                    cb->moved) {
+                    if ((ra->isCustomCD || cb->isCustomCD)) {
+                        if (customCDRB2ABCallback) {
+                            isCustomeCD = true;
 
-						CollisionTest(result, ra->col, ra->State().b2w,
-										cb->col, cb->b2w, backupVector);
-						
-						if (ra->sensors)
-						{
-							CollisionTestSensor(&ra->col.obb,
-												ra->sensors,
-												ra->State().b2w,
-												cb->col,
-												cb->b2w,
-												cb);
-						}
-					}
-				}
-			}
-			else
-			{
-				neBool doCollision = false;
-				
-				if (ra->GetConstraintHeader() && 
-					(ra->GetConstraintHeader() == rb->GetConstraintHeader()))
-				{
-					if (ra->isCollideConnected && rb->isCollideConnected)
-					{
-						if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-							rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
-	
-							doCollision = true;
-					}
-				}
-				else
-				{
-					if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-						rb->status != neRigidBody_::NE_RBSTATUS_IDLE || 
-						ra->isShifted ||
-						rb->isShifted)
-					{
-						doCollision = true;
-					}
-				}
-				if (doCollision)
-				{
-					if ((ra->isCustomCD || rb->isCustomCD))
-					{
-						if (customCDRB2RBCallback)
-						{
-							isCustomeCD = true;
+                            neCustomCDInfo cdInfo;
 
-							neCustomCDInfo cdInfo;
+                            memset(&cdInfo, 0, sizeof(cdInfo));
 
-							memset(&cdInfo, 0, sizeof(cdInfo));
+                            if (customCDRB2ABCallback((neRigidBody *) ra, (neAnimatedBody *) cb, cdInfo)) {
+                                result.penetrate = true;
+                                result.bodyA = ra;
+                                result.bodyB = cb;
+                                result.collisionFrame[2] = cdInfo.collisionNormal;
+                                result.materialIdA = cdInfo.materialIdA;
+                                result.materialIdB = cdInfo.materialIdB;
+                                result.contactA = cdInfo.worldContactPointA - ra->GetB2W().pos;
+                                result.contactB = cdInfo.worldContactPointB - cb->GetB2W().pos;
+                                result.contactAWorld = cdInfo.worldContactPointA;
+                                result.contactBWorld = cdInfo.worldContactPointB;
+                                result.contactABody = ra->GetB2W().rot.TransposeMulV3(result.contactA);
+                                result.contactBBody = cb->GetB2W().rot.TransposeMulV3(result.contactB);
+                                result.depth = cdInfo.penetrationDepth;
+                                ChooseAxis(result.collisionFrame[0], result.collisionFrame[1],
+                                           result.collisionFrame[2]);
+                            }
+                        }
+                    } else {
+                        backupVector = cb->backupVector - ra->backupVector;
 
-							if (customCDRB2RBCallback((neRigidBody*)ra, (neRigidBody*)rb, cdInfo))
-							{
-								result.penetrate = true;
-								result.bodyA = ra;
-								result.bodyB = rb;
-								result.collisionFrame[2] = cdInfo.collisionNormal;
-								result.materialIdA = cdInfo.materialIdA;
-								result.materialIdB = cdInfo.materialIdB;
-								result.contactA = cdInfo.worldContactPointA - ra->GetB2W().pos;
-								result.contactB = cdInfo.worldContactPointB - rb->GetB2W().pos;
-								result.contactAWorld = cdInfo.worldContactPointA;
-								result.contactBWorld = cdInfo.worldContactPointB;
-								result.contactABody = ra->GetB2W().rot.TransposeMulV3(result.contactA);
-								result.contactBBody = rb->GetB2W().rot.TransposeMulV3(result.contactB);
-								result.depth = cdInfo.penetrationDepth;
-								ChooseAxis(result.collisionFrame[0], result.collisionFrame[1], result.collisionFrame[2]);
-							}
-						}
-					}
-					else
-					{
-						backupVector = rb->backupVector - ra->backupVector;
+                        CollisionTest(result, ra->col, ra->State().b2w,
+                                      cb->col, cb->b2w, backupVector);
 
-						CollisionTest(result, ra->col, ra->State().b2w,
-											rb->col, rb->State().b2w, backupVector);
-						if (ra->sensors)
-						{
-							CollisionTestSensor(&ra->col.obb,
-												ra->sensors,
-												ra->State().b2w,
-												rb->col,
-												rb->State().b2w,
-												rb);
-						}
-						if (rb->sensors)
-						{
-							CollisionTestSensor(&rb->col.obb,
-												rb->sensors,
-												rb->State().b2w,
-												ra->col,
-												ra->State().b2w,
-												ra);
-						}
-					}
-				}
-			}
-		}
+                        if (ra->sensors) {
+                            CollisionTestSensor(&ra->col.obb,
+                                                ra->sensors,
+                                                ra->State().b2w,
+                                                cb->col,
+                                                cb->b2w,
+                                                cb);
+                        }
+                    }
+                }
+            } else {
+                neBool doCollision = false;
+
+                if (ra->GetConstraintHeader() &&
+                    (ra->GetConstraintHeader() == rb->GetConstraintHeader())) {
+                    if (ra->isCollideConnected && rb->isCollideConnected) {
+                        if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                            rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
+
+                            doCollision = true;
+                    }
+                } else {
+                    if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                        rb->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                        ra->isShifted ||
+                        rb->isShifted) {
+                        doCollision = true;
+                    }
+                }
+                if (doCollision) {
+                    if ((ra->isCustomCD || rb->isCustomCD)) {
+                        if (customCDRB2RBCallback) {
+                            isCustomeCD = true;
+
+                            neCustomCDInfo cdInfo;
+
+                            memset(&cdInfo, 0, sizeof(cdInfo));
+
+                            if (customCDRB2RBCallback((neRigidBody *) ra, (neRigidBody *) rb, cdInfo)) {
+                                result.penetrate = true;
+                                result.bodyA = ra;
+                                result.bodyB = rb;
+                                result.collisionFrame[2] = cdInfo.collisionNormal;
+                                result.materialIdA = cdInfo.materialIdA;
+                                result.materialIdB = cdInfo.materialIdB;
+                                result.contactA = cdInfo.worldContactPointA - ra->GetB2W().pos;
+                                result.contactB = cdInfo.worldContactPointB - rb->GetB2W().pos;
+                                result.contactAWorld = cdInfo.worldContactPointA;
+                                result.contactBWorld = cdInfo.worldContactPointB;
+                                result.contactABody = ra->GetB2W().rot.TransposeMulV3(result.contactA);
+                                result.contactBBody = rb->GetB2W().rot.TransposeMulV3(result.contactB);
+                                result.depth = cdInfo.penetrationDepth;
+                                ChooseAxis(result.collisionFrame[0], result.collisionFrame[1],
+                                           result.collisionFrame[2]);
+                            }
+                        }
+                    } else {
+                        backupVector = rb->backupVector - ra->backupVector;
+
+                        CollisionTest(result, ra->col, ra->State().b2w,
+                                      rb->col, rb->State().b2w, backupVector);
+                        if (ra->sensors) {
+                            CollisionTestSensor(&ra->col.obb,
+                                                ra->sensors,
+                                                ra->State().b2w,
+                                                rb->col,
+                                                rb->State().b2w,
+                                                rb);
+                        }
+                        if (rb->sensors) {
+                            CollisionTestSensor(&rb->col.obb,
+                                                rb->sensors,
+                                                rb->State().b2w,
+                                                ra->col,
+                                                ra->State().b2w,
+                                                ra);
+                        }
+                    }
+                }
+            }
+        }
 //		if (perfReport)
 //			perf.UpdateCD();
 
-		if (result.penetrate)
-		{
-			neBool bothAnimated = false;
+        if (result.penetrate) {
+            neBool bothAnimated = false;
 
-			if (ra && ra->status == neRigidBody_::NE_RBSTATUS_ANIMATED &&
-				rb && rb->status == neRigidBody_::NE_RBSTATUS_ANIMATED)
-			{
-				bothAnimated = true;
-			}
-			neBool response = true;
+            if (ra && ra->status == neRigidBody_::NE_RBSTATUS_ANIMATED &&
+                rb && rb->status == neRigidBody_::NE_RBSTATUS_ANIMATED) {
+                bothAnimated = true;
+            }
+            neBool response = true;
 
-			if (!result.collisionFrame[2].IsFinite() || result.collisionFrame[2].IsConsiderZero())
-			{
-				response = false;
-			}
+            if (!result.collisionFrame[2].IsFinite() || result.collisionFrame[2].IsConsiderZero()) {
+                response = false;
+            }
 
-			result.impulseType = IMPULSE_NORMAL;
+            result.impulseType = IMPULSE_NORMAL;
 
-			if ((collisionflag & neCollisionTable::RESPONSE_IMPULSE) && 
-				response &&
-				(!bothAnimated))
-			{
-				result.bodyA = bodyA;
-				result.bodyB = bodyB;
-				RegisterPenetration(bodyA, bodyB, result);
-			}
-			if ((collisionflag & neCollisionTable::RESPONSE_CALLBACK) && collisionCallback && !isCustomeCD)
-			{
-				static neCollisionInfo cinfo;
+            if ((collisionflag & neCollisionTable::RESPONSE_IMPULSE) &&
+                response &&
+                (!bothAnimated)) {
+                result.bodyA = bodyA;
+                result.bodyB = bodyB;
+                RegisterPenetration(bodyA, bodyB, result);
+            }
+            if ((collisionflag & neCollisionTable::RESPONSE_CALLBACK) && collisionCallback && !isCustomeCD) {
+                static neCollisionInfo cinfo;
 
-				cinfo.bodyA = (neByte *)bodyA;
-				cinfo.bodyB = (neByte *)bodyB;
-				cinfo.typeA = bodyA->btype == NE_OBJECT_COLISION? NE_ANIMATED_BODY : NE_RIGID_BODY;
-				cinfo.typeB = bodyB->btype == NE_OBJECT_COLISION? NE_ANIMATED_BODY : NE_RIGID_BODY;
-				cinfo.materialIdA = result.materialIdA;
-				cinfo.materialIdB = result.materialIdB;
-				cinfo.geometryA = (neGeometry*)result.convexA;
-				cinfo.geometryB = (neGeometry*)result.convexB;
-				cinfo.bodyContactPointA = result.contactABody;
-				cinfo.bodyContactPointB = result.contactBBody;
-				cinfo.worldContactPointA = result.contactAWorld;
-				cinfo.worldContactPointB = result.contactBWorld;
-				cinfo.relativeVelocity = result.initRelVelWorld;
-				cinfo.collisionNormal = result.collisionFrame[2];
+                cinfo.bodyA = (neByte *) bodyA;
+                cinfo.bodyB = (neByte *) bodyB;
+                cinfo.typeA = bodyA->btype == NE_OBJECT_COLISION ? NE_ANIMATED_BODY : NE_RIGID_BODY;
+                cinfo.typeB = bodyB->btype == NE_OBJECT_COLISION ? NE_ANIMATED_BODY : NE_RIGID_BODY;
+                cinfo.materialIdA = result.materialIdA;
+                cinfo.materialIdB = result.materialIdB;
+                cinfo.geometryA = (neGeometry *) result.convexA;
+                cinfo.geometryB = (neGeometry *) result.convexB;
+                cinfo.bodyContactPointA = result.contactABody;
+                cinfo.bodyContactPointB = result.contactBBody;
+                cinfo.worldContactPointA = result.contactAWorld;
+                cinfo.worldContactPointB = result.contactBWorld;
+                cinfo.relativeVelocity = result.initRelVelWorld;
+                cinfo.collisionNormal = result.collisionFrame[2];
 
-				collisionCallback(cinfo);
-			}
-		}
-	}
+                collisionCallback(cinfo);
+            }
+        }
+    }
 }
-	//OutputDebugString("terrain test\n");/////////////////////////////////
+//OutputDebugString("terrain test\n");/////////////////////////////////
 
-void neFixedTimeStepSimulator::CheckTerrainCollision()
-{
-	neCollisionResult result;
+void neFixedTimeStepSimulator::CheckTerrainCollision() {
+    neCollisionResult result;
 
-	neTreeNode & rootNode = region.GetTriangleTree().GetRoot();
+    neTreeNode &rootNode = region.GetTriangleTree().GetRoot();
 
-	neT3 identity;
+    neT3 identity;
 
-	identity.SetIdentity();
+    identity.SetIdentity();
 
-	neCollision & triCol = fakeCollisionBody.col;
+    neCollision &triCol = fakeCollisionBody.col;
 
-	triCol.convexCount = 1;
+    triCol.convexCount = 1;
 
-	triCol.obb.SetTransform(identity);
+    triCol.obb.SetTransform(identity);
 
-	neV3 backupVector;
+    neV3 backupVector;
 
-	for (s32 mop = 0; mop < 2; mop++)
-	{
-		neList<neRigidBody_> * activeList = &activeRB; 
-		
-		if (mop == 1)
-		{
-			activeList = &activeRP;
+    for (s32 mop = 0; mop < 2; mop++) {
+        neList<neRigidBody_> *activeList = &activeRB;
 
-		}
-		neRigidBody_ * rb = activeList->GetHead();
+        if (mop == 1) {
+            activeList = &activeRP;
 
-		//for (riter = rbHeap.BeginUsed(); riter.Valid(); riter++)
-		while (rb)
-		{
-			neRigidBody_ * bodyA = (rb);
+        }
+        neRigidBody_ *rb = activeList->GetHead();
 
-			if (bodyA->status == neRigidBody_::NE_RBSTATUS_IDLE &&
-				!bodyA->isShifted)
-			{
-				rb = activeList->GetNext(rb);
+        //for (riter = rbHeap.BeginUsed(); riter.Valid(); riter++)
+        while (rb) {
+            neRigidBody_ *bodyA = (rb);
 
-				continue;
-			}
-			backupVector = -rb->backupVector;
-			
-			treeNodes.Clear();
+            if (bodyA->status == neRigidBody_::NE_RBSTATUS_IDLE &&
+                !bodyA->isShifted) {
+                rb = activeList->GetNext(rb);
 
-			triangleIndex.Clear();
-			
-			if (!terrainQueryCallback)
-			{
-				rootNode.GetCandidateNodes(treeNodes, bodyA->minBound, bodyA->maxBound, 0);
+                continue;
+            }
+            backupVector = -rb->backupVector;
 
-				if (treeNodes.GetUsedCount() == 0)
-				{
-					rb = activeList->GetNext(rb);
-					
-					continue;
-				}
+            treeNodes.Clear();
 
-				//printf("node count %d\n", treeNodes.GetUsedCount());
-				
-				for (s32 i = 0; i < treeNodes.GetUsedCount(); i++)
-				{
-					neTreeNode * t = treeNodes[i];
+            triangleIndex.Clear();
 
-					for (s32 j = 0; j < t->triangleIndices.GetUsedCount(); j++)
-					{
-						s32 k;
+            if (!terrainQueryCallback) {
+                rootNode.GetCandidateNodes(treeNodes, bodyA->minBound, bodyA->maxBound, 0);
 
-						for (k = 0; k < triangleIndex.GetUsedCount(); k++)
-						{
-							if (t->triangleIndices[j] == triangleIndex[k])
-								break;
-						}
-						if (k == triangleIndex.GetUsedCount())
-						{
-							s32 * triIndex = triangleIndex.Alloc();
+                if (treeNodes.GetUsedCount() == 0) {
+                    rb = activeList->GetNext(rb);
 
-							//ASSERT(triIndex);
-			
-							*triIndex = t->triangleIndices[j];
-						}
-					}
-				}
+                    continue;
+                }
+
+                //printf("node count %d\n", treeNodes.GetUsedCount());
+
+                for (s32 i = 0; i < treeNodes.GetUsedCount(); i++) {
+                    neTreeNode *t = treeNodes[i];
+
+                    for (s32 j = 0; j < t->triangleIndices.GetUsedCount(); j++) {
+                        s32 k;
+
+                        for (k = 0; k < triangleIndex.GetUsedCount(); k++) {
+                            if (t->triangleIndices[j] == triangleIndex[k])
+                                break;
+                        }
+                        if (k == triangleIndex.GetUsedCount()) {
+                            s32 *triIndex = triangleIndex.Alloc();
+
+                            //ASSERT(triIndex);
+
+                            *triIndex = t->triangleIndices[j];
+                        }
+                    }
+                }
 
 #ifdef _WIN32
-if (perfReport)
-	perf->UpdateTerrainCulling();
+                if (perfReport)
+                    perf->UpdateTerrainCulling();
 #endif
-				triCol.obb.SetTerrain(triangleIndex, region.terrainTree.triangles, region.terrainTree.vertices);
+                triCol.obb.SetTerrain(triangleIndex, region.terrainTree.triangles, region.terrainTree.vertices);
 
-				triCol.convex = &triCol.obb;
+                triCol.convex = &triCol.obb;
 
-				CollisionTest(result, bodyA->col, ((neRigidBody_*)bodyA)->State().b2w,
-								triCol, identity, backupVector);
+                CollisionTest(result, bodyA->col, ((neRigidBody_ *) bodyA)->State().b2w,
+                              triCol, identity, backupVector);
 
-				if (bodyA->sensors)
-				{
-					CollisionTestSensor(&bodyA->col.obb,
-										bodyA->sensors,
-										bodyA->State().b2w,
-										triCol,
-										identity,
-										NULL);
-				}
+                if (bodyA->sensors) {
+                    CollisionTestSensor(&bodyA->col.obb,
+                                        bodyA->sensors,
+                                        bodyA->State().b2w,
+                                        triCol,
+                                        identity,
+                                        NULL);
+                }
 
-			}
-			else
-			{
-				neTriangle * tris;
-				s32 triCount;
-				s32 * candidates;
-				s32 candidateCount;
-				neV3 *verts;
+            } else {
+                neTriangle *tris;
+                s32 triCount;
+                s32 *candidates;
+                s32 candidateCount;
+                neV3 * verts;
 
-				static neSimpleArray<s32> _candArray;
-				static neArray<neTriangle_> _triArray;
-				
-				terrainQueryCallback(bodyA->minBound, bodyA->maxBound, &candidates, &tris, &verts, &candidateCount, &triCount, (neRigidBody*)bodyA);
+                static neSimpleArray<s32> _candArray;
+                static neArray<neTriangle_> _triArray;
+
+                terrainQueryCallback(bodyA->minBound, bodyA->maxBound, &candidates, &tris, &verts, &candidateCount,
+                                     &triCount, (neRigidBody *) bodyA);
 
 #ifdef _WIN32
-if (perfReport)
-	perf->UpdateTerrainCulling();
+                if (perfReport)
+                    perf->UpdateTerrainCulling();
 #endif
 
-				_candArray.MakeFromPointer(candidates, candidateCount);
+                _candArray.MakeFromPointer(candidates, candidateCount);
 
-				_triArray.MakeFromPointer((neTriangle_*)tris, triCount);
+                _triArray.MakeFromPointer((neTriangle_ *) tris, triCount);
 
-				triCol.obb.SetTerrain(_candArray, _triArray, verts);
+                triCol.obb.SetTerrain(_candArray, _triArray, verts);
 
-				triCol.convex = &triCol.obb;
+                triCol.convex = &triCol.obb;
 
-				CollisionTest(result, bodyA->col, ((neRigidBody_*)bodyA)->State().b2w,
-								triCol, identity, backupVector);
+                CollisionTest(result, bodyA->col, ((neRigidBody_ *) bodyA)->State().b2w,
+                              triCol, identity, backupVector);
 
-				if (bodyA->sensors)
-				{
-					CollisionTestSensor(&bodyA->col.obb,
-										bodyA->sensors,
-										bodyA->State().b2w,
-										triCol,
-										identity,
-										NULL);
-				}
-				_candArray.MakeFromPointer(NULL, 0);
-				_triArray.MakeFromPointer(NULL, 0);
-			}
-			if (result.penetrate)
-			{
-				result.impulseType = IMPULSE_NORMAL;
+                if (bodyA->sensors) {
+                    CollisionTestSensor(&bodyA->col.obb,
+                                        bodyA->sensors,
+                                        bodyA->State().b2w,
+                                        triCol,
+                                        identity,
+                                        NULL);
+                }
+                _candArray.MakeFromPointer(NULL, 0);
+                _triArray.MakeFromPointer(NULL, 0);
+            }
+            if (result.penetrate) {
+                result.impulseType = IMPULSE_NORMAL;
 
-				neCollisionTable::neReponseBitFlag collisionflag = colTable.Get(bodyA->cid, -1); //-1 is terrain
+                neCollisionTable::neReponseBitFlag collisionflag = colTable.Get(bodyA->cid, -1); //-1 is terrain
 
-				if ((collisionflag & neCollisionTable::RESPONSE_IMPULSE) &&
-					bodyA->status != neRigidBody_::NE_RBSTATUS_ANIMATED)
-				{
-					result.bodyA = bodyA;
-					result.bodyB = &fakeCollisionBody;
+                if ((collisionflag & neCollisionTable::RESPONSE_IMPULSE) &&
+                    bodyA->status != neRigidBody_::NE_RBSTATUS_ANIMATED) {
+                    result.bodyA = bodyA;
+                    result.bodyB = &fakeCollisionBody;
 
-					RegisterPenetration(bodyA, &fakeCollisionBody, result);
-				}
-				if ((collisionflag & neCollisionTable::RESPONSE_CALLBACK) && collisionCallback)
-				{
-					static neCollisionInfo cinfo;
+                    RegisterPenetration(bodyA, &fakeCollisionBody, result);
+                }
+                if ((collisionflag & neCollisionTable::RESPONSE_CALLBACK) && collisionCallback) {
+                    static neCollisionInfo cinfo;
 
-					cinfo.bodyA = (neByte *)bodyA;
-					cinfo.bodyB = (neByte *)result.convexB;
-					cinfo.typeA = NE_RIGID_BODY;
-					cinfo.typeB = NE_TERRAIN;
-					cinfo.materialIdA = result.materialIdA;
-					cinfo.materialIdB = result.materialIdB;
-					cinfo.geometryA = (neGeometry*)result.convexA;
-					cinfo.geometryB = NULL;
-					cinfo.bodyContactPointA = result.contactABody;
-					cinfo.bodyContactPointB = result.contactBBody;
-					cinfo.worldContactPointA = result.contactAWorld;
-					cinfo.worldContactPointB = result.contactBWorld;
-					cinfo.relativeVelocity = result.initRelVelWorld;
-					cinfo.collisionNormal = result.collisionFrame[2];
+                    cinfo.bodyA = (neByte *) bodyA;
+                    cinfo.bodyB = (neByte *) result.convexB;
+                    cinfo.typeA = NE_RIGID_BODY;
+                    cinfo.typeB = NE_TERRAIN;
+                    cinfo.materialIdA = result.materialIdA;
+                    cinfo.materialIdB = result.materialIdB;
+                    cinfo.geometryA = (neGeometry *) result.convexA;
+                    cinfo.geometryB = NULL;
+                    cinfo.bodyContactPointA = result.contactABody;
+                    cinfo.bodyContactPointB = result.contactBBody;
+                    cinfo.worldContactPointA = result.contactAWorld;
+                    cinfo.worldContactPointB = result.contactBWorld;
+                    cinfo.relativeVelocity = result.initRelVelWorld;
+                    cinfo.collisionNormal = result.collisionFrame[2];
 
-					collisionCallback(cinfo);
-				}
-			}
+                    collisionCallback(cinfo);
+                }
+            }
 
-			rb = activeList->GetNext(rb);
-		}
-	}//mop
+            rb = activeList->GetNext(rb);
+        }
+    }//mop
 
-	for (s32 mop2 = 0; mop2 < 2; mop2++)
-	{
-		neList<neRigidBody_> * activeList = &activeRB; 
-		
-		if (mop2 == 1)
-		{
-			activeList = &activeRP;
+    for (s32 mop2 = 0; mop2 < 2; mop2++) {
+        neList<neRigidBody_> *activeList = &activeRB;
 
-		}
-		neRigidBody_ * rb = activeList->GetHead();
+        if (mop2 == 1) {
+            activeList = &activeRP;
 
-		while (rb)
-		{
-			if (rb->isShifted2)
-			{
-				rb->isShifted = true;
-				rb->isShifted2 = false;
-			}
-			else
-			{
-				rb->isShifted = false;
-				rb->isShifted2 = false;
-			}
-			rb = activeList->GetNext(rb);
-		}
-	}
+        }
+        neRigidBody_ *rb = activeList->GetHead();
+
+        while (rb) {
+            if (rb->isShifted2) {
+                rb->isShifted = true;
+                rb->isShifted2 = false;
+            } else {
+                rb->isShifted = false;
+                rb->isShifted2 = false;
+            }
+            rb = activeList->GetNext(rb);
+        }
+    }
 }
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SolveConstrain
 *
-****************************************************************************/ 
+****************************************************************************/
 /*
 void RecalcRelative(neCollisionResult * cresult)
 {
@@ -1656,700 +1501,621 @@ void neFixedTimeStepSimulator::SolveConstrain()
 *
 *	neFixedTimeStepSimulator::RegisterPenetration
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase * bodyA, neRigidBodyBase * bodyB, neCollisionResult & cresult)
-{
-	neRigidBody_ * ba = bodyA->AsRigidBody();
+void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB,
+                                                   neCollisionResult &cresult) {
+    neRigidBody_ *ba = bodyA->AsRigidBody();
 
-	neRigidBody_ * bb = bodyB->AsRigidBody();
+    neRigidBody_ *bb = bodyB->AsRigidBody();
 
-	neRestRecord rc;
+    neRestRecord rc;
 
-	neBool isConnected = false;
+    neBool isConnected = false;
 
-	if (ba)
-	{
-		isConnected = ba->IsConstraintNeighbour(bodyB);
-	}
-	else
-	{
-		if (bb)
-		{
-			isConnected = bb->IsConstraintNeighbour(bodyA);
-		}
-	}
-	if (isConnected && !(bodyA->isCollideDirectlyConnected && bodyB->isCollideDirectlyConnected))
-	{
-		//HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
-		
-		return;
-	}
-	if (ba && bb)
-	{
-		if (bb->IsParticle() )
-		{
-			//ASSERT(!ba->IsParticle());
+    if (ba) {
+        isConnected = ba->IsConstraintNeighbour(bodyB);
+    } else {
+        if (bb) {
+            isConnected = bb->IsConstraintNeighbour(bodyA);
+        }
+    }
+    if (isConnected && !(bodyA->isCollideDirectlyConnected && bodyB->isCollideDirectlyConnected)) {
+        //HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
 
-			CollisionRigidParticle(ba, bb, cresult);
+        return;
+    }
+    if (ba && bb) {
+        if (bb->IsParticle()) {
+            //ASSERT(!ba->IsParticle());
 
-			return;
-		}
-	}
+            CollisionRigidParticle(ba, bb, cresult);
 
-	rc.depth = cresult.depth;
+            return;
+        }
+    }
 
-	f32 alignWithGravity = cresult.collisionFrame[2].Dot(gravityVector);
+    rc.depth = cresult.depth;
 
-	//f32 angle = 0.3f;
-	f32 angle = 0.3f;
+    f32 alignWithGravity = cresult.collisionFrame[2].Dot(gravityVector);
 
-	if (1)//neAbs(alignWithGravity) > angle)
-	{
-		neV3 velA = bodyA->VelocityAtPoint(cresult.contactA);
+    //f32 angle = 0.3f;
+    f32 angle = 0.3f;
 
-		neV3 velB = bodyB->VelocityAtPoint(cresult.contactB);
+    if (1)//neAbs(alignWithGravity) > angle)
+    {
+        neV3 velA = bodyA->VelocityAtPoint(cresult.contactA);
 
-		cresult.initRelVelWorld = velA - velB;
+        neV3 velB = bodyB->VelocityAtPoint(cresult.contactB);
 
-		if (alignWithGravity < 0.0f) //ba on top
-		{
-			if (ba)
-			{
-				cresult.PrepareForSolver();
+        cresult.initRelVelWorld = velA - velB;
 
-				HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
+        if (alignWithGravity < 0.0f) //ba on top
+        {
+            if (ba) {
+                cresult.PrepareForSolver();
 
-				neV3 normalBody;
+                HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
 
-				if (bodyB)
-					normalBody = bodyB->GetB2W().rot.TransposeMulV3(cresult.collisionFrame[2]);
-				else
-					normalBody = cresult.collisionFrame[2];
+                neV3 normalBody;
 
-				rc.SetTmp(bodyB, cresult.contactABody, cresult.contactBBody, normalBody, cresult.materialIdA, cresult.materialIdB);
+                if (bodyB)
+                    normalBody = bodyB->GetB2W().rot.TransposeMulV3(cresult.collisionFrame[2]);
+                else
+                    normalBody = cresult.collisionFrame[2];
 
-				ba->AddStackInfo(rc);
-			}
-			else if (bb)
-			{
-				SimpleShift(cresult);
+                rc.SetTmp(bodyB, cresult.contactABody, cresult.contactBBody, normalBody, cresult.materialIdA,
+                          cresult.materialIdB);
 
-				cresult.PrepareForSolver();
+                ba->AddStackInfo(rc);
+            } else if (bb) {
+                SimpleShift(cresult);
 
-				HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
-			}
-		}
-		else
-		{
-			if (bb)
-			{
-				cresult.PrepareForSolver();
+                cresult.PrepareForSolver();
 
-				HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
+                HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
+            }
+        } else {
+            if (bb) {
+                cresult.PrepareForSolver();
 
-				//if (cresult.relativeSpeed < restingSpeed)
-				{
-					neV3 normalBody;
+                HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
 
-					if (bodyA)
-						normalBody = bodyA->GetB2W().rot.TransposeMulV3(cresult.collisionFrame[2] * -1.0f);
-					else
-						normalBody = cresult.collisionFrame[2] * -1.0f;
+                //if (cresult.relativeSpeed < restingSpeed)
+                {
+                    neV3 normalBody;
 
-					rc.SetTmp(bodyA, cresult.contactBBody, cresult.contactABody, normalBody, cresult.materialIdB, cresult.materialIdA);
+                    if (bodyA)
+                        normalBody = bodyA->GetB2W().rot.TransposeMulV3(cresult.collisionFrame[2] * -1.0f);
+                    else
+                        normalBody = cresult.collisionFrame[2] * -1.0f;
 
-					bb->AddStackInfo(rc);
-				}
-			}
-			else if (ba)
-			{
-				SimpleShift(cresult);
+                    rc.SetTmp(bodyA, cresult.contactBBody, cresult.contactABody, normalBody, cresult.materialIdB,
+                              cresult.materialIdA);
 
-				cresult.PrepareForSolver();
+                    bb->AddStackInfo(rc);
+                }
+            } else if (ba) {
+                SimpleShift(cresult);
 
-				HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
-			}
-		}
-	}
-	else // not resting collision, resolve now
-	{
-		if (ba && bb)
-		{
-			if (!ba->isShifted && ba->status == neRigidBody_::NE_RBSTATUS_IDLE)
-			{
-				f32 e = ba->Derive().linearVel.Dot(ba->Derive().linearVel);
+                cresult.PrepareForSolver();
 
-				e += ba->Derive().angularVel.Dot(ba->Derive().angularVel);
+                HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
+            }
+        }
+    } else // not resting collision, resolve now
+    {
+        if (ba && bb) {
+            if (!ba->isShifted && ba->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+                f32 e = ba->Derive().linearVel.Dot(ba->Derive().linearVel);
 
-				if (e > highEnergy)
-				{
-					SimpleShift(cresult);
-				}
-				else
-				{
-					bb->SetPos( bb->GetPos() - (cresult.collisionFrame[2] * cresult.depth));
+                e += ba->Derive().angularVel.Dot(ba->Derive().angularVel);
 
-					bb->isShifted2 = true;
-				}
-			}
-			else if (!bb->isShifted && bb->status == neRigidBody_::NE_RBSTATUS_IDLE)
-			{
-				f32 e = bb->Derive().linearVel.Dot(bb->Derive().linearVel);
+                if (e > highEnergy) {
+                    SimpleShift(cresult);
+                } else {
+                    bb->SetPos(bb->GetPos() - (cresult.collisionFrame[2] * cresult.depth));
 
-				e += bb->Derive().angularVel.Dot(bb->Derive().angularVel);
+                    bb->isShifted2 = true;
+                }
+            } else if (!bb->isShifted && bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+                f32 e = bb->Derive().linearVel.Dot(bb->Derive().linearVel);
 
-				if (e > highEnergy)
-				{
-					SimpleShift(cresult);
-				}
-				else
-				{
-					ba->SetPos( ba->GetPos() + (cresult.collisionFrame[2] * cresult.depth));
+                e += bb->Derive().angularVel.Dot(bb->Derive().angularVel);
 
-					ba->isShifted2 = true;
-				}
-			}
-			else
-			{
-				SimpleShift(cresult);
-			}
-		}
-		else
-		{
-			SimpleShift(cresult);
-		}
-		cresult.PrepareForSolver();
+                if (e > highEnergy) {
+                    SimpleShift(cresult);
+                } else {
+                    ba->SetPos(ba->GetPos() + (cresult.collisionFrame[2] * cresult.depth));
 
-		HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
-	}
+                    ba->isShifted2 = true;
+                }
+            } else {
+                SimpleShift(cresult);
+            }
+        } else {
+            SimpleShift(cresult);
+        }
+        cresult.PrepareForSolver();
+
+        HandleCollision(bodyA, bodyB, cresult, IMPULSE_NORMAL, 1.0f);
+    }
 }
 
-void neFixedTimeStepSimulator::CollisionRigidParticle(neRigidBody_ * ba, neRigidBody_ * bb, neCollisionResult & cresult)
-{
-	cresult.PrepareForSolver();
+void neFixedTimeStepSimulator::CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult) {
+    cresult.PrepareForSolver();
 
-	HandleCollision(ba, bb, cresult, IMPULSE_NORMAL, 1.0f);
+    HandleCollision(ba, bb, cresult, IMPULSE_NORMAL, 1.0f);
 
-	neV3 shift; 
-	
-	shift = cresult.collisionFrame[2] * cresult.depth;
+    neV3 shift;
 
-	bb->SetPos( bb->GetPos() - shift);
+    shift = cresult.collisionFrame[2] * cresult.depth;
+
+    bb->SetPos(bb->GetPos() - shift);
 }
 
-void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult & cresult)
-{
-	neV3 shift; shift = cresult.collisionFrame[2] * cresult.depth;
+void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
+    neV3 shift;
+    shift = cresult.collisionFrame[2] * cresult.depth;
 
-	f32 aratio, bratio;
+    f32 aratio, bratio;
 
-	neRigidBodyBase * bodyA = cresult.bodyA;
+    neRigidBodyBase *bodyA = cresult.bodyA;
 
-	neRigidBodyBase * bodyB = cresult.bodyB;
+    neRigidBodyBase *bodyB = cresult.bodyB;
 
-	neRigidBody_ * ba = bodyA->AsRigidBody();
+    neRigidBody_ *ba = bodyA->AsRigidBody();
 
-	neRigidBody_ * bb = bodyB->AsRigidBody();
+    neRigidBody_ *bb = bodyB->AsRigidBody();
 
-	if (!ba)
-	{
-		aratio = 0.0f;
-		bratio = 1.0f;
+    if (!ba) {
+        aratio = 0.0f;
+        bratio = 1.0f;
 
-		if (bb)
-			bb->isShifted2 = true;
-	}
-	else if (!bb)
-	{
-		aratio = 1.0f;
-		bratio = 0.0f;
+        if (bb)
+            bb->isShifted2 = true;
+    } else if (!bb) {
+        aratio = 1.0f;
+        bratio = 0.0f;
 
-		if (ba)
-			ba->isShifted2 = true;
-	}
-	else
-	{
-		ba->isShifted2 = true;
-		bb->isShifted2 = true;
+        if (ba)
+            ba->isShifted2 = true;
+    } else {
+        ba->isShifted2 = true;
+        bb->isShifted2 = true;
 
-		f32 totalMass = ba->mass + bb->mass;
+        f32 totalMass = ba->mass + bb->mass;
 
-		aratio = bb->mass / totalMass;
+        aratio = bb->mass / totalMass;
 
-		bratio = ba->mass / totalMass;
-	}
+        bratio = ba->mass / totalMass;
+    }
 
-	if (ba)
-	{
-		ba->SetPos( ba->GetPos() + (shift * aratio) * 1.0f);
-	}
-	if (bb)
-	{
-		bb->SetPos( bb->GetPos() - (shift * bratio) * 1.0f);
-	}
+    if (ba) {
+        ba->SetPos(ba->GetPos() + (shift * aratio) * 1.0f);
+    }
+    if (bb) {
+        bb->SetPos(bb->GetPos() - (shift * bratio) * 1.0f);
+    }
 }
 
 
-neBool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase * originalBody, TConvex * convex, const neV3 & contactPoint, neV3 & impulse)
-{
-	f32 impulseMag;
+neBool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
+                                               neV3 &impulse) {
+    f32 impulseMag;
 
-	neV3 breakPlane;
+    neV3 breakPlane;
 
-	neM3 rot = originalBody->GetB2W().rot * convex->c2p.rot;
+    neM3 rot = originalBody->GetB2W().rot * convex->c2p.rot;
 
-	breakPlane = rot * convex->breakInfo.breakPlane;
+    breakPlane = rot * convex->breakInfo.breakPlane;
 
-	neV3 breakImpulse = impulse;
+    neV3 breakImpulse = impulse;
 
-	breakImpulse.RemoveComponent(breakPlane);
+    breakImpulse.RemoveComponent(breakPlane);
 
-	impulseMag = breakImpulse.Length();
+    impulseMag = breakImpulse.Length();
 
-	if (impulseMag < convex->breakInfo.breakMagnitude)
-	{
-		return false;
-	}
+    if (impulseMag < convex->breakInfo.breakMagnitude) {
+        return false;
+    }
 
-	f32 dot = impulse.Dot(breakPlane);
+    f32 dot = impulse.Dot(breakPlane);
 
-	impulse = breakPlane * dot;
+    impulse = breakPlane * dot;
 
-	breakImpulse *= convex->breakInfo.breakMagnitude / impulseMag;
+    breakImpulse *= convex->breakInfo.breakMagnitude / impulseMag;
 
-	neRigidBody_* newBody = NULL;
+    neRigidBody_ *newBody = NULL;
 
-	neV3 newImpulse, newContactPoint;
+    neV3 newImpulse, newContactPoint;
 
-	newImpulse = breakImpulse * convex->breakInfo.breakAbsorb;
+    newImpulse = breakImpulse * convex->breakInfo.breakAbsorb;
 
-	breakImpulse *= (1.0f - convex->breakInfo.breakAbsorb);
+    breakImpulse *= (1.0f - convex->breakInfo.breakAbsorb);
 
-	impulse += breakImpulse;
+    impulse += breakImpulse;
 
-	neBodyType originalBodyType;
+    neBodyType originalBodyType;
 
-	if (originalBody->AsRigidBody())
-	{
-		originalBodyType = NE_RIGID_BODY;
-	}
-	else
-	{
-		originalBodyType = NE_ANIMATED_BODY;
-	}
+    if (originalBody->AsRigidBody()) {
+        originalBodyType = NE_RIGID_BODY;
+    } else {
+        originalBodyType = NE_ANIMATED_BODY;
+    }
 
-	switch (convex->breakInfo.flag)
-	{
-	case neGeometry::NE_BREAK_NORMAL:
-	case neGeometry::NE_BREAK_NORMAL_PARTICLE:
+    switch (convex->breakInfo.flag) {
+        case neGeometry::NE_BREAK_NORMAL:
+        case neGeometry::NE_BREAK_NORMAL_PARTICLE:
 
-		newBody = CreateRigidBodyFromConvex(convex, originalBody);
+            newBody = CreateRigidBodyFromConvex(convex, originalBody);
 
-		newContactPoint = contactPoint - newBody->GetPos();
+            newContactPoint = contactPoint - newBody->GetPos();
 
-		newBody->ApplyCollisionImpulse(newImpulse, newContactPoint, IMPULSE_NORMAL);
+            newBody->ApplyCollisionImpulse(newImpulse, newContactPoint, IMPULSE_NORMAL);
 
-		break;
-	case neGeometry::NE_BREAK_ALL:
-	case neGeometry::NE_BREAK_ALL_PARTICLE:
+            break;
+        case neGeometry::NE_BREAK_ALL:
+        case neGeometry::NE_BREAK_ALL_PARTICLE:
 
-		break;
-	case neGeometry::NE_BREAK_NEIGHBOUR:
-	case neGeometry::NE_BREAK_NEIGHBOUR_PARTICLE:
+            break;
+        case neGeometry::NE_BREAK_NEIGHBOUR:
+        case neGeometry::NE_BREAK_NEIGHBOUR_PARTICLE:
 
-		break;
-	}
-	if (originalBodyType == NE_ANIMATED_BODY)
-	{
-		impulse = newImpulse;
-	}
-	if (newBody)
-	{
-		breakageCallback((neByte *)originalBody, originalBodyType, (neGeometry *)convex, (neRigidBody*)newBody);
-	
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+            break;
+    }
+    if (originalBodyType == NE_ANIMATED_BODY) {
+        impulse = newImpulse;
+    }
+    if (newBody) {
+        breakageCallback((neByte *) originalBody, originalBodyType, (neGeometry *) convex, (neRigidBody *) newBody);
+
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
-void neFixedTimeStepSimulator::ResetStackHeaderFlag()
-{
-	neStackHeaderItem * hitem = (neStackHeaderItem *)(*stackHeaderHeap.BeginUsed());
+void neFixedTimeStepSimulator::ResetStackHeaderFlag() {
+    neStackHeaderItem *hitem = (neStackHeaderItem *) (*stackHeaderHeap.BeginUsed());
 
-	while (hitem)
-	{
-		neStackHeader * sheader = (neStackHeader *) hitem;
+    while (hitem) {
+        neStackHeader *sheader = (neStackHeader *) hitem;
 
-		sheader->dynamicSolved = false;
+        sheader->dynamicSolved = false;
 
-		hitem = hitem->next;
-	}
+        hitem = hitem->next;
+    }
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::SetTerrainMesh
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::SetTerrainMesh(neTriangleMesh * tris)
-{
-	region.MakeTerrain(tris);
+void neFixedTimeStepSimulator::SetTerrainMesh(neTriangleMesh *tris) {
+    region.MakeTerrain(tris);
 }
 
-void neFixedTimeStepSimulator::FreeTerrainMesh()
-{
-	region.FreeTerrain();
+void neFixedTimeStepSimulator::FreeTerrainMesh() {
+    region.FreeTerrain();
 }
 
-neStackHeader * neFixedTimeStepSimulator::NewStackHeader(neStackInfo * sinfo)
-{
-	neStackHeader * n = stackHeaderHeap.Alloc();
+neStackHeader *neFixedTimeStepSimulator::NewStackHeader(neStackInfo *sinfo) {
+    neStackHeader *n = stackHeaderHeap.Alloc();
 
-	//ASSERT(n);
+    //ASSERT(n);
 
-	n->Null();
+    n->Null();
 
-	n->sim = this;
+    n->sim = this;
 
-	if (sinfo)
-		n->Add(sinfo);
+    if (sinfo)
+        n->Add(sinfo);
 
-	return n;
+    return n;
 }
 
-neConstraintHeader * neFixedTimeStepSimulator::NewConstraintHeader()
-{
-	neConstraintHeader * ret = constraintHeaders.Alloc();
+neConstraintHeader *neFixedTimeStepSimulator::NewConstraintHeader() {
+    neConstraintHeader *ret = constraintHeaders.Alloc();
 
-	ret->Reset();
+    ret->Reset();
 
-	return ret;
+    return ret;
 }
 
-void neFixedTimeStepSimulator::CheckStackHeader()
-{
-	neStackHeaderItem * item = (neStackHeaderItem *)(*stackHeaderHeap.BeginUsed());
+void neFixedTimeStepSimulator::CheckStackHeader() {
+    neStackHeaderItem *item = (neStackHeaderItem *) (*stackHeaderHeap.BeginUsed());
 
-	while (item)
-	{
-		neStackHeader * h = (neStackHeader *)item;
+    while (item) {
+        neStackHeader *h = (neStackHeader *) item;
 
-		//ASSERT(h->infoCount > 0);
-		//assert(h->infoCount > 0);
-		item = item->next;
-	}
+        //ASSERT(h->infoCount > 0);
+        //assert(h->infoCount > 0);
+        item = item->next;
+    }
 }
 
-void neFixedTimeStepSimulator::UpdateConstraintControllers()
-{
-	neFreeListItem<neConstraintHeader> * hitem = (neFreeListItem<neConstraintHeader> *)(*constraintHeaders.BeginUsed());
+void neFixedTimeStepSimulator::UpdateConstraintControllers() {
+    neFreeListItem<neConstraintHeader> *hitem = (neFreeListItem<neConstraintHeader> *) (*constraintHeaders.BeginUsed());
 
-	while (hitem)
-	{
-		neConstraintHeader * h = (neConstraintHeader *)hitem;
+    while (hitem) {
+        neConstraintHeader *h = (neConstraintHeader *) hitem;
 
-		hitem = hitem->next;
+        hitem = hitem->next;
 
-		neFreeListItem<_neConstraint> * citem = (neFreeListItem<_neConstraint> *) h->head;
-		
-		while (citem)
-		{
-			_neConstraint * c = (_neConstraint *)citem;	
+        neFreeListItem<_neConstraint> *citem = (neFreeListItem<_neConstraint> *) h->head;
 
-			citem = citem->next;
+        while (citem) {
+            _neConstraint *c = (_neConstraint *) citem;
 
-			if (c->enable)
-				c->UpdateController();
-		}
-	}
+            citem = citem->next;
+
+            if (c->enable)
+                c->UpdateController();
+        }
+    }
 }
 
-void neFixedTimeStepSimulator::FreeAllBodies()
-{
-	neRigidBody_ * rb = activeRB.GetHead();
+void neFixedTimeStepSimulator::FreeAllBodies() {
+    neRigidBody_ *rb = activeRB.GetHead();
 
-	while (rb)
-	{
-		rb->Free();
+    while (rb) {
+        rb->Free();
 
-		neRigidBody_ * rbNext = activeRB.GetNext(rb);
+        neRigidBody_ *rbNext = activeRB.GetNext(rb);
 
-		activeRB.Remove(rb);
+        activeRB.Remove(rb);
 
-		rigidBodyHeap.Dealloc(rb, 1);
-		
-		rb = rbNext;
-	}
-	rb = inactiveRB.GetHead();
+        rigidBodyHeap.Dealloc(rb, 1);
 
-	while (rb)
-	{
-		rb->Free();
+        rb = rbNext;
+    }
+    rb = inactiveRB.GetHead();
 
-		neRigidBody_ * rbNext = inactiveRB.GetNext(rb);
+    while (rb) {
+        rb->Free();
 
-		inactiveRB.Remove(rb);
+        neRigidBody_ *rbNext = inactiveRB.GetNext(rb);
 
-		rigidBodyHeap.Dealloc(rb, 1);
-		
-		rb = rbNext;
-	}
+        inactiveRB.Remove(rb);
 
-	//ASSERT(activeRB.count == 0);
+        rigidBodyHeap.Dealloc(rb, 1);
 
-	//ASSERT(inactiveRB.count == 0);
+        rb = rbNext;
+    }
 
-	activeRB.Reset();
+    //ASSERT(activeRB.count == 0);
 
-	inactiveRB.Reset();
+    //ASSERT(inactiveRB.count == 0);
 
-	///////////////////////////////////////////////////////////
+    activeRB.Reset();
 
-	neRigidBody_ * rp = activeRP.GetHead();
+    inactiveRB.Reset();
 
-	while (rp)
-	{
-		rp->Free();
+    ///////////////////////////////////////////////////////////
 
-		neRigidBody_ * rpNext = activeRP.GetNext(rp);
+    neRigidBody_ *rp = activeRP.GetHead();
 
-		activeRP.Remove(rp);
+    while (rp) {
+        rp->Free();
 
-		rigidParticleHeap.Dealloc(rp, 1);
-		
-		rp = rpNext;
-	}
-	rp = inactiveRP.GetHead();
+        neRigidBody_ *rpNext = activeRP.GetNext(rp);
 
-	while (rp)
-	{
-		rp->Free();
+        activeRP.Remove(rp);
 
-		neRigidBody_ * rpNext = inactiveRP.GetNext(rp);
+        rigidParticleHeap.Dealloc(rp, 1);
 
-		inactiveRP.Remove(rp);
+        rp = rpNext;
+    }
+    rp = inactiveRP.GetHead();
 
-		rigidParticleHeap.Dealloc(rp, 1);
-		
-		rp = rpNext;
-	}
+    while (rp) {
+        rp->Free();
 
-	//ASSERT(activeRP.count == 0);
+        neRigidBody_ *rpNext = inactiveRP.GetNext(rp);
 
-	//ASSERT(inactiveRP.count == 0);
+        inactiveRP.Remove(rp);
 
-	activeRP.Reset();
+        rigidParticleHeap.Dealloc(rp, 1);
 
-	inactiveRP.Reset();
+        rp = rpNext;
+    }
 
-	///////////////////////////////////////////////////////////
+    //ASSERT(activeRP.count == 0);
 
-	neCollisionBody_ * cb = activeCB.GetHead();
+    //ASSERT(inactiveRP.count == 0);
 
-	while (cb)
-	{
-		cb->Free();
+    activeRP.Reset();
 
-		neCollisionBody_ * cbNext = activeCB.GetNext(cb);
+    inactiveRP.Reset();
 
-		activeCB.Remove(cb);
+    ///////////////////////////////////////////////////////////
 
-		collisionBodyHeap.Dealloc(cb, 1);
-		
-		cb = cbNext;
-	}
+    neCollisionBody_ *cb = activeCB.GetHead();
 
-	cb = inactiveCB.GetHead();
+    while (cb) {
+        cb->Free();
 
-	while (cb)
-	{
-		cb->Free();
+        neCollisionBody_ *cbNext = activeCB.GetNext(cb);
 
-		neCollisionBody_ * cbNext = inactiveCB.GetNext(cb);
+        activeCB.Remove(cb);
 
-		inactiveCB.Remove(cb);
+        collisionBodyHeap.Dealloc(cb, 1);
 
-		collisionBodyHeap.Dealloc(cb, 1);
-		
-		cb = cbNext;
-	}
+        cb = cbNext;
+    }
 
-	//ASSERT(activeCB.count == 0);
+    cb = inactiveCB.GetHead();
 
-	//ASSERT(inactiveCB.count == 0);
+    while (cb) {
+        cb->Free();
 
-	activeCB.Reset();
+        neCollisionBody_ *cbNext = inactiveCB.GetNext(cb);
 
-	inactiveCB.Reset();
+        inactiveCB.Remove(cb);
 
-	//ASSERT(rigidBodyHeap.GetUsedCount() == 0);
+        collisionBodyHeap.Dealloc(cb, 1);
 
-	//ASSERT(collisionBodyHeap.GetUsedCount() == 0);
+        cb = cbNext;
+    }
 
-	//ASSERT(constraintHeap.GetUsedCount() == 0);
+    //ASSERT(activeCB.count == 0);
 
-	//ASSERT(geometryHeap.GetUsedCount() == 0);
+    //ASSERT(inactiveCB.count == 0);
 
-	//ASSERT(controllerHeap.GetUsedCount() == 0);
+    activeCB.Reset();
+
+    inactiveCB.Reset();
+
+    //ASSERT(rigidBodyHeap.GetUsedCount() == 0);
+
+    //ASSERT(collisionBodyHeap.GetUsedCount() == 0);
+
+    //ASSERT(constraintHeap.GetUsedCount() == 0);
+
+    //ASSERT(geometryHeap.GetUsedCount() == 0);
+
+    //ASSERT(controllerHeap.GetUsedCount() == 0);
 
 //	ASSERT(miniConstraintHeap.GetUsedCount() == 0);
 
-	//ASSERT(stackInfoHeap.GetUsedCount() == 0);
+    //ASSERT(stackInfoHeap.GetUsedCount() == 0);
 }
 
 /****************************************************************************
 *
 *	neFixedTimeStepSimulator::GetMemoryUsage
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neFixedTimeStepSimulator::GetMemoryAllocated(s32 & memoryAllocated)
-{
-	memoryAllocated = 0;
+void neFixedTimeStepSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
+    memoryAllocated = 0;
 
-	memoryAllocated += rigidBodyHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
+    memoryAllocated += rigidBodyHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
 
-	memoryAllocated += rigidParticleHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
-	
-	memoryAllocated += collisionBodyHeap.Size() * sizeof(neFreeListItem<neCollisionBody_>);
+    memoryAllocated += rigidParticleHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
 
-	memoryAllocated += treeNodes.GetTotalSize() * sizeof(neTreeNode *);
+    memoryAllocated += collisionBodyHeap.Size() * sizeof(neFreeListItem<neCollisionBody_>);
 
-	memoryAllocated += triangleIndex.GetTotalSize() * sizeof(s32);
+    memoryAllocated += treeNodes.GetTotalSize() * sizeof(neTreeNode *);
 
-	memoryAllocated += constraintHeaders.Size() * sizeof(neFreeListItem<neConstraintHeader>);
+    memoryAllocated += triangleIndex.GetTotalSize() * sizeof(s32);
 
-	memoryAllocated += constraintHeap.Size() * sizeof(neFreeListItem<_neConstraint>);
+    memoryAllocated += constraintHeaders.Size() * sizeof(neFreeListItem<neConstraintHeader>);
+
+    memoryAllocated += constraintHeap.Size() * sizeof(neFreeListItem<_neConstraint>);
 
 //	memoryAllocated += miniConstraintHeap.Size() * sizeof(neFreeListItem<neMiniConstraint>);
 
-	memoryAllocated += controllerHeap.Size() * sizeof(neFreeListItem<neController>);
+    memoryAllocated += controllerHeap.Size() * sizeof(neFreeListItem<neController>);
 
-	memoryAllocated += stackInfoHeap.Size() * sizeof(neFreeListItem<neStackInfo>);
+    memoryAllocated += stackInfoHeap.Size() * sizeof(neFreeListItem<neStackInfo>);
 
-	memoryAllocated += stackHeaderHeap.Size() * sizeof(neFreeListItem<neStackHeader>);
+    memoryAllocated += stackHeaderHeap.Size() * sizeof(neFreeListItem<neStackHeader>);
 
-	memoryAllocated += sensorHeap.Size() * sizeof(neFreeListItem<neSensor_>);
+    memoryAllocated += sensorHeap.Size() * sizeof(neFreeListItem<neSensor_>);
 
-	memoryAllocated += geometryHeap.Size() * sizeof(neFreeListItem<TConvex>);
+    memoryAllocated += geometryHeap.Size() * sizeof(neFreeListItem<TConvex>);
 
-	//memoryAllocated += cresultHeap.Size() * sizeof(neFreeListItem<neCollisionResult>);
-	memoryAllocated += cresultHeap.GetTotalSize() * sizeof(neFreeListItem<neCollisionResult>);
+    //memoryAllocated += cresultHeap.Size() * sizeof(neFreeListItem<neCollisionResult>);
+    memoryAllocated += cresultHeap.GetTotalSize() * sizeof(neFreeListItem<neCollisionResult>);
 
-	memoryAllocated += pointerBuffer1.GetTotalSize() * sizeof(neByte *);
+    memoryAllocated += pointerBuffer1.GetTotalSize() * sizeof(neByte *);
 
-	memoryAllocated += pointerBuffer2.GetTotalSize() * sizeof(neByte *);
+    memoryAllocated += pointerBuffer2.GetTotalSize() * sizeof(neByte *);
 
-	//region stuff
-	memoryAllocated += region.b2b.GetTotalSize() * sizeof(neOverlapped);
+    //region stuff
+    memoryAllocated += region.b2b.GetTotalSize() * sizeof(neOverlapped);
 
-	memoryAllocated += region.b2p.GetTotalSize() * sizeof(neOverlapped);
+    memoryAllocated += region.b2p.GetTotalSize() * sizeof(neOverlapped);
 
-	memoryAllocated += region.newBodies.GetTotalSize() * sizeof(neAddBodyInfo);
+    memoryAllocated += region.newBodies.GetTotalSize() * sizeof(neAddBodyInfo);
 
-	memoryAllocated += region.bodies.Size() * sizeof(neFreeListItem<neRigidBodyBase *>);
+    memoryAllocated += region.bodies.Size() * sizeof(neFreeListItem<neRigidBodyBase *>);
 
-	memoryAllocated += region.overlappedPairs.Size() * sizeof(neFreeListItem<neOverlappedPair>);
+    memoryAllocated += region.overlappedPairs.Size() * sizeof(neFreeListItem<neOverlappedPair>);
 
-	memoryAllocated += region.coordLists[0].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
+    memoryAllocated += region.coordLists[0].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
 
-	memoryAllocated += region.coordLists[1].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
+    memoryAllocated += region.coordLists[1].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
 
-	memoryAllocated += region.coordLists[2].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
+    memoryAllocated += region.coordLists[2].coordList.Size() * sizeof(neFreeListItem<CCoordListEntry>);
 
-	memoryAllocated += region.terrainTree.nodes.GetTotalSize() * sizeof(neTreeNode);
+    memoryAllocated += region.terrainTree.nodes.GetTotalSize() * sizeof(neTreeNode);
 
-	memoryAllocated += region.terrainTree.triangles.GetTotalSize() * sizeof(neTriangle_);
+    memoryAllocated += region.terrainTree.triangles.GetTotalSize() * sizeof(neTriangle_);
 }
 
 /****************************************************************************
 *
 *	neCollisionTable_::neCollisionTable_
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neCollisionTable_::neCollisionTable_()
-{
-	for (s32 i = 0 ; i < NE_COLLISION_TABLE_MAX; i++)
-	{
-		for (s32 j = 0 ; j < NE_COLLISION_TABLE_MAX; j++)
-			table[i][j] = table[j][i] = neCollisionTable::RESPONSE_IMPULSE;
+neCollisionTable_::neCollisionTable_() {
+    for (s32 i = 0; i < NE_COLLISION_TABLE_MAX; i++) {
+        for (s32 j = 0; j < NE_COLLISION_TABLE_MAX; j++)
+            table[i][j] = table[j][i] = neCollisionTable::RESPONSE_IMPULSE;
 
-		terrainTable[i] = neCollisionTable::RESPONSE_IMPULSE;
-	}
+        terrainTable[i] = neCollisionTable::RESPONSE_IMPULSE;
+    }
 }
 
 /****************************************************************************
 *
 *	neCollisionTable_::~neCollisionTable_
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neCollisionTable_::~neCollisionTable_()
-{
+neCollisionTable_::~neCollisionTable_() {
 }
 
 /****************************************************************************
 *
 *	neCollisionTable_::Set
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neCollisionTable_::Set(s32 collisionID1, s32 collisionID2, neCollisionTable::neReponseBitFlag value)
-{
-	//ASSERT(collisionID1 >= -1 && collisionID1 < neCollisionTable::NE_COLLISION_TABLE_MAX);
-	//ASSERT(collisionID2 >= -1 && collisionID2 < neCollisionTable::NE_COLLISION_TABLE_MAX);
+void neCollisionTable_::Set(s32 collisionID1, s32 collisionID2, neCollisionTable::neReponseBitFlag value) {
+    //ASSERT(collisionID1 >= -1 && collisionID1 < neCollisionTable::NE_COLLISION_TABLE_MAX);
+    //ASSERT(collisionID2 >= -1 && collisionID2 < neCollisionTable::NE_COLLISION_TABLE_MAX);
 
-	if (collisionID1 == -1 && collisionID2 == -1)
-	{
-		return;
-	}
+    if (collisionID1 == -1 && collisionID2 == -1) {
+        return;
+    }
 
-	if (collisionID1 == -1)
-	{
-		terrainTable[collisionID2] = value;
-	}
-	else if (collisionID2 == -1)
-	{
-		terrainTable[collisionID1] = value;
-	}
-	else
-	{
-		table[collisionID1][collisionID2] = value;
-		table[collisionID2][collisionID1] = value;
-	}
+    if (collisionID1 == -1) {
+        terrainTable[collisionID2] = value;
+    } else if (collisionID2 == -1) {
+        terrainTable[collisionID1] = value;
+    } else {
+        table[collisionID1][collisionID2] = value;
+        table[collisionID2][collisionID1] = value;
+    }
 }
 
 /****************************************************************************
 *
 *	neCollisionTable_::Get
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neCollisionTable::neReponseBitFlag neCollisionTable_::Get(s32 collisionID1, s32 collisionID2)
-{
-	//ASSERT(collisionID1 >= -1 && collisionID1 < neCollisionTable::NE_COLLISION_TABLE_MAX);
-	//ASSERT(collisionID2 >= -1 && collisionID2 < neCollisionTable::NE_COLLISION_TABLE_MAX);
+neCollisionTable::neReponseBitFlag neCollisionTable_::Get(s32 collisionID1, s32 collisionID2) {
+    //ASSERT(collisionID1 >= -1 && collisionID1 < neCollisionTable::NE_COLLISION_TABLE_MAX);
+    //ASSERT(collisionID2 >= -1 && collisionID2 < neCollisionTable::NE_COLLISION_TABLE_MAX);
 
-	if (collisionID1 == -1 && collisionID2 == -1)
-	{
-		return neCollisionTable::RESPONSE_IGNORE;
-	}
-	
-	if (collisionID1 == -1)
-	{
-		return terrainTable[collisionID2];
-	}
-	else if (collisionID2 == -1)
-	{
-		return terrainTable[collisionID1];
-	}
-	
-	return table[collisionID1][collisionID2];
+    if (collisionID1 == -1 && collisionID2 == -1) {
+        return neCollisionTable::RESPONSE_IGNORE;
+    }
+
+    if (collisionID1 == -1) {
+        return terrainTable[collisionID2];
+    } else if (collisionID2 == -1) {
+        return terrainTable[collisionID1];
+    }
+
+    return table[collisionID1][collisionID2];
 }

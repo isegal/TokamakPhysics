@@ -18,183 +18,172 @@
 
 class neStackHeader;
 
-class neStackInfo
-{
+class neStackInfo {
 public:
-	void Init()
-	{
-		stackHeader = NULL;
-		body = NULL;
-		isTerminator = true;
-		isBroken = false;
-	}
-	void Resolve();
+    void Init() {
+        stackHeader = NULL;
+        body = NULL;
+        isTerminator = true;
+        isBroken = false;
+    }
 
-	void AddToSolver(neBool addCheader);
+    void Resolve();
 
-	neStackHeader * CheckAcceptNewHeader(neStackHeader * newHeader);
+    void AddToSolver(neBool addCheader);
 
-	void ForceAcceptNewHeader(neStackHeader * newHeader);
+    neStackHeader *CheckAcceptNewHeader(neStackHeader *newHeader);
 
-	//void Break();
+    void ForceAcceptNewHeader(neStackHeader *newHeader);
 
-	void CheckHeader(neStackHeader * sh);
+    //void Break();
 
-	neBool isResolved;
-	neBool isTerminator;
-	neBool isBroken;
-	neStackHeader * stackHeader;
-	neRigidBody_ * body;
-	s32 startTime;
-	s32 endTime;
+    void CheckHeader(neStackHeader *sh);
 
-	//neRestRecord restRecords[neRigidBody_::NE_RB_MAX_RESTON_RECORDS];
+    neBool isResolved;
+    neBool isTerminator;
+    neBool isBroken;
+    neStackHeader *stackHeader;
+    neRigidBody_ *body;
+    s32 startTime;
+    s32 endTime;
+
+    //neRestRecord restRecords[neRigidBody_::NE_RB_MAX_RESTON_RECORDS];
 };
 
 typedef neDLinkList<neStackInfo> neStackInfoHeap;
 
 typedef neFreeListItem<neStackInfo> neStackInfoItem;
 
-class neStackHeader
-{
+class neStackHeader {
 public:
-	neFixedTimeStepSimulator * sim;
+    neFixedTimeStepSimulator *sim;
 
-	neStackInfo * head;
-	neStackInfo * tail;
-	s32 infoCount;
-	neBool isHeaderX;
-	neBool isAllIdle;
-	static s32 golbalTime;
-	neBool dynamicSolved;
-	
-	void Null()
-	{
-		head = NULL;
+    neStackInfo *head;
+    neStackInfo *tail;
+    s32 infoCount;
+    neBool isHeaderX;
+    neBool isAllIdle;
+    static s32 golbalTime;
+    neBool dynamicSolved;
 
-		tail = NULL;
+    void Null() {
+        head = NULL;
 
-		infoCount = 0;
+        tail = NULL;
 
-		isHeaderX = false;
+        infoCount = 0;
 
-		isAllIdle = false;
+        isHeaderX = false;
 
-		dynamicSolved = false;
-	}
+        isAllIdle = false;
 
-	//void Purge();
+        dynamicSolved = false;
+    }
 
-	void Resolve();
+    //void Purge();
 
-	void CheckLength()
-	{
-		s32 c = 0;
+    void Resolve();
 
-		neStackInfoItem * item = (neStackInfoItem *) head;
+    void CheckLength() {
+        s32 c = 0;
 
-		while (item)
-		{
-			ASSERT(c < infoCount);
+        neStackInfoItem *item = (neStackInfoItem *) head;
 
-			c++;
+        while (item) {
+            ASSERT(c < infoCount);
 
-			item = item->next;
-		}
-	}
-	void CheckHeader()
-	{
-		ASSERT(infoCount != 0);
-		
-		s32 c = 0;
+            c++;
 
-		neStackInfoItem * item = (neStackInfoItem *) head;
+            item = item->next;
+        }
+    }
 
-		while (item)
-		{
-			ASSERT(c < infoCount);
+    void CheckHeader() {
+        ASSERT(infoCount != 0);
 
-			c++;
+        s32 c = 0;
 
-			neStackInfo * sinfo = (neStackInfo*) item;
+        neStackInfoItem *item = (neStackInfoItem *) head;
 
-			ASSERT(sinfo->stackHeader == this);
+        while (item) {
+            ASSERT(c < infoCount);
 
-			if (!sinfo->isTerminator)
-				sinfo->CheckHeader(this);
+            c++;
 
-			item = item->next;
-		}
-		ASSERT(c == infoCount);
-	}
-	void Add(neStackInfo * add)
-	{
-		if (!head)
-		{
-			head = tail = add;
+            neStackInfo *sinfo = (neStackInfo *) item;
 
-			ASSERT(((neStackInfoItem*)add)->next == NULL);
-		}
-		else
-		{
-			ASSERT(add != tail);
-			
-			((neStackInfoItem*)tail)->Append((neStackInfoItem*)add);
+            ASSERT(sinfo->stackHeader == this);
 
-			tail = add;
-		}
-		infoCount++;
+            if (!sinfo->isTerminator)
+                sinfo->CheckHeader(this);
 
-		add->stackHeader = this;
-	}
-	void Remove(neStackInfo * add, s32 flag = 0)
-	{
+            item = item->next;
+        }
+        ASSERT(c == infoCount);
+    }
+
+    void Add(neStackInfo *add) {
+        if (!head) {
+            head = tail = add;
+
+            ASSERT(((neStackInfoItem *) add)->next == NULL);
+        } else {
+            ASSERT(add != tail);
+
+            ((neStackInfoItem *) tail)->Append((neStackInfoItem *) add);
+
+            tail = add;
+        }
+        infoCount++;
+
+        add->stackHeader = this;
+    }
+
+    void Remove(neStackInfo *add, s32 flag = 0) {
 /*		if (infoCount == 1 && !isHeaderX && flag == 0)
 			ASSERT(0);
 */
-		neStackInfoItem * item = (neStackInfoItem *)add;
+        neStackInfoItem *item = (neStackInfoItem *) add;
 
-		if (head == add)
-			head = (neStackInfo*)item->next;
+        if (head == add)
+            head = (neStackInfo *) item->next;
 
-		if (tail == add)
-			tail = (neStackInfo*)item->prev;
+        if (tail == add)
+            tail = (neStackInfo *) item->prev;
 
-		item->Remove();
+        item->Remove();
 
-		infoCount--;
+        infoCount--;
 
-		add->stackHeader = NULL;
-	}
-	neBool Check(neStackInfo * st)
-	{
-		s32 c = 0;
+        add->stackHeader = NULL;
+    }
 
-		neStackInfoItem * item = (neStackInfoItem *) head;
+    neBool Check(neStackInfo *st) {
+        s32 c = 0;
 
-		while (item)
-		{
-			ASSERT(c < infoCount);
+        neStackInfoItem *item = (neStackInfoItem *) head;
 
-			c++;
+        while (item) {
+            ASSERT(c < infoCount);
 
-			neStackInfo * sinfo = (neStackInfo*) item;
+            c++;
 
-			ASSERT(sinfo->stackHeader == this);
+            neStackInfo *sinfo = (neStackInfo *) item;
 
-			if (st == sinfo)
-			{
-				return true;
-			}
-			item = item->next;
-		}
-		return false;
-	}
-	neBool CheckStackDisconnected();
+            ASSERT(sinfo->stackHeader == this);
 
-	neRigidBody_ * GetBottomStackBody()
-	{
-		return NULL;
+            if (st == sinfo) {
+                return true;
+            }
+            item = item->next;
+        }
+        return false;
+    }
+
+    neBool CheckStackDisconnected();
+
+    neRigidBody_ *GetBottomStackBody() {
+        return NULL;
 /*		if (!head)
 			return NULL;
 
@@ -240,14 +229,15 @@ public:
 		}
 		ASSERT(0);
 		return NULL;
-*/	}
-	void ChangeHeader(neStackHeader * newHeader);
+*/    }
 
-	void AddToSolver(/*neBool withConstraint*/);
+    void ChangeHeader(neStackHeader *newHeader);
 
-	void AddToSolverNoConstraintHeader();
+    void AddToSolver(/*neBool withConstraint*/);
 
-	void ResetRigidBodyFlag();
+    void AddToSolverNoConstraintHeader();
+
+    void ResetRigidBodyFlag();
 };
 
 typedef neDLinkList<neStackHeader> neStackHeaderHeap;

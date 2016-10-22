@@ -35,52 +35,50 @@ class neRestRecord;
 //	neControllerCallback
 //
 ///////////////////////////////////////////////////////////////////
-class neController
-{
+class neController {
 PLACEMENT_MAGIC
-public:
-	s32 period;
-	s32 count;
-	neRigidBodyControllerCallback * rbc;
-	neJointControllerCallback * jc;
-	_neConstraint * constraint;
-	neRigidBody_ * rb;
-	neV3 forceA;
-	neV3 torqueA;
-	neV3 forceB;
-	neV3 torqueB;
 
 public:
-	neController()
-	{
-		period = 0;
-		count = 0;
-		rbc = NULL;
-		jc = NULL;
-		constraint = NULL;
-		rb = NULL;
-	}
+    s32 period;
+    s32 count;
+    neRigidBodyControllerCallback *rbc;
+    neJointControllerCallback *jc;
+    _neConstraint *constraint;
+    neRigidBody_ *rb;
+    neV3 forceA;
+    neV3 torqueA;
+    neV3 forceB;
+    neV3 torqueB;
+
+public:
+    neController() {
+        period = 0;
+        count = 0;
+        rbc = NULL;
+        jc = NULL;
+        constraint = NULL;
+        rb = NULL;
+    }
 };
 
 //typedef neFreeListItem<neController> neControllerItem;
 
 //coordinate list
 
-class CCoordListEntry
-{
+class CCoordListEntry {
 PLACEMENT_MAGIC
+
 public:
-	enum
-	{
-		LowEnd = 0,
-		HighEnd = 1,
-	};
-	neByte flag;
-	f32 value;
-	neRigidBodyBase * bb;
+    enum {
+        LowEnd = 0,
+        HighEnd = 1,
+    };
+    neByte flag;
+    f32 value;
+    neRigidBodyBase *bb;
 };
 
-typedef CCoordListEntry* PCCoordListEntry;
+typedef CCoordListEntry *PCCoordListEntry;
 
 typedef neDLinkList<CCoordListEntry>::listItem CCoordListEntryItem;
 
@@ -99,193 +97,184 @@ typedef neCollection<neRigidBodyBase>::itemType neBodyHandle;
 
 //neCollection<_neConstraint>::itemType neConstraintItem;
 
-typedef enum
-{
-	NE_OBJECT_COLISION,
-	NE_OBJECT_RIGID,
-}neObjectType;
+typedef enum {
+    NE_OBJECT_COLISION,
+    NE_OBJECT_RIGID,
+} neObjectType;
 
-typedef enum
-{
-	NE_RIGID_NORMAL,
-	NE_RIGID_PARTICLE,
-}neRigidType;
+typedef enum {
+    NE_RIGID_NORMAL,
+    NE_RIGID_PARTICLE,
+} neRigidType;
 
-class neRigidBodyBase
-{
+class neRigidBodyBase {
 public:
-	neRigidBodyBase(){ 
-		//isAnimated = true; 
-		btype = NE_OBJECT_COLISION;
-		col.convex = NULL;
-		col.convexCount = 0;
-		col.obb.Initialise();
-		sim = NULL;
-		cid = 0;
-		isCollideConnected = false;
-		isCollideDirectlyConnected = false;
-		sensors = NULL;
+    neRigidBodyBase() {
+        //isAnimated = true;
+        btype = NE_OBJECT_COLISION;
+        col.convex = NULL;
+        col.convexCount = 0;
+        col.obb.Initialise();
+        sim = NULL;
+        cid = 0;
+        isCollideConnected = false;
+        isCollideDirectlyConnected = false;
+        sensors = NULL;
 
-		geometryCursor = NULL;
-		sensorCursor = NULL;
+        geometryCursor = NULL;
+        sensorCursor = NULL;
 
-		constraintHeaderItem.thing = this;
-		isActive = true;
-		regionHandle = NULL;
+        constraintHeaderItem.thing = this;
+        isActive = true;
+        regionHandle = NULL;
 
-		_constraintHeader = NULL;
+        _constraintHeader = NULL;
 
-		isCustomCD = false;
+        isCustomCD = false;
 
-		for (s32 i = 0; i < 3; i++)
-		{
-			maxCoord[i] = NULL;
-			minCoord[i] = NULL;
-		}
+        for (s32 i = 0; i < 3; i++) {
+            maxCoord[i] = NULL;
+            minCoord[i] = NULL;
+        }
 
-		backupVector.SetZero();
+        backupVector.SetZero();
 
-		pendingAddToRegion = 0;
-	}
-	~neRigidBodyBase()
-	{
-		//if (col.convex)
-		//	delete [] col.convex;
-	};
-	void RecalcBB();
-	
-	//TConvex * GetConvex(s32 index);
+        pendingAddToRegion = 0;
+    }
 
-	void Free();
+    ~neRigidBodyBase() {
+        //if (col.convex)
+        //	delete [] col.convex;
+    };
 
-	NEINLINE neByte IsAABOverlapped(neRigidBodyBase * b)
-	{
-		neByte ret = 0;
+    void RecalcBB();
 
-		for (s32 i = 0; i < 3; i++)
-		{
-			if (minCoord[i])
-			{
-				if (!(minCoord[i]->value >= b->maxCoord[i]->value || 
-					maxCoord[i]->value <= b->minCoord[i]->value))
-					ret |= (1 << i);
-			}
-		}
+    //TConvex * GetConvex(s32 index);
 
-		return ret;
-	}
+    void Free();
 
-	neBool IsValid();
+    NEINLINE neByte IsAABOverlapped(neRigidBodyBase *b) {
+        neByte ret = 0;
 
-	neV3 VelocityAtPoint(const neV3 & pt);
+        for (s32 i = 0; i < 3; i++) {
+            if (minCoord[i]) {
+                if (!(minCoord[i]->value >= b->maxCoord[i]->value ||
+                      maxCoord[i]->value <= b->minCoord[i]->value))
+                    ret |= (1 << i);
+            }
+        }
 
-	NEINLINE neV3 GetLinearVelocity();
+        return ret;
+    }
 
-	NEINLINE neV3 GetAngularVelocity();
+    neBool IsValid();
 
-	void CollideConnected(neBool yes);
+    neV3 VelocityAtPoint(const neV3 &pt);
 
-	neBool CollideConnected();
+    NEINLINE neV3 GetLinearVelocity();
 
-	neSensor_ * AddSensor();
+    NEINLINE neV3 GetAngularVelocity();
 
-	void BeginIterateSensor();
+    void CollideConnected(neBool yes);
 
-	neSensor_ * GetNextSensor();
+    neBool CollideConnected();
 
-	void ClearSensor();
+    neSensor_ *AddSensor();
 
-	TConvex * AddGeometry();
+    void BeginIterateSensor();
 
-	void BeginIterateGeometry();
+    neSensor_ *GetNextSensor();
 
-	TConvex * GetNextGeometry();
+    void ClearSensor();
 
-	void Active(neBool yes, neRigidBodyBase * hint);
+    TConvex *AddGeometry();
 
-	NEINLINE neCollisionBody_ * AsCollisionBody() 
-	{
-		if (btype != NE_OBJECT_COLISION)
-			return NULL;
+    void BeginIterateGeometry();
 
-		return (neCollisionBody_ *)this;
-	}
+    TConvex *GetNextGeometry();
 
-	NEINLINE neRigidBody_ * AsRigidBody()
-	{
-		if (btype != NE_OBJECT_RIGID)
-			return NULL;
-			
-		return (neRigidBody_ *)this;
-	}
-	
-	neT3 & GetB2W();
+    void Active(neBool yes, neRigidBodyBase *hint);
 
-	NEINLINE void SetConstraintHeader(neConstraintHeader * cheader)
-	{
-		_constraintHeader = cheader;
-	}
-	NEINLINE neConstraintHeader * GetConstraintHeader()
-	{
-		return _constraintHeader;
-	}
-	void RemoveConstraintHeader();
+    NEINLINE neCollisionBody_ *AsCollisionBody() {
+        if (btype != NE_OBJECT_COLISION)
+            return NULL;
 
-	NEINLINE neBool IsInRegion()
-	{
-		return (regionHandle != NULL);
-	}
+        return (neCollisionBody_ *) this;
+    }
 
-	neBodyHandle constraintHeaderItem;
+    NEINLINE neRigidBody_ *AsRigidBody() {
+        if (btype != NE_OBJECT_RIGID)
+            return NULL;
 
-	//neBodyHandle activeHandle;
+        return (neRigidBody_ *) this;
+    }
 
-	neCollection<_neConstraint> constraintCollection;
+    neT3 &GetB2W();
 
-	TConvexItem * geometryCursor;
+    NEINLINE void SetConstraintHeader(neConstraintHeader *cheader) {
+        _constraintHeader = cheader;
+    }
 
-	neSensorItem * sensorCursor;
+    NEINLINE neConstraintHeader *GetConstraintHeader() {
+        return _constraintHeader;
+    }
 
-	u32 cookies;
-	
-	neCollision col;
-	
-	u32 id;
+    void RemoveConstraintHeader();
 
-	u32 cid;
+    NEINLINE neBool IsInRegion() {
+        return (regionHandle != NULL);
+    }
 
-	neConstraintHeader * _constraintHeader;
+    neBodyHandle constraintHeaderItem;
 
-	//bool isAnimated;
-	neObjectType btype;
+    //neBodyHandle activeHandle;
 
-	neBool isActive;
+    neCollection<_neConstraint> constraintCollection;
 
-	neBool isCollideConnected;
+    TConvexItem *geometryCursor;
 
-	neBool isCollideDirectlyConnected;
+    neSensorItem *sensorCursor;
 
-	neSensor_ * sensors;
+    u32 cookies;
 
-	neFreeListItem<neRigidBodyBase *> * regionHandle;
+    neCollision col;
 
-	neFixedTimeStepSimulator * sim;
+    u32 id;
 
-	neT3 obb;
+    u32 cid;
 
-	neBool isCustomCD;
+    neConstraintHeader *_constraintHeader;
 
-	neV3 minBound;
-	neV3 maxBound;
-	CCoordListEntry * maxCoord[3];
-	CCoordListEntry * minCoord[3];	
+    //bool isAnimated;
+    neObjectType btype;
 
-	neV3 backupVector;
+    neBool isActive;
 
-	neCollection<neRestRecord> rbRestingOnMe;
+    neBool isCollideConnected;
 
-	s32 pendingAddToRegion;
-	
+    neBool isCollideDirectlyConnected;
+
+    neSensor_ *sensors;
+
+    neFreeListItem<neRigidBodyBase *> *regionHandle;
+
+    neFixedTimeStepSimulator *sim;
+
+    neT3 obb;
+
+    neBool isCustomCD;
+
+    neV3 minBound;
+    neV3 maxBound;
+    CCoordListEntry *maxCoord[3];
+    CCoordListEntry *minCoord[3];
+
+    neV3 backupVector;
+
+    neCollection<neRestRecord> rbRestingOnMe;
+
+    s32 pendingAddToRegion;
+
 //	neV3 debugMinBound;
 //	neM3 dobb;
 };
@@ -296,13 +285,13 @@ public:
 //
 ///////////////////////////////////////////////////////////////////
 
-class neRigidBodyState
-{
+class neRigidBodyState {
 public:
-	neRigidBodyState();
-	neQ q;
-	neV3 linearMom; // P
-	neV3 angularMom; // L
+    neRigidBodyState();
+
+    neQ q;
+    neV3 linearMom; // P
+    neV3 angularMom; // L
 
 //	NEINLINE neV3 &pos() const{ 
 //		return b2w.pos;}
@@ -311,36 +300,35 @@ public:
 //		b2w.pos = pos;}
 
 
-	NEINLINE neM3 & rot() { 
-		return b2w.rot;}
+    NEINLINE neM3 &rot() {
+        return b2w.rot;
+    }
 
 //private:
-	neT3 b2w;
+    neT3 b2w;
 };
 
-class neRigidBodyDerive
-{
+class neRigidBodyDerive {
 public:
-	neRigidBodyDerive()
-	{
-		linearVel.SetZero();
-		angularVel.SetZero();
-		qDot.Zero();
-		Iinv.SetZero();
-	}
-	neV3 linearVel; // v
-	neV3 angularVel; // w
-	neQ qDot; 
-	neM3 Iinv; // R * IbodyInv * Rtrans
-	f32 speed;
+    neRigidBodyDerive() {
+        linearVel.SetZero();
+        angularVel.SetZero();
+        qDot.Zero();
+        Iinv.SetZero();
+    }
+
+    neV3 linearVel; // v
+    neV3 angularVel; // w
+    neQ qDot;
+    neM3 Iinv; // R * IbodyInv * Rtrans
+    f32 speed;
 };
 
 typedef struct neImpulseRecord neImpulseRecord;
 
-struct neImpulseRecord
-{
-	neV3 point;
-	u32 stepCount;
+struct neImpulseRecord {
+    neV3 point;
+    u32 stepCount;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -349,486 +337,467 @@ struct neImpulseRecord
 //
 ///////////////////////////////////////////////////////////////////
 
-class neCollisionBody_: public neRigidBodyBase
-{
+class neCollisionBody_ : public neRigidBodyBase {
 public:
 PLACEMENT_MAGIC
 
-	neCollisionBody_()
-	{
-		moved = false;
-	}
-	void UpdateAABB();
+    neCollisionBody_() {
+        moved = false;
+    }
 
-	void Free();
+    void UpdateAABB();
+
+    void Free();
 
 public:
-	neT3 b2w;
-	
-	neBool moved;
+    neT3 b2w;
+
+    neBool moved;
 };
 
 class neStackInfo;
+
 class neStackHeader;
 
 /////////////////////////////////////////////////////////////////
 
 typedef neCollection<neRestRecord>::itemType neRestRecordHandle;
 
-class neRestRecord
-{
+class neRestRecord {
 public:
-	typedef enum
-	{
-		REST_ON_NOT_VALID,
-		REST_ON_RIGID_BODY,
-		REST_ON_COLLISION_BODY,
-		REST_ON_WORLD,
+    typedef enum {
+        REST_ON_NOT_VALID,
+        REST_ON_RIGID_BODY,
+        REST_ON_COLLISION_BODY,
+        REST_ON_WORLD,
 
-	} RestOnType;
+    } RestOnType;
 
-	neV3 bodyPoint;
-	neV3 otherBodyPoint;
-	neV3 worldThisBody;
-	neV3 worldOtherBody;
-	neV3 worldDiff;
-	neV3 normalBody; //normal define in the body space of otherBody
-	neV3 normalWorld; //normal define in the world space
-	f32 depth;
-	f32 normalDiff;
-	f32 tangentialDiffSq;
-	s32 material;
-	s32 otherMaterial;
+    neV3 bodyPoint;
+    neV3 otherBodyPoint;
+    neV3 worldThisBody;
+    neV3 worldOtherBody;
+    neV3 worldDiff;
+    neV3 normalBody; //normal define in the body space of otherBody
+    neV3 normalWorld; //normal define in the world space
+    f32 depth;
+    f32 normalDiff;
+    f32 tangentialDiffSq;
+    s32 material;
+    s32 otherMaterial;
 
 private:
-	RestOnType rtype;
-	neRigidBodyBase * otherBody;
-	neRestRecordHandle restOnHandle;
-	neRigidBody_ * body;
-	s32 counter;
+    RestOnType rtype;
+    neRigidBodyBase *otherBody;
+    neRestRecordHandle restOnHandle;
+    neRigidBody_ *body;
+    s32 counter;
 
-public:	
-	neRestRecord()
-	{
-		restOnHandle.thing = this;
-	}
-	void Init()
-	{
-		rtype = REST_ON_NOT_VALID;
-		counter = 0;
-		otherBody = NULL;
-		body = NULL;
-		restOnHandle.Remove();
-	}
-	neBool IsValid()
-	{
-		return rtype != REST_ON_NOT_VALID;
-	}
-	void Update();
-
-	neRigidBodyBase * GetOtherBody() const
-	{
-		return otherBody;
-	}
-	neRigidBody_ * GetOtherRigidBody() const
-	{
-		if (!otherBody)
-			return NULL;
-
-		return otherBody->AsRigidBody();
-	}
-	neCollisionBody_ * GetOtherCollisionBody() const
-	{
-		if (!otherBody)
-			return NULL;
-
-		return otherBody->AsCollisionBody();
-	}
-	neBool CanConsiderOtherBodyIdle();
-
-	neBool CheckOtherBody(neFixedTimeStepSimulator * sim);
-
-	void SetInvalid();
-
-	neV3 GetOtherBodyPoint();
-
-	void Set(neRigidBody_* thisBody, const neRestRecord & rc);
-
-	void SetTmp(neRigidBodyBase * otherb, const neV3 & contactA, const neV3 & contactB, const neV3 & normalBody, s32 matA, s32 matB);
-};
-
-class neRestHull
-{
 public:
-	typedef enum
-	{
-		NONE,
-		POINT,
-		LINE,
-		TRIANGLE,
-		QUAD,
-	}neRestHullType;
+    neRestRecord() {
+        restOnHandle.thing = this;
+    }
 
-	s32 htype;
-	s32 indices[4];
-	neV3 normal;
+    void Init() {
+        rtype = REST_ON_NOT_VALID;
+        counter = 0;
+        otherBody = NULL;
+        body = NULL;
+        restOnHandle.Remove();
+    }
+
+    neBool IsValid() {
+        return rtype != REST_ON_NOT_VALID;
+    }
+
+    void Update();
+
+    neRigidBodyBase *GetOtherBody() const {
+        return otherBody;
+    }
+
+    neRigidBody_ *GetOtherRigidBody() const {
+        if (!otherBody)
+            return NULL;
+
+        return otherBody->AsRigidBody();
+    }
+
+    neCollisionBody_ *GetOtherCollisionBody() const {
+        if (!otherBody)
+            return NULL;
+
+        return otherBody->AsCollisionBody();
+    }
+
+    neBool CanConsiderOtherBodyIdle();
+
+    neBool CheckOtherBody(neFixedTimeStepSimulator *sim);
+
+    void SetInvalid();
+
+    neV3 GetOtherBodyPoint();
+
+    void Set(neRigidBody_ *thisBody, const neRestRecord &rc);
+
+    void SetTmp(neRigidBodyBase *otherb, const neV3 &contactA, const neV3 &contactB, const neV3 &normalBody, s32 matA,
+                s32 matB);
 };
 
-enum
-{
-	NE_RB_MAX_PAST_RECORDS = 10,
-	NE_RB_MAX_RESTON_RECORDS = 3,
-};	
-
-class neRBExtra
-{
+class neRestHull {
 public:
-	neRestRecord restOnRecord[NE_RB_MAX_RESTON_RECORDS];
-	
-	neV3 velRecords[NE_RB_MAX_PAST_RECORDS];
+    typedef enum {
+        NONE,
+        POINT,
+        LINE,
+        TRIANGLE,
+        QUAD,
+    } neRestHullType;
 
-	neV3 angVelRecords[NE_RB_MAX_PAST_RECORDS];
-
-	neRestHull restHull;
+    s32 htype;
+    s32 indices[4];
+    neV3 normal;
 };
 
-class neMotionCorrectionInfo
-{
+enum {
+    NE_RB_MAX_PAST_RECORDS = 10,
+    NE_RB_MAX_RESTON_RECORDS = 3,
+};
+
+class neRBExtra {
 public:
-	neQ  lastQuat;
-	neV3 lastPos;
-	neV3 lastAM;
-	neV3 lastW;
-	neM3 lastIinv;
-	neV3 lastVel;
-	neV3 lastAVel;
+    neRestRecord restOnRecord[NE_RB_MAX_RESTON_RECORDS];
+
+    neV3 velRecords[NE_RB_MAX_PAST_RECORDS];
+
+    neV3 angVelRecords[NE_RB_MAX_PAST_RECORDS];
+
+    neRestHull restHull;
 };
 
-class neRigidBody_: public neRigidBodyBase
-{
+class neMotionCorrectionInfo {
+public:
+    neQ lastQuat;
+    neV3 lastPos;
+    neV3 lastAM;
+    neV3 lastW;
+    neM3 lastIinv;
+    neV3 lastVel;
+    neV3 lastAVel;
+};
+
+class neRigidBody_ : public neRigidBodyBase {
 PLACEMENT_MAGIC
 
-friend class neFixedTimeStepSimulator;
-public:
-
-	enum
-	{
-		NE_RBSTATUS_NORMAL = 0,
-		NE_RBSTATUS_IDLE,
-		NE_RBSTATUS_ANIMATED,
-	};
-	f32		mass;
-	f32		oneOnMass;
-	neM3	IbodyInv;
-	neM3	Ibody;
-	neV3	force;
-	neV3	torque;
-	s32		status;
-	neBool	gravityOn;
-	neV3	gforce;
-	neV3	cforce;
-	neV3	ctorque;
-	neV3	totalTorque;
-	neV3	totalForce;
-	neV3	acc;
-
-	f32		linearDamp;
-	f32		angularDamp;
-
-	u32 curState;
-	
-	neRigidBodyState stateBuffer[MAX_RB_STATES];
-	
-	neRigidBodyDerive derive;	
-	
-	s32 lowEnergyCounter;
-
-	// constraints
-	neStackInfo * stackInfo;
-	
-	neBool isShifted;
-
-	neBool isShifted2;
-
-	neController * controllers;
-
-	neControllerItem * controllerCursor;
-
-	neBool needRecalc;
-
-	neBool isAddedToSolver;
-
-	neRBExtra * rbExtra;
-
-	neRBExtra eggs;
-
-	neRigidType subType;
-
-	neQ totalRot;
-
-	neV3 totalTrans;
-
-	s32 rotCount;
-
-	s32 transCount;
-
-	neQ totalLastRot;
-
-	s32 lastRotCount;
-
-	neV3 totalLastTrans;
-
-	s32 lastTransCount;
-
-	neBool needSolveContactDynamic;
-
-	neV3 totalDV;
-
-	neV3 totalDA;
-
-	s32 impulseCount;
-
-	s32 twistCount;
-
-	neV3 dvRecord[NE_RB_MAX_PAST_RECORDS];
-	neV3 davRecord[NE_RB_MAX_PAST_RECORDS];
-
-	neCollisionResult * maxErrCResult;
-
-	f32 sleepingParam;
-
-	neV3 oldPosition;
-
-	neQ oldRotation;
-
-	neV3 oldVelocity;
-
-	neV3 oldAngularVelocity;
-
-	s32 oldCounter;
-
-	//////////////////////////////////////////////////
-
-	NEINLINE neBool IsParticle()
-	{
-		return (subType == NE_RIGID_PARTICLE);
-	}
-
-	NEINLINE neRestRecord & GetRestRecord(s32 index)
-	{
-		ASSERT(rbExtra);
-		return rbExtra->restOnRecord[index];
-	}
-
-	NEINLINE neRestHull & GetRestHull()
-	{
-		ASSERT(rbExtra);
-		return rbExtra->restHull;
-	}
-
-	NEINLINE neV3 & GetVelRecord(s32 index)
-	{
-		ASSERT(rbExtra);
-		return rbExtra->velRecords[index];
-	}
-
-	NEINLINE neV3 & GetAngVelRecord(s32 index)
-	{
-		ASSERT(rbExtra);
-		return rbExtra->angVelRecords[index];
-	}
+    friend class neFixedTimeStepSimulator;
 
 public:
-	neRigidBody_();
 
-	~neRigidBody_();
-	
-	NEINLINE neRigidBodyState & State() 
-	{
-		return stateBuffer[curState];
-	};
-	NEINLINE void SetPos(const neV3 & newPos)
-	{
-		State().b2w.pos = newPos;
-	}
-	NEINLINE neV3 GetPos()
-	{
-		return State().b2w.pos;
-	}
-	NEINLINE neRigidBodyDerive & Derive(){
-		return derive;
-	}
-	void RecalcInertiaTensor();
+    enum {
+        NE_RBSTATUS_NORMAL = 0,
+        NE_RBSTATUS_IDLE,
+        NE_RBSTATUS_ANIMATED,
+    };
+    f32 mass;
+    f32 oneOnMass;
+    neM3 IbodyInv;
+    neM3 Ibody;
+    neV3 force;
+    neV3 torque;
+    s32 status;
+    neBool gravityOn;
+    neV3 gforce;
+    neV3 cforce;
+    neV3 ctorque;
+    neV3 totalTorque;
+    neV3 totalForce;
+    neV3 acc;
 
-	void SetAngMom(const neV3 & am);
+    f32 linearDamp;
+    f32 angularDamp;
 
-	void GravityEnable(neBool yes);
+    u32 curState;
 
-	void CheckForIdle();
+    neRigidBodyState stateBuffer[MAX_RB_STATES];
 
-	void CheckForIdleNonJoint();
+    neRigidBodyDerive derive;
 
-	void CheckForIdleJoint();
+    s32 lowEnergyCounter;
 
-	void BecomeIdle();
+    // constraints
+    neStackInfo *stackInfo;
 
-	void ZeroMotion();
+    neBool isShifted;
 
-	void WakeUp();
+    neBool isShifted2;
 
-	neBool AddStackInfo(neRestRecord & rc);
+    neController *controllers;
 
-	void  FreeStackInfo();
+    neControllerItem *controllerCursor;
 
-	neBool NewStackInfo(neRestRecord & rc);
+    neBool needRecalc;
 
-	void MigrateNewHeader(neStackHeader * newHeader, neStackHeader * curHeader);
+    neBool isAddedToSolver;
 
-	void ResetRestOnRecords();
+    neRBExtra *rbExtra;
 
-	void RemoveStackInfo();
+    neRBExtra eggs;
 
-	neBool NewStackInfoTerminator(neStackHeader * header);
+    neRigidType subType;
 
-	s32 AddContactImpulseRecord(neBool withConstraint);
+    neQ totalRot;
 
-	neBool IsRestPointStillValid();
+    neV3 totalTrans;
 
-	void AddRestContact(neRestRecord & rc);
+    s32 rotCount;
 
-	neBool CheckContactValidity();
+    s32 transCount;
 
-	void ResolveRestingPenetration();
+    neQ totalLastRot;
 
-	neBool IsConstraintNeighbour(neRigidBodyBase * otherBody);
+    s32 lastRotCount;
 
-	neController * AddController(neRigidBodyControllerCallback * rbc, s32 period);
+    neV3 totalLastTrans;
 
-	void BeginIterateController();
+    s32 lastTransCount;
 
-	neController * GetNextController();
+    neBool needSolveContactDynamic;
 
-	void Free();
+    neV3 totalDV;
 
-	void DrawCPointLine();
+    neV3 totalDA;
 
-	void SetAngMomComponent(const neV3 & angMom, const neV3 & dir);
+    s32 impulseCount;
 
-	void ShiftPosition(const neV3 & delta);
+    s32 twistCount;
 
-	void UpdateAABB();
+    neV3 dvRecord[NE_RB_MAX_PAST_RECORDS];
+    neV3 davRecord[NE_RB_MAX_PAST_RECORDS];
 
-	s32 CheckRestHull();
+    neCollisionResult *maxErrCResult;
 
-	neBool ApplyCollisionImpulse(const neV3 & impulse, const neV3 & contactPoint, neImpulseType itype);
+    f32 sleepingParam;
 
-	neV3 GetCorrectRotation(neRigidBody_ * otherBody, f32 massOther, neV3 & pointThis, neV3 & pointOther);
+    neV3 oldPosition;
 
-	void CorrectPosition(neV3 & pointThis, neV3 & pointDest, s32 flag, s32 changeLast);
+    neQ oldRotation;
 
-	void CorrectRotation(f32 massOther, neV3 & pointThis, neV3 & pointDest, neV3 & pointDest2, s32 flag, s32 changeLast);
+    neV3 oldVelocity;
 
-	void CorrectPenetrationDrift();
+    neV3 oldAngularVelocity;
 
-	void CorrectPenetrationDrift2(s32 index, neBool slide, s32 flag);
+    s32 oldCounter;
 
-	f32 TestImpulse(neV3 & dir, neV3 & pt, f32 & linear, f32 & angular);
+    //////////////////////////////////////////////////
 
-	void UpdateDerive();
+    NEINLINE neBool IsParticle() {
+        return (subType == NE_RIGID_PARTICLE);
+    }
 
-	void AddContactConstraint();
+    NEINLINE neRestRecord &GetRestRecord(s32 index) {
+        ASSERT(rbExtra);
+        return rbExtra->restOnRecord[index];
+    }
 
-	void CorrectPenetrationRotation();
+    NEINLINE neRestHull &GetRestHull() {
+        ASSERT(rbExtra);
+        return rbExtra->restHull;
+    }
 
-	void CorrectPenetrationTranslation();
+    NEINLINE neV3 &GetVelRecord(s32 index) {
+        ASSERT(rbExtra);
+        return rbExtra->velRecords[index];
+    }
 
-	void CorrectPenetrationRotation2(s32 index, neBool slide);
+    NEINLINE neV3 &GetAngVelRecord(s32 index) {
+        ASSERT(rbExtra);
+        return rbExtra->angVelRecords[index];
+    }
 
-	void CorrectPenetrationTranslation2(s32 index, neBool slide);
+public:
+    neRigidBody_();
 
-	neBool CheckStillIdle();
+    ~neRigidBody_();
 
-	neBool CheckHighEnergy();
+    NEINLINE neRigidBodyState &State() {
+        return stateBuffer[curState];
+    };
 
-	neBool TestWakeUpImpulse(const neV3 & impulse);
+    NEINLINE void SetPos(const neV3 &newPos) {
+        State().b2w.pos = newPos;
+    }
 
-	void MidPointIntegration(const neV3 & totalTorque, f32 tStep);
+    NEINLINE neV3 GetPos() {
+        return State().b2w.pos;
+    }
 
-	void ImprovedEulerIntegration(const neV3 & totalTorque, f32 tStep);
+    NEINLINE neRigidBodyDerive &Derive() {
+        return derive;
+    }
 
-	void RungeKutta4Integration(const neV3 & totalTorque, f32 tStep);
+    void RecalcInertiaTensor();
 
-	void WakeUpAllJoint();
+    void SetAngMom(const neV3 &am);
 
-	void ApplyLinearConstraint();
+    void GravityEnable(neBool yes);
 
-	void ApplyAngularConstraint();
+    void CheckForIdle();
 
-	void ConstraintDoSleepCheck();
+    void CheckForIdleNonJoint();
 
-	neBool CheckStationary();
+    void CheckForIdleJoint();
 
-	void SyncOldState();
+    void BecomeIdle();
 
-	neBool AllRestRecordInvalid()	;
+    void ZeroMotion();
+
+    void WakeUp();
+
+    neBool AddStackInfo(neRestRecord &rc);
+
+    void FreeStackInfo();
+
+    neBool NewStackInfo(neRestRecord &rc);
+
+    void MigrateNewHeader(neStackHeader *newHeader, neStackHeader *curHeader);
+
+    void ResetRestOnRecords();
+
+    void RemoveStackInfo();
+
+    neBool NewStackInfoTerminator(neStackHeader *header);
+
+    s32 AddContactImpulseRecord(neBool withConstraint);
+
+    neBool IsRestPointStillValid();
+
+    void AddRestContact(neRestRecord &rc);
+
+    neBool CheckContactValidity();
+
+    void ResolveRestingPenetration();
+
+    neBool IsConstraintNeighbour(neRigidBodyBase *otherBody);
+
+    neController *AddController(neRigidBodyControllerCallback *rbc, s32 period);
+
+    void BeginIterateController();
+
+    neController *GetNextController();
+
+    void Free();
+
+    void DrawCPointLine();
+
+    void SetAngMomComponent(const neV3 &angMom, const neV3 &dir);
+
+    void ShiftPosition(const neV3 &delta);
+
+    void UpdateAABB();
+
+    s32 CheckRestHull();
+
+    neBool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
+
+    neV3 GetCorrectRotation(neRigidBody_ *otherBody, f32 massOther, neV3 &pointThis, neV3 &pointOther);
+
+    void CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast);
+
+    void CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag, s32 changeLast);
+
+    void CorrectPenetrationDrift();
+
+    void CorrectPenetrationDrift2(s32 index, neBool slide, s32 flag);
+
+    f32 TestImpulse(neV3 &dir, neV3 &pt, f32 &linear, f32 &angular);
+
+    void UpdateDerive();
+
+    void AddContactConstraint();
+
+    void CorrectPenetrationRotation();
+
+    void CorrectPenetrationTranslation();
+
+    void CorrectPenetrationRotation2(s32 index, neBool slide);
+
+    void CorrectPenetrationTranslation2(s32 index, neBool slide);
+
+    neBool CheckStillIdle();
+
+    neBool CheckHighEnergy();
+
+    neBool TestWakeUpImpulse(const neV3 &impulse);
+
+    void MidPointIntegration(const neV3 &totalTorque, f32 tStep);
+
+    void ImprovedEulerIntegration(const neV3 &totalTorque, f32 tStep);
+
+    void RungeKutta4Integration(const neV3 &totalTorque, f32 tStep);
+
+    void WakeUpAllJoint();
+
+    void ApplyLinearConstraint();
+
+    void ApplyAngularConstraint();
+
+    void ConstraintDoSleepCheck();
+
+    neBool CheckStationary();
+
+    void SyncOldState();
+
+    neBool AllRestRecordInvalid();
 
 protected:
-	
-	void AdvanceDynamic(f32 tStep);
-	void AdvancePosition(f32 tStep);
-	void IsCollideWith(neRigidBody_& rb);
-	void UpdateController();
+
+    void AdvanceDynamic(f32 tStep);
+
+    void AdvancePosition(f32 tStep);
+
+    void IsCollideWith(neRigidBody_ &rb);
+
+    void UpdateController();
 };
 
-NEINLINE neV3 neRigidBodyBase::GetLinearVelocity()
-{
-	if (AsCollisionBody())
-	{
-		neV3 v;
+NEINLINE neV3 neRigidBodyBase::GetLinearVelocity() {
+    if (AsCollisionBody()) {
+        neV3 v;
 
-		v.SetZero();
+        v.SetZero();
 
-		return v;
-	}
-	else
-	{
-		return AsRigidBody()->Derive().linearVel;
-	}
+        return v;
+    } else {
+        return AsRigidBody()->Derive().linearVel;
+    }
 }
 
-NEINLINE neV3 neRigidBodyBase::GetAngularVelocity()
-{
-	if (AsCollisionBody())
-	{
-		neV3 v;
+NEINLINE neV3 neRigidBodyBase::GetAngularVelocity() {
+    if (AsCollisionBody()) {
+        neV3 v;
 
-		v.SetZero();
+        v.SetZero();
 
-		return v;
-	}
-	else
-	{
-		return ((neRigidBody_*)this)->Derive().angularVel;
-	}
+        return v;
+    } else {
+        return ((neRigidBody_ *) this)->Derive().angularVel;
+    }
 }
-NEINLINE neV3 neRigidBodyBase::VelocityAtPoint(const neV3 & pt)
-{
-	neV3 ret;
 
-	if (AsCollisionBody())
-	{
-		ret.SetZero();
+NEINLINE neV3 neRigidBodyBase::VelocityAtPoint(const neV3 &pt) {
+    neV3 ret;
 
-		return ret;
-	}
-	else
-	{
-		ret = ((neRigidBody_*)this)->Derive().linearVel;
+    if (AsCollisionBody()) {
+        ret.SetZero();
 
-		ret += ((neRigidBody_*)this)->Derive().angularVel.Cross(pt);
+        return ret;
+    } else {
+        ret = ((neRigidBody_ *) this)->Derive().linearVel;
 
-		return ret;
-	}
+        ret += ((neRigidBody_ *) this)->Derive().angularVel.Cross(pt);
+
+        return ret;
+    }
 }
 
 /*

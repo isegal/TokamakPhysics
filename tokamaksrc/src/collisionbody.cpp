@@ -38,12 +38,11 @@
 *
 *	neCollisionBody_::UpdateAABB
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neCollisionBody_::UpdateAABB()
-{
-	if (col.convexCount == 0 && !isCustomCD)
-		return;
+void neCollisionBody_::UpdateAABB() {
+    if (col.convexCount == 0 && !isCustomCD)
+        return;
 /*
 	neM3 c;
 		
@@ -51,30 +50,28 @@ void neCollisionBody_::UpdateAABB()
 	c[1] = col.obb.as.box.boxSize[1] * col.obb.c2p.rot[1];
 	c[2] = col.obb.as.box.boxSize[2] * col.obb.c2p.rot[2];
 */
-	neT3 c2w = b2w * obb;   
+    neT3 c2w = b2w * obb;
 
-	neV3 &pos = c2w.pos;
+    neV3 & pos = c2w.pos;
 
-	int i;
+    int i;
 
-	for (i = 0; i < 3; i++)
-	{
-		f32 a = neAbs(c2w.rot[0][i]) + neAbs(c2w.rot[1][i]) + neAbs(c2w.rot[2][i]);
+    for (i = 0; i < 3; i++) {
+        f32 a = neAbs(c2w.rot[0][i]) + neAbs(c2w.rot[1][i]) + neAbs(c2w.rot[2][i]);
 
-		minBound[i] = pos[i] - a;
-		maxBound[i] = pos[i] + a;
+        minBound[i] = pos[i] - a;
+        maxBound[i] = pos[i] + a;
 
-		if (minCoord[i])
-			minCoord[i]->value = pos[i] - a;// - col.boundingRadius;
+        if (minCoord[i])
+            minCoord[i]->value = pos[i] - a;// - col.boundingRadius;
 
-		if (maxCoord[i])
-			maxCoord[i]->value = pos[i] + a;// + col.boundingRadius;
-	}
+        if (maxCoord[i])
+            maxCoord[i]->value = pos[i] + a;// + col.boundingRadius;
+    }
 };
 
-void neCollisionBody_::Free()
-{
-	neRigidBodyBase::Free();
+void neCollisionBody_::Free() {
+    neRigidBodyBase::Free();
 
-	RemoveConstraintHeader();
+    RemoveConstraintHeader();
 }

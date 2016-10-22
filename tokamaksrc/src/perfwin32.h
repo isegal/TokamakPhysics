@@ -11,14 +11,13 @@
  *                                                                       *
  *************************************************************************/
 
-class nePerformanceDataWin32: public nePerformanceData
-{
+class nePerformanceDataWin32 : public nePerformanceData {
 public:
-	void Start();
-	
-	f32 GetCount();
+    void Start();
 
-	LARGE_INTEGER perfFreq;
+    f32 GetCount();
 
-	LARGE_INTEGER counter;
+    LARGE_INTEGER perfFreq;
+
+    LARGE_INTEGER counter;
 };

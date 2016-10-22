@@ -26,450 +26,398 @@
 
 #define BOX_SPHERE_DO_TEST(whichCase, _dir) {configuration = whichCase; dir = _dir;}
 
-void Box2SphereTest(neCollisionResult & result, TConvex & boxA, neT3 & transA, TConvex & sphereB, neT3 & transB)
-{
-	f32 penetration;
-	
-	result.penetrate = false;
+void Box2SphereTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TConvex &sphereB, neT3 &transB) {
+    f32 penetration;
 
-	neV3 sphereCenter;
-	
-	sphereCenter = (transA.FastInverse() * transB).pos;
+    result.penetrate = false;
 
-	neV3 flag1, flag2;
+    neV3 sphereCenter;
 
-	for (s32 i = 0; i < 3; i++)
-		flag1[i] = sphereCenter[i] < 0.0f ? -1.0f: 1.0f;
+    sphereCenter = (transA.FastInverse() * transB).pos;
 
-	neV3 sphereCenterAbs;
+    neV3 flag1, flag2;
 
-	sphereCenterAbs = sphereCenter * flag1;
+    for (s32 i = 0; i < 3; i++)
+        flag1[i] = sphereCenter[i] < 0.0f ? -1.0f : 1.0f;
 
-	flag2 = sphereCenterAbs - boxA.as.box.boxSize;
+    neV3 sphereCenterAbs;
 
-	s32 configuration, dir;
+    sphereCenterAbs = sphereCenter * flag1;
 
-	if (INSIDE_BOX_BOUNDARY(1))
-	{
-		if (INSIDE_BOX_BOUNDARY(2))
-			if (INSIDE_BOX_BOUNDARY(0))
-				configuration = -1; //center inside the box
-			else
-				BOX_SPHERE_DO_TEST(0, 0)
-		else
-			if (INSIDE_BOX_BOUNDARY(0))
-				BOX_SPHERE_DO_TEST(0, 2)
-			else
-				BOX_SPHERE_DO_TEST(1, 1)
-	}	
-	else if (INSIDE_BOX_BOUNDARY(2))
-	{
-		if (INSIDE_BOX_BOUNDARY(0))
-			BOX_SPHERE_DO_TEST(0, 1)
-		else
-			BOX_SPHERE_DO_TEST(1, 2)
-	}
-	else if (INSIDE_BOX_BOUNDARY(0))
-	{
-		BOX_SPHERE_DO_TEST(1, 0)
-	}
-	else
-	{
-		BOX_SPHERE_DO_TEST(2, 0)
-	}
+    flag2 = sphereCenterAbs - boxA.as.box.boxSize;
 
-	neV3 contactA;
+    s32 configuration, dir;
 
-	if (configuration == -1)
-	{
-		//find the shallowest penetration
-		neV3 depth; depth = boxA.as.box.boxSize - flag2;
-		s32 k;
+    if (INSIDE_BOX_BOUNDARY(1)) {
+        if (INSIDE_BOX_BOUNDARY(2))
+            if (INSIDE_BOX_BOUNDARY(0))
+                configuration = -1; //center inside the box
+            else BOX_SPHERE_DO_TEST(0, 0)
+        else if (INSIDE_BOX_BOUNDARY(0)) BOX_SPHERE_DO_TEST(0, 2)
+        else BOX_SPHERE_DO_TEST(1, 1)
+    } else if (INSIDE_BOX_BOUNDARY(2)) {
+        if (INSIDE_BOX_BOUNDARY(0)) BOX_SPHERE_DO_TEST(0, 1)
+        else BOX_SPHERE_DO_TEST(1, 2)
+    } else if (INSIDE_BOX_BOUNDARY(0)) {
+        BOX_SPHERE_DO_TEST(1, 0)
+    } else {
+        BOX_SPHERE_DO_TEST(2, 0)
+    }
 
-		if (depth[0] < depth[1])
-		{
-			if (depth[0] < depth[2])
-			{ //x
-				k = 0;
-			}
-			else
-			{ //z
-				k = 2;
-			}
-		}
-		else if (depth[1] < depth[2])
-		{ //y
-			k = 1;
-		}
-		else
-		{ //z
-			k = 2;
-		}
-		ASSERT(depth[k] >= 0.0f);
+    neV3 contactA;
 
-		result.depth = depth[k] + sphereB.Radius();
+    if (configuration == -1) {
+        //find the shallowest penetration
+        neV3 depth;
+        depth = boxA.as.box.boxSize - flag2;
+        s32 k;
 
-		result.penetrate = true;
+        if (depth[0] < depth[1]) {
+            if (depth[0] < depth[2]) { //x
+                k = 0;
+            } else { //z
+                k = 2;
+            }
+        } else if (depth[1] < depth[2]) { //y
+            k = 1;
+        } else { //z
+            k = 2;
+        }
+        ASSERT(depth[k] >= 0.0f);
 
-		result.collisionFrame[2] = transA.rot[k] * flag1[k] * -1.0f;
+        result.depth = depth[k] + sphereB.Radius();
 
-		result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
+        result.penetrate = true;
 
-		result.contactA = result.contactB - result.collisionFrame[2] * result.depth;
-	}
-	else if (configuration == 0)
-	{
-		penetration = sphereB.Radius() + boxA.BoxSize(dir) - sphereCenterAbs[dir];
+        result.collisionFrame[2] = transA.rot[k] * flag1[k] * -1.0f;
 
-		if (penetration > 0.0f)
-		{
-			result.depth = penetration;
+        result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
 
-			result.penetrate = true;
+        result.contactA = result.contactB - result.collisionFrame[2] * result.depth;
+    } else if (configuration == 0) {
+        penetration = sphereB.Radius() + boxA.BoxSize(dir) - sphereCenterAbs[dir];
 
-			result.collisionFrame[2] = transA.rot[dir] * flag1[dir] * -1.0f;
+        if (penetration > 0.0f) {
+            result.depth = penetration;
 
-			result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
+            result.penetrate = true;
 
-			result.contactA = result.contactB - result.collisionFrame[2] * penetration;
-		}
-	}
-	else if (configuration == 1)
-	{
-		s32 dir1, dir2;
+            result.collisionFrame[2] = transA.rot[dir] * flag1[dir] * -1.0f;
 
-		dir1 = neNextDim1[dir];
+            result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
 
-		dir2 = neNextDim2[dir];
+            result.contactA = result.contactB - result.collisionFrame[2] * penetration;
+        }
+    } else if (configuration == 1) {
+        s32 dir1, dir2;
 
-		contactA[dir] = sphereCenter[dir];
+        dir1 = neNextDim1[dir];
 
-		contactA[dir1] = flag1[dir1] * boxA.BoxSize(dir1);
+        dir2 = neNextDim2[dir];
 
-		contactA[dir2] = flag1[dir2] * boxA.BoxSize(dir2);
+        contactA[dir] = sphereCenter[dir];
 
-		neV3 sub = contactA - sphereCenter;
+        contactA[dir1] = flag1[dir1] * boxA.BoxSize(dir1);
 
-		f32 lenSq = sub[dir1] * sub[dir1] + 
-					sub[dir2] * sub[dir2];
+        contactA[dir2] = flag1[dir2] * boxA.BoxSize(dir2);
 
-		if (lenSq > sphereB.RadiusSq())
-			return;
-		
-		f32 len = sqrtf(lenSq);
+        neV3 sub = contactA - sphereCenter;
 
-		sub *= 1.0f / len;
+        f32 lenSq = sub[dir1] * sub[dir1] +
+                    sub[dir2] * sub[dir2];
 
-		penetration = sphereB.Radius() - len;
+        if (lenSq > sphereB.RadiusSq())
+            return;
 
-		ASSERT(penetration > 0.0f);
+        f32 len = sqrtf(lenSq);
 
-		result.depth = penetration;
+        sub *= 1.0f / len;
 
-		result.penetrate = true;
+        penetration = sphereB.Radius() - len;
 
-		result.collisionFrame[2] = transA.rot * sub;
+        ASSERT(penetration > 0.0f);
 
-		result.contactA = transA * contactA;
+        result.depth = penetration;
 
-		result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
-	}
-	else if (configuration == 2)
-	{
-		contactA.SetZero();
+        result.penetrate = true;
 
-		for (s32 i = 0; i < 3; i++)
-			contactA[i] += flag1[i] * boxA.BoxSize(i);
+        result.collisionFrame[2] = transA.rot * sub;
 
-		neV3 sub = contactA - sphereCenter;
+        result.contactA = transA * contactA;
 
-		f32 lenSq = sub.Dot(sub);
+        result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
+    } else if (configuration == 2) {
+        contactA.SetZero();
 
-		if (lenSq > sphereB.RadiusSq())
-			return;
-		
-		f32 len = sqrtf(lenSq);
+        for (s32 i = 0; i < 3; i++)
+            contactA[i] += flag1[i] * boxA.BoxSize(i);
 
-		penetration = sphereB.Radius() - len;
+        neV3 sub = contactA - sphereCenter;
 
-		sub *= 1.0f / len;
+        f32 lenSq = sub.Dot(sub);
 
-		ASSERT(penetration > 0.0f);
+        if (lenSq > sphereB.RadiusSq())
+            return;
 
-		result.depth = penetration;
+        f32 len = sqrtf(lenSq);
 
-		result.penetrate = true;
+        penetration = sphereB.Radius() - len;
 
-		result.collisionFrame[2] = transA.rot * sub;
+        sub *= 1.0f / len;
 
-		result.contactA = transA * contactA;
+        ASSERT(penetration > 0.0f);
 
-		result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
-	}
-	return;
+        result.depth = penetration;
+
+        result.penetrate = true;
+
+        result.collisionFrame[2] = transA.rot * sub;
+
+        result.contactA = transA * contactA;
+
+        result.contactB = transB.pos + result.collisionFrame[2] * sphereB.Radius();
+    }
+    return;
 }
 
-void Sphere2TerrainTest(neCollisionResult & result, TConvex & sphereA, neT3 & transA, TConvex & terrainB)
-{
-	neSimpleArray<s32> & _triIndex = *terrainB.as.terrain.triIndex;
+void Sphere2TerrainTest(neCollisionResult &result, TConvex &sphereA, neT3 &transA, TConvex &terrainB) {
+    neSimpleArray<s32> &_triIndex = *terrainB.as.terrain.triIndex;
 
-	s32 triangleCount = _triIndex.GetUsedCount();
+    s32 triangleCount = _triIndex.GetUsedCount();
 
-	neArray<neTriangle_> & triangleArray = *terrainB.as.terrain.triangles;
+    neArray<neTriangle_> &triangleArray = *terrainB.as.terrain.triangles;
 
-	ConvexTestResult res[2];
+    ConvexTestResult res[2];
 
-	s32 finalTriIndex = -1;
-	s32 currentRes = 1;
-	s32 testRes = 0;
+    s32 finalTriIndex = -1;
+    s32 currentRes = 1;
+    s32 testRes = 0;
 
-	res[currentRes].depth = -1.0e6f;
-	res[currentRes].valid = false;
-	res[testRes].depth = 1.0e6f;
-	
-	s32 terrainMatID = 0;
+    res[currentRes].depth = -1.0e6f;
+    res[currentRes].valid = false;
+    res[testRes].depth = 1.0e6f;
 
-	for (s32 i = 0; i < triangleCount; i++)
-	{
-		s32 test = _triIndex[i];
+    s32 terrainMatID = 0;
 
-		neTriangle_ * t = &triangleArray[_triIndex[i]];
+    for (s32 i = 0; i < triangleCount; i++) {
+        s32 test = _triIndex[i];
 
-		TriangleParam triParam;
+        neTriangle_ *t = &triangleArray[_triIndex[i]];
 
-		triParam.vert[0] = terrainB.vertices[t->indices[0]];
-		triParam.vert[1] = terrainB.vertices[t->indices[1]];
-		triParam.vert[2] = terrainB.vertices[t->indices[2]];
+        TriangleParam triParam;
 
-		triParam.edges[0] = triParam.vert[1] - triParam.vert[0];
-		triParam.edges[1] = triParam.vert[2] - triParam.vert[1];
-		triParam.edges[2] = triParam.vert[0] - triParam.vert[2];
-		triParam.normal = triParam.edges[0].Cross(triParam.edges[1]);
-		triParam.normal.Normalize();
-		triParam.d = triParam.normal.Dot(triParam.vert[0]);
+        triParam.vert[0] = terrainB.vertices[t->indices[0]];
+        triParam.vert[1] = terrainB.vertices[t->indices[1]];
+        triParam.vert[2] = terrainB.vertices[t->indices[2]];
 
-		if (t->flag == neTriangle::NE_TRI_TRIANGLE)
-		{
-			if (SphereTriTest(transA.pos, sphereA.Radius(), res[testRes], triParam))
-			{
-				if (res[testRes].depth > res[currentRes].depth)
-				{
-					s32 tmp = testRes;	
+        triParam.edges[0] = triParam.vert[1] - triParam.vert[0];
+        triParam.edges[1] = triParam.vert[2] - triParam.vert[1];
+        triParam.edges[2] = triParam.vert[0] - triParam.vert[2];
+        triParam.normal = triParam.edges[0].Cross(triParam.edges[1]);
+        triParam.normal.Normalize();
+        triParam.d = triParam.normal.Dot(triParam.vert[0]);
 
-					testRes = currentRes;
+        if (t->flag == neTriangle::NE_TRI_TRIANGLE) {
+            if (SphereTriTest(transA.pos, sphereA.Radius(), res[testRes], triParam)) {
+                if (res[testRes].depth > res[currentRes].depth) {
+                    s32 tmp = testRes;
 
-					currentRes = tmp;
+                    testRes = currentRes;
 
-					terrainMatID = t->materialID;
+                    currentRes = tmp;
 
-					finalTriIndex = _triIndex[i];
-				}
-			}
-		}
-		else if (t->flag == neTriangle::NE_TRI_HEIGHT_MAP)
-		{
-		}
-		else
-		{
-			ASSERT(0);
-		}
-	}
-	if (res[currentRes].valid)
-	{
-		result.penetrate = true;
+                    terrainMatID = t->materialID;
 
-		result.depth = res[currentRes].depth;
+                    finalTriIndex = _triIndex[i];
+                }
+            }
+        } else if (t->flag == neTriangle::NE_TRI_HEIGHT_MAP) {
+        } else {
+            ASSERT(0);
+        }
+    }
+    if (res[currentRes].valid) {
+        result.penetrate = true;
 
-		result.collisionFrame[2] = res[currentRes].contactNormal;
+        result.depth = res[currentRes].depth;
 
-		result.materialIdB = terrainMatID;
+        result.collisionFrame[2] = res[currentRes].contactNormal;
 
-		result.contactA = res[currentRes].contactA;
+        result.materialIdB = terrainMatID;
 
-		result.contactB = res[currentRes].contactB;
-	}
-	else
-	{
-		result.penetrate = false;
-	}
+        result.contactA = res[currentRes].contactA;
+
+        result.contactB = res[currentRes].contactB;
+    } else {
+        result.penetrate = false;
+    }
 }
 
-void MeasureSphereAndTriEdge(const neV3 & center, f32 radius, ConvexTestResult & result, TriangleParam & tri, s32 whichEdge)
-{
-	s32 whichVert0, whichVert1;
+void
+MeasureSphereAndTriEdge(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri, s32 whichEdge) {
+    s32 whichVert0, whichVert1;
 
-	whichVert0 = whichEdge;
+    whichVert0 = whichEdge;
 
-	whichVert1 = neNextDim1[whichEdge];
+    whichVert1 = neNextDim1[whichEdge];
 
-	f32 penetrate;
-	
-	neV3 dir = tri.edges[whichEdge];
+    f32 penetrate;
 
-	f32 edgeLen = dir.Length();
+    neV3 dir = tri.edges[whichEdge];
 
-	if (neIsConsiderZero(edgeLen))
-	{
-		dir.SetZero();
-	}
-	else
-	{
-		dir *= (1.0f / edgeLen);
-	}
-	neV3 vert2Point = center - tri.vert[whichVert0];
-	
-	f32 dot = dir.Dot(vert2Point);
+    f32 edgeLen = dir.Length();
 
-	neV3 project = tri.vert[whichVert0] + dot * dir;
+    if (neIsConsiderZero(edgeLen)) {
+        dir.SetZero();
+    } else {
+        dir *= (1.0f / edgeLen);
+    }
+    neV3 vert2Point = center - tri.vert[whichVert0];
 
-	if (dot > 0.0f && dot < edgeLen)
-	{
-		neV3 diff = center - project;
-			
-		f32 len = diff.Length();
-		
-		penetrate = radius - len;
+    f32 dot = dir.Dot(vert2Point);
 
-		if (penetrate > 0.0f && penetrate < result.depth && penetrate < radius)
-		{
-			result.valid = true;
+    neV3 project = tri.vert[whichVert0] + dot * dir;
 
-			result.depth = penetrate;
+    if (dot > 0.0f && dot < edgeLen) {
+        neV3 diff = center - project;
 
-			result.contactNormal = diff * (1.0f / len);
+        f32 len = diff.Length();
 
-			result.contactA = center - result.contactNormal * radius;
+        penetrate = radius - len;
 
-			result.contactB = project;
-		}
-	}
+        if (penetrate > 0.0f && penetrate < result.depth && penetrate < radius) {
+            result.valid = true;
+
+            result.depth = penetrate;
+
+            result.contactNormal = diff * (1.0f / len);
+
+            result.contactA = center - result.contactNormal * radius;
+
+            result.contactB = project;
+        }
+    }
 }
 
-void MeasureSphereAndTriVert(const neV3 & center, f32 radius, ConvexTestResult & result, TriangleParam & tri, s32 whichVert)
-{
-	neV3 diff = center - tri.vert[whichVert];
-		
-	f32 len = diff.Length();
-	
-	f32 penetrate = radius - len;
+void
+MeasureSphereAndTriVert(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri, s32 whichVert) {
+    neV3 diff = center - tri.vert[whichVert];
 
-	if (penetrate > 0.0f)
-	{
-		result.valid = true;
+    f32 len = diff.Length();
 
-		result.depth = penetrate;
+    f32 penetrate = radius - len;
 
-		result.contactNormal = diff * (1.0f / len);
+    if (penetrate > 0.0f) {
+        result.valid = true;
 
-		result.contactA = center - result.contactNormal * radius;
+        result.depth = penetrate;
 
-		result.contactB = tri.vert[whichVert];
-	}
+        result.contactNormal = diff * (1.0f / len);
+
+        result.contactA = center - result.contactNormal * radius;
+
+        result.contactB = tri.vert[whichVert];
+    }
 }
 
-neBool SphereTriTest(const neV3 & center, f32 radius, ConvexTestResult & result, TriangleParam & tri)
-{
-	//check sphere and triangle plane
-	result.depth = 1.e5f;
-	result.valid = false;
+neBool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri) {
+    //check sphere and triangle plane
+    result.depth = 1.e5f;
+    result.valid = false;
 
-	f32 distFromPlane = tri.normal.Dot(center) - tri.d;
+    f32 distFromPlane = tri.normal.Dot(center) - tri.d;
 
-	f32 factor = 1.0f;
+    f32 factor = 1.0f;
 
-	if (distFromPlane < 0.0f)
-		factor = -1.0f;
+    if (distFromPlane < 0.0f)
+        factor = -1.0f;
 
-	f32 penetrated = radius - distFromPlane * factor;
+    f32 penetrated = radius - distFromPlane * factor;
 
-	if (penetrated <= 0.0f)
-		return false;
+    if (penetrated <= 0.0f)
+        return false;
 
-	neV3 contactB = center - tri.normal * distFromPlane;
+    neV3 contactB = center - tri.normal * distFromPlane;
 
-	s32 pointInside = tri.IsPointInside(contactB);
+    s32 pointInside = tri.IsPointInside(contactB);
 
-	if (pointInside == -1) // inside the triangle
-	{
-		result.depth = penetrated;
+    if (pointInside == -1) // inside the triangle
+    {
+        result.depth = penetrated;
 
-		result.contactA = center - tri.normal * factor * radius; //on the sphere
+        result.contactA = center - tri.normal * factor * radius; //on the sphere
 
-		result.contactB = contactB;
+        result.contactB = contactB;
 
-		result.valid = true;
+        result.valid = true;
 
-		result.contactNormal = tri.normal * factor;
+        result.contactNormal = tri.normal * factor;
 
-		return true;
-	}
+        return true;
+    }
 
-	switch (pointInside)
-	{
-	case 0:
-		MeasureSphereAndTriVert(center, radius, result, tri, 0);
-		break;
+    switch (pointInside) {
+        case 0:
+            MeasureSphereAndTriVert(center, radius, result, tri, 0);
+            break;
 
-	case 1:
-		MeasureSphereAndTriEdge(center, radius, result, tri, 0);
-		break;
+        case 1:
+            MeasureSphereAndTriEdge(center, radius, result, tri, 0);
+            break;
 
-	case 2:
-		MeasureSphereAndTriVert(center, radius, result, tri, 1);
-		break;
+        case 2:
+            MeasureSphereAndTriVert(center, radius, result, tri, 1);
+            break;
 
-	case 3:
-		MeasureSphereAndTriEdge(center, radius, result, tri, 1);
-		break;
+        case 3:
+            MeasureSphereAndTriEdge(center, radius, result, tri, 1);
+            break;
 
-	case 4:
-		MeasureSphereAndTriVert(center, radius, result, tri, 2);
-		break;
+        case 4:
+            MeasureSphereAndTriVert(center, radius, result, tri, 2);
+            break;
 
-	case 5:
-		MeasureSphereAndTriEdge(center, radius, result, tri, 2);
-		break;
-	}
-	
-	return result.valid;
+        case 5:
+            MeasureSphereAndTriEdge(center, radius, result, tri, 2);
+            break;
+    }
+
+    return result.valid;
 }
 
-void Sphere2SphereTest(neCollisionResult & result, TConvex & sphereA, neT3 & transA, TConvex & sphereB, neT3 & transB)
-{
-	neV3 sub = transA.pos - transB.pos;
+void Sphere2SphereTest(neCollisionResult &result, TConvex &sphereA, neT3 &transA, TConvex &sphereB, neT3 &transB) {
+    neV3 sub = transA.pos - transB.pos;
 
-	f32 dot = sub.Dot(sub);
+    f32 dot = sub.Dot(sub);
 
-	f32 totalLen = sphereA.Radius() + sphereB.Radius();
+    f32 totalLen = sphereA.Radius() + sphereB.Radius();
 
-	totalLen *= totalLen;
+    totalLen *= totalLen;
 
-	if (dot >= totalLen)
-	{
-		result.penetrate = false;
+    if (dot >= totalLen) {
+        result.penetrate = false;
 
-		return;
-	}
+        return;
+    }
 
-	if (neIsConsiderZero(dot))
-	{
-		result.penetrate = false;
+    if (neIsConsiderZero(dot)) {
+        result.penetrate = false;
 
-		return;
-	}
-	f32 len = sub.Length();
+        return;
+    }
+    f32 len = sub.Length();
 
-	sub *= 1.0f / len;
+    sub *= 1.0f / len;
 
-	result.depth = sphereA.Radius() + sphereB.Radius() - len;
+    result.depth = sphereA.Radius() + sphereB.Radius() - len;
 
-	ASSERT(result.depth > 0.0f);
+    ASSERT(result.depth > 0.0f);
 
-	result.penetrate = true;
+    result.penetrate = true;
 
-	result.collisionFrame[2] = sub;
+    result.collisionFrame[2] = sub;
 
-	result.contactA = transA.pos - sub * sphereA.Radius();
+    result.contactA = transA.pos - sub * sphereA.Radius();
 
-	result.contactB = transB.pos + sub * sphereB.Radius();
+    result.contactB = transB.pos + sub * sphereB.Radius();
 }

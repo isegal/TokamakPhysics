@@ -11,14 +11,13 @@
  *                                                                       *
  *************************************************************************/
 
-class nePerformanceDataLinux: public nePerformanceData
-{
+class nePerformanceDataLinux : public nePerformanceData {
 public:
-	void Start();
+    void Start();
 
-	f32 GetCount();
+    f32 GetCount();
 
-	s64 perfFreq;
+    s64 perfFreq;
 
-	s64 counter;
+    s64 counter;
 };

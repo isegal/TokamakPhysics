@@ -44,32 +44,32 @@ public:
 };
 */
 
-class neFastImpulse
-{
+class neFastImpulse {
 public:
-	neRigidBody_ * bodyA;
-	neRigidBody_ * bodyB;
-	neV3 contactA;
-	neV3 contactB;
-	neM3 k;
-	neM3 kInv;
-	neV3 initRelVel;
-	neM3 collisionFrame;
-	neM3 w2c;
-	f32 relativeSpeedSq;
-	
+    neRigidBody_ *bodyA;
+    neRigidBody_ *bodyB;
+    neV3 contactA;
+    neV3 contactB;
+    neM3 k;
+    neM3 kInv;
+    neV3 initRelVel;
+    neM3 collisionFrame;
+    neM3 w2c;
+    f32 relativeSpeedSq;
+
 public:
-	void Init();
-	void Update();
-	void Apply(f32 scale);
+    void Init();
+
+    void Update();
+
+    void Apply(f32 scale);
 };
 
 
-struct nePhysicsMaterial
-{
-	f32 friction;
-	f32 resititution;
-	f32 density;
+struct nePhysicsMaterial {
+    f32 friction;
+    f32 resititution;
+    f32 density;
 };
 
 
@@ -81,132 +81,128 @@ struct nePhysicsMaterial
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 class neRegion;
 
-class neCoordList
-{
+class neCoordList {
 public:
-	neDLinkList<CCoordListEntry> coordList;
+    neDLinkList<CCoordListEntry> coordList;
 
-	void Add(neRigidBodyBase * bb, neRigidBodyBase * hint, s32 hintCoord);
+    void Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord);
 
-	bool Reserve(s32 size, neAllocatorAbstract * all = NULL)
-	{
-		return coordList.Reserve(size, all);
-	}
+    bool Reserve(s32 size, neAllocatorAbstract *all = NULL) {
+        return coordList.Reserve(size, all);
+    }
 
-	void Sort(bool sortOnly);
+    void Sort(bool sortOnly);
 
 #ifdef _DEBUG
 
-	void OuputDebug();
+    void OuputDebug();
 
 #endif
 
-	s32 dim;
+    s32 dim;
 
-	neByte dimPower2;
+    neByte dimPower2;
 
-	neRegion * region;
+    neRegion *region;
 };
 
 typedef struct neOverlappedPair neOverlappedPair;
 
-struct neOverlappedPair
-{
+struct neOverlappedPair {
 PLACEMENT_MAGIC
-	neRigidBodyBase * bodyA;
-	neRigidBodyBase * bodyB;
+
+    neRigidBodyBase *bodyA;
+    neRigidBodyBase *bodyB;
 };
 
 typedef struct neOverlapped neOverlapped;
 
-struct neOverlapped
-{
-	neByte status;
-	neOverlappedPair * pairItem;
+struct neOverlapped {
+    neByte status;
+    neOverlappedPair *pairItem;
 };
 
-struct neAddBodyInfo
-{
-	neRigidBodyBase * body;
+struct neAddBodyInfo {
+    neRigidBodyBase *body;
 
-	neRigidBodyBase * hint;
+    neRigidBodyBase *hint;
 };
 
-class neRegion 
-{
+class neRegion {
 public:
-	neRegion() {}
+    neRegion() {}
 
 //	enum {
 //		MAX_OVERLAPPED = 100000,
 //	};
-	enum {
-		SORT_DIMENSION_X = 1,
-		SORT_DIMENSION_Y = 2,
-		SORT_DIMENSION_Z = 4,
-	};
-	void Initialise(neFixedTimeStepSimulator * s, neByte sortD = (SORT_DIMENSION_X | SORT_DIMENSION_Y));
+    enum {
+        SORT_DIMENSION_X = 1,
+        SORT_DIMENSION_Y = 2,
+        SORT_DIMENSION_Z = 4,
+    };
 
-	bool AddBody(neRigidBodyBase * bb, neRigidBodyBase * hint);
+    void Initialise(neFixedTimeStepSimulator *s, neByte sortD = (SORT_DIMENSION_X | SORT_DIMENSION_Y));
 
-	void InsertCoordList(neRigidBodyBase * bb, neRigidBodyBase * hint);
+    bool AddBody(neRigidBodyBase *bb, neRigidBodyBase *hint);
 
-	void RemoveBody(neRigidBodyBase * bb);
+    void InsertCoordList(neRigidBodyBase *bb, neRigidBodyBase *hint);
 
-	void Update();
+    void RemoveBody(neRigidBodyBase *bb);
 
-	void Rebuild();
+    void Update();
 
-	neOverlapped * GetOverlappedStatus(neRigidBodyBase * a, neRigidBodyBase * b);
+    void Rebuild();
 
-	void ToggleOverlapStatus(neRigidBodyBase * a, neRigidBodyBase * b, neByte dimp2);
+    neOverlapped *GetOverlappedStatus(neRigidBodyBase *a, neRigidBodyBase *b);
 
-	void ResetOverlapStatus(neRigidBodyBase * a, neRigidBodyBase * b);
+    void ToggleOverlapStatus(neRigidBodyBase *a, neRigidBodyBase *b, neByte dimp2);
 
-	void MakeTerrain(neTriangleMesh * tris);
+    void ResetOverlapStatus(neRigidBodyBase *a, neRigidBodyBase *b);
 
-	void FreeTerrain();
+    void MakeTerrain(neTriangleMesh *tris);
 
-	neTriangleTree & GetTriangleTree() {return terrainTree;}
+    void FreeTerrain();
 
-	~neRegion();
+    neTriangleTree &GetTriangleTree() { return terrainTree; }
+
+    ~neRegion();
 
 public:
-	neByte sortDimension;
-		
-	neFixedTimeStepSimulator * sim;
+    neByte sortDimension;
 
-	s32 maxRigidBodies;
+    neFixedTimeStepSimulator *sim;
 
-	s32 maxAnimBodies;
+    s32 maxRigidBodies;
 
-	s32 totalBodies;
+    s32 maxAnimBodies;
 
-	s32 maxParticle;
+    s32 totalBodies;
+
+    s32 maxParticle;
 
 //	neArray<neOverlapped> rb2rb;
 
 //	neArray<neOverlapped> rb2ab;
 
-	neArray<neOverlapped> b2b;
+    neArray<neOverlapped> b2b;
 
-	neArray<neOverlapped> b2p;
+    neArray<neOverlapped> b2p;
 
-	neSimpleArray<neAddBodyInfo> newBodies;
+    neSimpleArray<neAddBodyInfo> newBodies;
 
-	neDLinkList<neRigidBodyBase *> bodies;
+    neDLinkList<neRigidBodyBase *> bodies;
 
-	neDLinkList<neOverlappedPair> overlappedPairs;
+    neDLinkList<neOverlappedPair> overlappedPairs;
 
-	neCoordList coordLists[3];
+    neCoordList coordLists[3];
 
-	neTriangleTree terrainTree;
+    neTriangleTree terrainTree;
 
 #ifdef _DEBUG_REGION
-	bool debugOn;
+    bool debugOn;
 #endif
 };
 
@@ -219,353 +215,363 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neCollisionTable_
-{
+class neCollisionTable_ {
 public:
-	enum
-	{
-		NE_COLLISION_TABLE_MAX = neCollisionTable::NE_COLLISION_TABLE_MAX,
-	};
+    enum {
+        NE_COLLISION_TABLE_MAX = neCollisionTable::NE_COLLISION_TABLE_MAX,
+    };
 
-	neCollisionTable_();
+    neCollisionTable_();
 
-	~neCollisionTable_();
+    ~neCollisionTable_();
 
-	void Set(s32 collisionID1, s32 collisionID2, neCollisionTable::neReponseBitFlag flag);
+    void Set(s32 collisionID1, s32 collisionID2, neCollisionTable::neReponseBitFlag flag);
 
-	neCollisionTable::neReponseBitFlag Get(s32 collisionID1, s32 collisionID2);
+    neCollisionTable::neReponseBitFlag Get(s32 collisionID1, s32 collisionID2);
 
-	s32 GetMaxCollisionID() {
-		return NE_COLLISION_TABLE_MAX;
-	};
+    s32 GetMaxCollisionID() {
+        return NE_COLLISION_TABLE_MAX;
+    };
 
 public:
-	neCollisionTable::neReponseBitFlag table[NE_COLLISION_TABLE_MAX][NE_COLLISION_TABLE_MAX];
+    neCollisionTable::neReponseBitFlag table[NE_COLLISION_TABLE_MAX][NE_COLLISION_TABLE_MAX];
 
-	neCollisionTable::neReponseBitFlag terrainTable[NE_COLLISION_TABLE_MAX];
+    neCollisionTable::neReponseBitFlag terrainTable[NE_COLLISION_TABLE_MAX];
 };
 
-class nePerformanceData
-{
+class nePerformanceData {
 public:
-	static nePerformanceData * Create();
+    static nePerformanceData *Create();
 
-	nePerformanceData()
-	{
-		Reset();
-	}
-	void Reset()
-	{
-		dynamic = 0.0f;
-		position = 0.0f;
-		constrain_1 = 0.0f;
-		constrain_2 = 0.0f;
-		cd = 0.0f;
-		cdCulling = 0.0f;
-		terrain = 0.0f;
-		terrainCulling = 0.0f;
-		controllerCallback = 0.0f;
-	}
-	void Start();
-	void Init();
-	f32 GetCount();
-	f32 GetTotalTime()
-	{
-		return dynamic + 
-				position +
-				constrain_1 +
-				constrain_2 +
-				cd +
-				cdCulling +
-				terrain +
-				terrainCulling +
-				controllerCallback;
-	};
+    nePerformanceData() {
+        Reset();
+    }
 
-	void UpdateDynamic();
-	void UpdatePosition();
-	void UpdateConstrain1();
-	void UpdateConstrain2();
-	void UpdateCD();
-	void UpdateCDCulling();
-	void UpdateTerrain();
-	void UpdateTerrainCulling();
-	void UpdateControllerCallback();
+    void Reset() {
+        dynamic = 0.0f;
+        position = 0.0f;
+        constrain_1 = 0.0f;
+        constrain_2 = 0.0f;
+        cd = 0.0f;
+        cdCulling = 0.0f;
+        terrain = 0.0f;
+        terrainCulling = 0.0f;
+        controllerCallback = 0.0f;
+    }
 
-	f32 dynamic;
+    void Start();
 
-	f32 position;
+    void Init();
 
-	f32 controllerCallback;
+    f32 GetCount();
 
-	f32 constrain_1;
+    f32 GetTotalTime() {
+        return dynamic +
+               position +
+               constrain_1 +
+               constrain_2 +
+               cd +
+               cdCulling +
+               terrain +
+               terrainCulling +
+               controllerCallback;
+    };
 
-	f32 constrain_2;
+    void UpdateDynamic();
 
-	f32 cdCulling;
+    void UpdatePosition();
 
-	f32 cd;
+    void UpdateConstrain1();
 
-	f32 terrain;
+    void UpdateConstrain2();
 
-	f32 terrainCulling;
+    void UpdateCD();
 
-	s32 perfFreqAdjust; // in case Freq is too big
+    void UpdateCDCulling();
 
-	s32 overheadTicks;   // overhead  in calling timer
+    void UpdateTerrain();
+
+    void UpdateTerrainCulling();
+
+    void UpdateControllerCallback();
+
+    f32 dynamic;
+
+    f32 position;
+
+    f32 controllerCallback;
+
+    f32 constrain_1;
+
+    f32 constrain_2;
+
+    f32 cdCulling;
+
+    f32 cd;
+
+    f32 terrain;
+
+    f32 terrainCulling;
+
+    s32 perfFreqAdjust; // in case Freq is too big
+
+    s32 overheadTicks;   // overhead  in calling timer
 };
 
-class neFixedTimeStepSimulator
-{
+class neFixedTimeStepSimulator {
 public:
-	friend class neRegion;
+    friend class neRegion;
 
-	enum {MAX_MATERIAL = 256,};
+    enum {
+        MAX_MATERIAL = 256,
+    };
 
-	neFixedTimeStepSimulator(const neSimulatorSizeInfo & _sizeInfo, neAllocatorAbstract * alloc = NULL, const neV3 * grav = NULL);
-	
-	~neFixedTimeStepSimulator();
+    neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = NULL,
+                             const neV3 *grav = NULL);
 
-	void Initialise(const neV3& gravity);
-	
-	neRigidBody_* CreateRigidBody(neBool isParticle = false);
+    ~neFixedTimeStepSimulator();
 
-	neRigidBody_ * CreateRigidBodyFromConvex(TConvex * convex, neRigidBodyBase * originalBody);
-	
-	neCollisionBody_* CreateCollisionBody();
+    void Initialise(const neV3 &gravity);
 
-	void Free(neRigidBodyBase * bb);
-	
-	void Advance(f32 time, u32 nStep, nePerformanceReport * _perfReport = NULL);
+    neRigidBody_ *CreateRigidBody(neBool isParticle = false);
 
-	void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport * _perfReport = NULL);
+    neRigidBody_ *CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody);
 
-	void Advance(nePerformanceReport * _perfReport = NULL);
+    neCollisionBody_ *CreateCollisionBody();
 
-	bool SetMaterial(s32 index, f32 friction, f32 restitution, f32 density);
+    void Free(neRigidBodyBase *bb);
 
-	bool GetMaterial(s32 index, f32& friction, f32& restitution, f32& density);
+    void Advance(f32 time, u32 nStep, nePerformanceReport *_perfReport = NULL);
 
-	f32 HandleCollision(neRigidBodyBase * bodyA, neRigidBodyBase * bodyB, neCollisionResult & cresult, neImpulseType impulseType, f32 scale = 0.0f);
+    void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = NULL);
 
-	void CollisionRigidParticle(neRigidBody_ * ba, neRigidBody_ * bb, neCollisionResult & cresult);
+    void Advance(nePerformanceReport *_perfReport = NULL);
 
-	void SimpleShift(const neCollisionResult & cresult);
+    bool SetMaterial(s32 index, f32 friction, f32 restitution, f32 density);
 
-	void RegisterPenetration(neRigidBodyBase * bodyA, neRigidBodyBase * bodyB, neCollisionResult & cresult);
+    bool GetMaterial(s32 index, f32 &friction, f32 &restitution, f32 &density);
 
-	void SetTerrainMesh(neTriangleMesh * tris);
+    f32 HandleCollision(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB, neCollisionResult &cresult,
+                        neImpulseType impulseType, f32 scale = 0.0f);
 
-	void FreeTerrainMesh();
+    void CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult);
 
-	void CreatePoint2PointConstraint(neRigidBodyBase * bodyA, const neV3 & pointA, neRigidBodyBase * bodyB, const neV3 & pointB);
+    void SimpleShift(const neCollisionResult &cresult);
 
-	neStackHeader * NewStackHeader(neStackInfo *);
+    void RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB, neCollisionResult &cresult);
 
-	neConstraintHeader * NewConstraintHeader();
+    void SetTerrainMesh(neTriangleMesh *tris);
 
-	void CheckStackHeader();
+    void FreeTerrainMesh();
 
-	neLogOutputCallback * SetLogOutputCallback(neLogOutputCallback * fn);
+    void
+    CreatePoint2PointConstraint(neRigidBodyBase *bodyA, const neV3 &pointA, neRigidBodyBase *bodyB, const neV3 &pointB);
 
-	neCollisionCallback * SetCollisionCallback(neCollisionCallback * fn);
+    neStackHeader *NewStackHeader(neStackInfo *);
 
-	void LogOutput(neSimulator::LOG_OUTPUT_LEVEL);
+    neConstraintHeader *NewConstraintHeader();
 
-	void SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl);
+    void CheckStackHeader();
 
-	void UpdateConstraintControllers();
+    neLogOutputCallback *SetLogOutputCallback(neLogOutputCallback *fn);
 
-	void FreeAllBodies();
+    neCollisionCallback *SetCollisionCallback(neCollisionCallback *fn);
 
-	void GetMemoryAllocated(s32 & memoryAllocated);
+    void LogOutput(neSimulator::LOG_OUTPUT_LEVEL);
 
-	neBool CheckBreakage(neRigidBodyBase * originalBody, TConvex * convex, const neV3 & contactPoint, neV3 & impulse);
+    void SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl);
 
-	void ResetTotalForce();
-	
-	void AdvanceDynamicRigidBodies();
-		
-	void AdvanceDynamicParticles();
+    void UpdateConstraintControllers();
 
-	void AdvancePositionRigidBodies();
-		
-	void AdvancePositionParticles();
+    void FreeAllBodies();
 
-	void ApplyJointDamping();
+    void GetMemoryAllocated(s32 &memoryAllocated);
 
-	void ClearCollisionBodySensors();
+    neBool CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint, neV3 &impulse);
 
-	void UpdateAABB();
+    void ResetTotalForce();
 
-	//f32 SolveDynamicLocal(neCollisionResult * cr);
+    void AdvanceDynamicRigidBodies();
 
-	f32 SolveLocal(neCollisionResult * cr);
+    void AdvanceDynamicParticles();
 
-	void AddContactConstraint(f32 & epsilon, s32 & iteration);
+    void AdvancePositionRigidBodies();
 
-	void SetGravity(const neV3 & g);
+    void AdvancePositionParticles();
 
-	neV3 CalcNormalImpulse(neCollisionResult & cresult, neBool isContact);
+    void ApplyJointDamping();
 
-	void ResetStackHeaderFlag();
+    void ClearCollisionBodySensors();
 
-	void AddCollisionResult(neCollisionResult & cresult);
+    void UpdateAABB();
 
-	neCollisionBody_ * GetTerrainBody()
-	{
-		return &fakeCollisionBody;
-	}
-	
+    //f32 SolveDynamicLocal(neCollisionResult * cr);
+
+    f32 SolveLocal(neCollisionResult *cr);
+
+    void AddContactConstraint(f32 &epsilon, s32 &iteration);
+
+    void SetGravity(const neV3 &g);
+
+    neV3 CalcNormalImpulse(neCollisionResult &cresult, neBool isContact);
+
+    void ResetStackHeaderFlag();
+
+    void AddCollisionResult(neCollisionResult &cresult);
+
+    neCollisionBody_ *GetTerrainBody() {
+        return &fakeCollisionBody;
+    }
+
 public:
-	neSimulatorSizeInfo sizeInfo;
+    neSimulatorSizeInfo sizeInfo;
 
-	nePerformanceReport * perfReport;
+    nePerformanceReport *perfReport;
 
-	nePerformanceData * perf;
+    nePerformanceData *perf;
 
-	neV3 gravity;
+    neV3 gravity;
 
-	neV3 gravityVector;
+    neV3 gravityVector;
 
-	f32 gravityMag;
+    f32 gravityMag;
 
-	f32 restingSpeed;
+    f32 restingSpeed;
 
-	s32 stepSoFar;
+    s32 stepSoFar;
 
-	f32 _currentTimeStep;
+    f32 _currentTimeStep;
 
-	f32 oneOnCurrentTimeStep;
+    f32 oneOnCurrentTimeStep;
 
-	f32 highEnergy;
+    f32 highEnergy;
 
 //	neConstraintSolver solver;
 
-	neDLinkList<neConstraintHeader> constraintHeaders;
+    neDLinkList<neConstraintHeader> constraintHeaders;
 
-	neDLinkList<_neConstraint> constraintHeap;
+    neDLinkList<_neConstraint> constraintHeap;
 
 //	neDLinkList<neMiniConstraint> miniConstraintHeap;
 
-	neDLinkList<neController> controllerHeap;
+    neDLinkList<neController> controllerHeap;
 
-	neStackInfoHeap stackInfoHeap;
+    neStackInfoHeap stackInfoHeap;
 
-	neStackHeaderHeap stackHeaderHeap;
+    neStackHeaderHeap stackHeaderHeap;
 
-	neStackHeader stackHeaderX;
+    neStackHeader stackHeaderX;
 
-	neDLinkList<neSensor_> sensorHeap;
+    neDLinkList<neSensor_> sensorHeap;
 
-	neDLinkList<TConvex> geometryHeap;
+    neDLinkList<TConvex> geometryHeap;
 
-	neSimpleArray<neByte *> pointerBuffer1;
+    neSimpleArray<neByte *> pointerBuffer1;
 
-	neSimpleArray<neByte *> pointerBuffer2;
+    neSimpleArray<neByte *> pointerBuffer2;
 
-	neSimulator::LOG_OUTPUT_LEVEL logLevel;
+    neSimulator::LOG_OUTPUT_LEVEL logLevel;
 
-	s32 solverStage;
+    s32 solverStage;
 
-	bool solverLastIteration;
+    bool solverLastIteration;
 
-	static char logBuffer[256];
+    static char logBuffer[256];
 
-	neSimpleArray<neCollisionResult> cresultHeap;
+    neSimpleArray<neCollisionResult> cresultHeap;
 
-	neSimpleArray<neCollisionResult> cresultHeap2;
+    neSimpleArray<neCollisionResult> cresultHeap2;
 
-	neConstraintHeader contactConstraintHeader;
+    neConstraintHeader contactConstraintHeader;
 
-	f32 magicNumber;
+    f32 magicNumber;
 
-	s32 currentRecord;
+    s32 currentRecord;
 
-	f32 timeFromLastFrame;
+    f32 timeFromLastFrame;
 
-	f32 lastTimeStep;
+    f32 lastTimeStep;
 
 protected:
-	void CheckCollision();
+    void CheckCollision();
 
-	void CheckTerrainCollision();
+    void CheckTerrainCollision();
 
-	void SolveAllConstrain();
+    void SolveAllConstrain();
 
-	void SolveOneConstrainChain(f32 epsilon, s32 iteration);
+    void SolveOneConstrainChain(f32 epsilon, s32 iteration);
 
-	void ResolvePenetration();
+    void ResolvePenetration();
 
-	void SolveContactConstrain();
+    void SolveContactConstrain();
 
-	void CheckIfStationary();
+    void CheckIfStationary();
 
-	nePhysicsMaterial materials[MAX_MATERIAL];
+    nePhysicsMaterial materials[MAX_MATERIAL];
 
 public:
 
-	neAllocatorAbstract * allocator;
+    neAllocatorAbstract *allocator;
 
-	neAllocatorDefault allocDef;
+    neAllocatorDefault allocDef;
 
 //data
 
-	u32 maxRigidBodies;
+    u32 maxRigidBodies;
 
-	u32 maxAnimBodies;
+    u32 maxAnimBodies;
 
-	u32 maxParticles;
+    u32 maxParticles;
 
-	neDLinkList<neRigidBody_> rigidBodyHeap;
+    neDLinkList<neRigidBody_> rigidBodyHeap;
 
-	neDLinkList<neCollisionBody_> collisionBodyHeap;
+    neDLinkList<neCollisionBody_> collisionBodyHeap;
 
-	neDLinkList<neRigidBody_> rigidParticleHeap;
+    neDLinkList<neRigidBody_> rigidParticleHeap;
 
-	neList<neRigidBody_> activeRB;
+    neList<neRigidBody_> activeRB;
 
-	neList<neRigidBody_> inactiveRB;
+    neList<neRigidBody_> inactiveRB;
 
-	neList<neCollisionBody_> activeCB;
+    neList<neCollisionBody_> activeCB;
 
-	neList<neCollisionBody_> inactiveCB;
+    neList<neCollisionBody_> inactiveCB;
 
-	neList<neRigidBody_> activeRP;
+    neList<neRigidBody_> activeRP;
 
-	neList<neRigidBody_> inactiveRP;
+    neList<neRigidBody_> inactiveRP;
 
-	neList<neCollisionResult> colResults;
+    neList<neCollisionResult> colResults;
 
-	neRegion region;
+    neRegion region;
 
-	neCollisionTable_ colTable;
+    neCollisionTable_ colTable;
 
-	neSimpleArray<neTreeNode*> treeNodes;
+    neSimpleArray<neTreeNode *> treeNodes;
 
-	neSimpleArray<s32> triangleIndex;
+    neSimpleArray<s32> triangleIndex;
 
-	neCollisionBody_ fakeCollisionBody;
+    neCollisionBody_ fakeCollisionBody;
 
 //state
-	bool buildCoordList;
+    bool buildCoordList;
 
 //others
-	neCollisionCallback * collisionCallback;
-	
-	neLogOutputCallback * logCallback;	
+    neCollisionCallback *collisionCallback;
 
-	neBreakageCallback * breakageCallback;
+    neLogOutputCallback *logCallback;
 
-	neTerrainTriangleQueryCallback * terrainQueryCallback;
+    neBreakageCallback *breakageCallback;
 
-	neCustomCDRB2RBCallback * customCDRB2RBCallback;
+    neTerrainTriangleQueryCallback *terrainQueryCallback;
 
-	neCustomCDRB2ABCallback * customCDRB2ABCallback;
+    neCustomCDRB2RBCallback *customCDRB2RBCallback;
 
-	s32 idleBodyCount;
+    neCustomCDRB2ABCallback *customCDRB2ABCallback;
+
+    s32 idleBodyCount;
 };
 
 #endif

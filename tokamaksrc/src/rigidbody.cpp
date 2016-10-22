@@ -42,31 +42,29 @@
 *
 *	neRigidBodyState::neRigidBodyState
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neRigidBodyState::neRigidBodyState()
-{
-	q.Identity();
+neRigidBodyState::neRigidBodyState() {
+    q.Identity();
 
-	b2w.SetIdentity();
-	
+    b2w.SetIdentity();
+
 //	b2w.pos.SetZero(); // x
-	
-	angularMom.SetZero(); // L
-	
+
+    angularMom.SetZero(); // L
+
 //	rot().SetIdentity();
-	
-	linearMom.SetZero();
+
+    linearMom.SetZero();
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::~neRigidBody_
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neRigidBody_::~neRigidBody_()
-{
+neRigidBody_::~neRigidBody_() {
 
 }
 
@@ -74,345 +72,324 @@ neRigidBody_::~neRigidBody_()
 *
 *	neRigidBody_::neRigidBody_
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neRigidBody_::neRigidBody_()
-{
-	btype = NE_OBJECT_RIGID;
+neRigidBody_::neRigidBody_() {
+    btype = NE_OBJECT_RIGID;
 
-	rbExtra = &eggs;
+    rbExtra = &eggs;
 
-	curState = 0;
-	
-	mass = ne_Default_Mass;
+    curState = 0;
 
-	oneOnMass = 1.0f / ne_Default_Mass;
-	
-	IbodyInv.SetZero();
-	
-	IbodyInv.M[0][0] = oneOnMass;
-	IbodyInv.M[1][1] = oneOnMass;
-	IbodyInv.M[2][2] = oneOnMass;
+    mass = ne_Default_Mass;
 
-	Ibody.SetZero();
+    oneOnMass = 1.0f / ne_Default_Mass;
 
-	IbodyInv.M[0][0] = ne_Default_Mass;
-	IbodyInv.M[1][1] = ne_Default_Mass;
-	IbodyInv.M[2][2] = ne_Default_Mass;
+    IbodyInv.SetZero();
 
-	cookies = 0;
+    IbodyInv.M[0][0] = oneOnMass;
+    IbodyInv.M[1][1] = oneOnMass;
+    IbodyInv.M[2][2] = oneOnMass;
 
-	force.SetZero();
-	torque.SetZero();
+    Ibody.SetZero();
 
-	gravityOn = true;
+    IbodyInv.M[0][0] = ne_Default_Mass;
+    IbodyInv.M[1][1] = ne_Default_Mass;
+    IbodyInv.M[2][2] = ne_Default_Mass;
 
-	status = NE_RBSTATUS_NORMAL;
-	
-	SetConstraintHeader(NULL);
+    cookies = 0;
 
-	s32 i;
+    force.SetZero();
+    torque.SetZero();
 
-	for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		GetRestRecord(i).Init();
-	}
-	for (i = 0; i < NE_RB_MAX_PAST_RECORDS; i++)
-	{
-		GetVelRecord(i).SetZero();
-		GetAngVelRecord(i).SetZero();
-		dvRecord[i].SetZero();
-		davRecord[i].SetZero();
-	}
+    gravityOn = true;
 
-	stackInfo = NULL;
+    status = NE_RBSTATUS_NORMAL;
 
-	lowEnergyCounter = 0;
+    SetConstraintHeader(NULL);
 
-	GetRestHull().htype = neRestHull::NONE;
+    s32 i;
 
-	isShifted = isShifted2 = false;
+    for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        GetRestRecord(i).Init();
+    }
+    for (i = 0; i < NE_RB_MAX_PAST_RECORDS; i++) {
+        GetVelRecord(i).SetZero();
+        GetAngVelRecord(i).SetZero();
+        dvRecord[i].SetZero();
+        davRecord[i].SetZero();
+    }
 
-	controllers = NULL;
+    stackInfo = NULL;
 
-	controllerCursor = NULL;
+    lowEnergyCounter = 0;
 
-	gforce.SetZero();
+    GetRestHull().htype = neRestHull::NONE;
 
-	cforce.SetZero();
+    isShifted = isShifted2 = false;
 
-	ctorque.SetZero();
+    controllers = NULL;
 
-	subType = NE_RIGID_NORMAL;
+    controllerCursor = NULL;
 
-	acc.SetZero();
+    gforce.SetZero();
 
-	angularDamp = 0.0f;
+    cforce.SetZero();
 
-	linearDamp = 0.0f;
+    ctorque.SetZero();
 
-	sleepingParam = 0.2f;
+    subType = NE_RIGID_NORMAL;
 
-	SyncOldState();
+    acc.SetZero();
+
+    angularDamp = 0.0f;
+
+    linearDamp = 0.0f;
+
+    sleepingParam = 0.2f;
+
+    SyncOldState();
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::Free
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::Free()
-{
-	neRigidBodyBase::Free();
+void neRigidBody_::Free() {
+    neRigidBodyBase::Free();
 
-	//free controller
+    //free controller
 
-	neFreeListItem<neController> * ci = (neFreeListItem<neController> *) controllers;
+    neFreeListItem<neController> *ci = (neFreeListItem<neController> *) controllers;
 
-	while (ci)
-	{
-		neFreeListItem<neController> * next = ci->next;
+    while (ci) {
+        neFreeListItem<neController> *next = ci->next;
 
-		ci->Remove();
+        ci->Remove();
 
-		sim->controllerHeap.Dealloc((neController *)ci, 1);
+        sim->controllerHeap.Dealloc((neController *) ci, 1);
 
-		ci = next;
-	}
-	controllers = NULL;
+        ci = next;
+    }
+    controllers = NULL;
 
-	//free constraint header
+    //free constraint header
 
-	RemoveConstraintHeader();
+    RemoveConstraintHeader();
 
-	//free stack
-	
-	if (stackInfo)
-	{
-		ASSERT(stackInfo->stackHeader);
+    //free stack
 
-		stackInfo->stackHeader->Remove(stackInfo);
+    if (stackInfo) {
+        ASSERT(stackInfo->stackHeader);
 
-		//sim->stackInfoHeap.Dealloc(stackInfo, 1);
-		FreeStackInfo();
-	}
-	for (s32 i = 0; i < NE_MAX_REST_ON; i++)
-	{
-		GetRestRecord(i).SetInvalid();
-	}
+        stackInfo->stackHeader->Remove(stackInfo);
+
+        //sim->stackInfoHeap.Dealloc(stackInfo, 1);
+        FreeStackInfo();
+    }
+    for (s32 i = 0; i < NE_MAX_REST_ON; i++) {
+        GetRestRecord(i).SetInvalid();
+    }
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::RecalcInertiaTensor
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::RecalcInertiaTensor()
-{
-	if (col.convexCount == 0)	
-		return;
+void neRigidBody_::RecalcInertiaTensor() {
+    if (col.convexCount == 0)
+        return;
 
-	neM3 tensor;
-	neV3 cogShift;
-	f32 _mass = 0.0f;
+    neM3 tensor;
+    neV3 cogShift;
+    f32 _mass = 0.0f;
 
-	f32 density = 0.0f;
-	f32 friction = 0.0f;
-	f32 restitution = 0.0f;
+    f32 density = 0.0f;
+    f32 friction = 0.0f;
+    f32 restitution = 0.0f;
 
-	cogShift.SetZero();
+    cogShift.SetZero();
 
-	tensor.SetZero();
+    tensor.SetZero();
 
-	if (col.convexCount == 1)
-	{
-		sim->GetMaterial(col.obb.GetMaterialId(), friction, restitution, density);
+    if (col.convexCount == 1) {
+        sim->GetMaterial(col.obb.GetMaterialId(), friction, restitution, density);
 
-		tensor = col.obb.CalcInertiaTensor(density, _mass);
-		
-		IbodyInv.SetInvert(tensor);
+        tensor = col.obb.CalcInertiaTensor(density, _mass);
 
-		mass = _mass;
+        IbodyInv.SetInvert(tensor);
 
-		cogShift = col.obb.c2p.pos * _mass;
-	}
-	else
-	{
-		s32 i;
-		f32 m;
-		neM3 _tensor;
+        mass = _mass;
 
-		for (i = 0; i < col.convexCount; i++)
-		{
-			sim->GetMaterial(col.convex[i].GetMaterialId() , friction, restitution, density);
+        cogShift = col.obb.c2p.pos * _mass;
+    } else {
+        s32 i;
+        f32 m;
+        neM3 _tensor;
 
-			_tensor = col.convex[i].CalcInertiaTensor(density, m);
-			
-			tensor += _tensor;
+        for (i = 0; i < col.convexCount; i++) {
+            sim->GetMaterial(col.convex[i].GetMaterialId(), friction, restitution, density);
 
-			_mass += m;
+            _tensor = col.convex[i].CalcInertiaTensor(density, m);
 
-			cogShift += col.convex[i].c2p.pos * _mass;
-		}
+            tensor += _tensor;
 
-		mass = _mass;		
-	}
-	oneOnMass = 1.0f/mass;
+            _mass += m;
 
-	cogShift =  cogShift * (1.0f / mass);
+            cogShift += col.convex[i].c2p.pos * _mass;
+        }
 
-	TranslateCOM(tensor, cogShift, mass, -1.0f);
+        mass = _mass;
+    }
+    oneOnMass = 1.0f / mass;
 
-	Ibody = tensor;
+    cogShift = cogShift * (1.0f / mass);
 
-	IbodyInv.SetInvert(tensor);
+    TranslateCOM(tensor, cogShift, mass, -1.0f);
+
+    Ibody = tensor;
+
+    IbodyInv.SetInvert(tensor);
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::AddController
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neController * neRigidBody_::AddController(neRigidBodyControllerCallback * rbc, s32 period)
-{
-	neController * c = sim->controllerHeap.Alloc(1);
+neController *neRigidBody_::AddController(neRigidBodyControllerCallback *rbc, s32 period) {
+    neController *c = sim->controllerHeap.Alloc(1);
 
-	if (!c)
-	{
-		sprintf(sim->logBuffer, MSG_CONTROLLER_FULL);
-		
-		sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+    if (!c) {
+        sprintf(sim->logBuffer, MSG_CONTROLLER_FULL);
 
-		return NULL;
-	}
-	if (!controllers)
-	{
-		controllers = c;
-	}
-	else
-	{
-		//((neControllerItem *)controllers)->Append((neControllerItem *)c);		
+        sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		neControllerItem * citem = (neControllerItem *)controllers;
+        return NULL;
+    }
+    if (!controllers) {
+        controllers = c;
+    } else {
+        //((neControllerItem *)controllers)->Append((neControllerItem *)c);
 
-		while (citem->next)
-		{
-			citem = citem->next;
-		}
-		citem->Append((neControllerItem *)c);
-	}
-	c->rb = this;
+        neControllerItem *citem = (neControllerItem *) controllers;
 
-	c->constraint = NULL;
+        while (citem->next) {
+            citem = citem->next;
+        }
+        citem->Append((neControllerItem *) c);
+    }
+    c->rb = this;
 
-	c->rbc = rbc;
+    c->constraint = NULL;
 
-	c->jc = NULL;
+    c->rbc = rbc;
 
-	c->period = period;
+    c->jc = NULL;
 
-	c->count = period;
+    c->period = period;
 
-	c->forceA.SetZero();
+    c->count = period;
 
-	c->torqueA.SetZero();
+    c->forceA.SetZero();
 
-	c->forceB.SetZero();
+    c->torqueA.SetZero();
 
-	c->torqueB.SetZero();
+    c->forceB.SetZero();
 
-	return c;
+    c->torqueB.SetZero();
+
+    return c;
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::BeginIterateController
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::BeginIterateController()
-{
-	controllerCursor = (neControllerItem *)controllers;
+void neRigidBody_::BeginIterateController() {
+    controllerCursor = (neControllerItem *) controllers;
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::GetNextController
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neController * neRigidBody_::GetNextController()
-{
-	if (!controllerCursor)
-		return NULL;
+neController *neRigidBody_::GetNextController() {
+    if (!controllerCursor)
+        return NULL;
 
-	neController * ret = (neController *)controllerCursor;
+    neController *ret = (neController *) controllerCursor;
 
-	controllerCursor = controllerCursor->next;
+    controllerCursor = controllerCursor->next;
 
-	return ret;
+    return ret;
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::GravityEnable
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::GravityEnable(neBool yes)
+void neRigidBody_::GravityEnable(neBool
+yes)
 {
-	gravityOn = yes;
+gravityOn = yes;
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::UpdateDerive
 *
-****************************************************************************/ 
-void neRigidBody_::SetAngMom(const neV3 & am)
-{
-	neQ		w;
-	
-	State().angularMom = am;
+****************************************************************************/
+void neRigidBody_::SetAngMom(const neV3 &am) {
+    neQ w;
 
-	Derive().angularVel = Derive().Iinv * State().angularMom;
+    State().angularMom = am;
 
-	w.Set(Derive().angularVel, 0.0f);
+    Derive().angularVel = Derive().Iinv * State().angularMom;
 
-	Derive().qDot = w * State().q;
+    w.Set(Derive().angularVel, 0.0f);
 
-	Derive().qDot *= 0.5f;
+    Derive().qDot = w * State().q;
+
+    Derive().qDot *= 0.5f;
 }
 
-void neRigidBody_::UpdateDerive()
-{
-	neRigidBodyState & state = State();
-	
-	state.q = state.q.Normalize();
+void neRigidBody_::UpdateDerive() {
+    neRigidBodyState & state = State();
 
-	state.rot() = state.q.BuildMatrix3();
+    state.q = state.q.Normalize();
 
-	// Iinv = R * IbodyInv Rtrans
-	//derive.Iinv = state.rot() * IbodyInv * neM3_BuildTranspose(state.rot());
-	derive.Iinv = state.rot() * IbodyInv * neM3().SetTranspose(state.rot());
+    state.rot() = state.q.BuildMatrix3();
 
-	// w = Iinv * L
-	derive.angularVel = derive.Iinv * state.angularMom;
+    // Iinv = R * IbodyInv Rtrans
+    //derive.Iinv = state.rot() * IbodyInv * neM3_BuildTranspose(state.rot());
+    derive.Iinv = state.rot() * IbodyInv * neM3().SetTranspose(state.rot());
 
-	neQ w;
-	w.W = 0.0f;
-	w.X = derive.angularVel[0];
-	w.Y = derive.angularVel[1];
-	w.Z = derive.angularVel[2];
+    // w = Iinv * L
+    derive.angularVel = derive.Iinv * state.angularMom;
 
-	derive.qDot = w * state.q;
+    neQ w;
+    w.W = 0.0f;
+    w.X = derive.angularVel[0];
+    w.Y = derive.angularVel[1];
+    w.Z = derive.angularVel[2];
 
-	derive.qDot = derive.qDot * 0.5f;
+    derive.qDot = w * state.q;
 
-	derive.speed = derive.linearVel.Length();
+    derive.qDot = derive.qDot * 0.5f;
+
+    derive.speed = derive.linearVel.Length();
 }
 
 
@@ -420,111 +397,104 @@ void neRigidBody_::UpdateDerive()
 *
 *	neRigidBody_::Advance
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::AdvanceDynamic(f32 tStep)
-{
-	oldCounter++;
+void neRigidBody_::AdvanceDynamic(f32 tStep) {
+    oldCounter++;
 
-	totalDV.SetZero();
+    totalDV.SetZero();
 
-	totalDA.SetZero();
+    totalDA.SetZero();
 
-	impulseCount = 0;
+    impulseCount = 0;
 
-	twistCount = 0;
-	
-	isAddedToSolver = false;
+    twistCount = 0;
 
-	if (status == neRigidBody_::NE_RBSTATUS_IDLE)
-	{
-		if (!cforce.IsConsiderZero())
-			WakeUp();
-		
-		if (!ctorque.IsConsiderZero())
-			WakeUp();
-	}
+    isAddedToSolver = false;
 
-	if (status == neRigidBody_::NE_RBSTATUS_IDLE)
-	{
-		if (CheckStillIdle())
-		{
-			return;
-		}
-	}
+    if (status == neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (!cforce.IsConsiderZero())
+            WakeUp();
 
-	if (status == neRigidBody_::NE_RBSTATUS_ANIMATED)
-	{
-		return;
-	}
+        if (!ctorque.IsConsiderZero())
+            WakeUp();
+    }
 
-	dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].SetZero();
-	davRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].SetZero();
+    if (status == neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (CheckStillIdle()) {
+            return;
+        }
+    }
 
-	neRigidBodyState & state = State();
+    if (status == neRigidBody_::NE_RBSTATUS_ANIMATED) {
+        return;
+    }
 
-	int newStateId = (curState + 1) % MAX_RB_STATES;
+    dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].SetZero();
+    davRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].SetZero();
 
-	neRigidBodyState & newState = stateBuffer[newStateId];
+    neRigidBodyState & state = State();
 
-	totalForce += (force + gforce + cforce);
+    int newStateId = (curState + 1) % MAX_RB_STATES;
 
-	dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] = totalForce * oneOnMass * tStep;
+    neRigidBodyState & newState = stateBuffer[newStateId];
 
-	acc = totalForce * oneOnMass;
+    totalForce += (force + gforce + cforce);
 
-	derive.linearVel += acc * tStep;
+    dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] = totalForce * oneOnMass * tStep;
 
-	derive.linearVel *= (1.0f - linearDamp);
+    acc = totalForce * oneOnMass;
 
-	totalTorque += (torque + ctorque);
+    derive.linearVel += acc * tStep;
 
-	//L = L0 + torque * t
+    derive.linearVel *= (1.0f - linearDamp);
 
-	MidPointIntegration(totalTorque, tStep);
+    totalTorque += (torque + ctorque);
+
+    //L = L0 + torque * t
+
+    MidPointIntegration(totalTorque, tStep);
 }
 
-void neRigidBody_::MidPointIntegration(const neV3 & totalTorque, f32 tStep)
-{
-	State().angularMom *= (1.0f - angularDamp);
-	
-	neV3 newAngularMom = State().angularMom + totalTorque * tStep;
+void neRigidBody_::MidPointIntegration(const neV3 &totalTorque, f32 tStep) {
+    State().angularMom *= (1.0f - angularDamp);
 
-	neQ tmpQ;
+    neV3 newAngularMom = State().angularMom + totalTorque * tStep;
 
-	tmpQ = State().q;
+    neQ tmpQ;
 
-	f32 midStep = tStep * 0.5f;
+    tmpQ = State().q;
 
-	tmpQ = State().q + Derive().qDot * midStep;
+    f32 midStep = tStep * 0.5f;
 
-	neV3 tmpL = State().angularMom + totalTorque  * midStep;
+    tmpQ = State().q + Derive().qDot * midStep;
 
-	tmpQ = tmpQ.Normalize();
+    neV3 tmpL = State().angularMom + totalTorque * midStep;
 
-	neM3 rot = tmpQ.BuildMatrix3();
+    tmpQ = tmpQ.Normalize();
 
-	neM3 tmpIinv = rot * IbodyInv * neM3().SetTranspose(rot);
+    neM3 rot = tmpQ.BuildMatrix3();
 
-	neV3 tmpAngVel = tmpIinv * tmpL;
+    neM3 tmpIinv = rot * IbodyInv * neM3().SetTranspose(rot);
 
-	neQ tmpW; 
-	
-	tmpW.Set(tmpAngVel, 0.0f);
+    neV3 tmpAngVel = tmpIinv * tmpL;
 
-	Derive().qDot = tmpW * tmpQ * 0.5f;
+    neQ tmpW;
 
-	curState = (curState + 1) % MAX_RB_STATES;
+    tmpW.Set(tmpAngVel, 0.0f);
 
-	State().angularMom = newAngularMom;
+    Derive().qDot = tmpW * tmpQ * 0.5f;
 
-	Derive().angularVel = tmpAngVel;
+    curState = (curState + 1) % MAX_RB_STATES;
 
-	//SetAngMom(am);
+    State().angularMom = newAngularMom;
+
+    Derive().angularVel = tmpAngVel;
+
+    //SetAngMom(am);
 }
 
-void neRigidBody_::ImprovedEulerIntegration(const neV3 & totalTorque, f32 tStep)
-{
+void neRigidBody_::ImprovedEulerIntegration(const neV3 &totalTorque, f32 tStep) {
 /*	neV3 newAngularMom = State().angularMom + totalTorque * tStep;
 
 	neQ tmpQ = State().q + Derive().qDot * tStep;
@@ -545,8 +515,7 @@ void neRigidBody_::ImprovedEulerIntegration(const neV3 & totalTorque, f32 tStep)
 */
 }
 
-void neRigidBody_::RungeKutta4Integration(const neV3 & totalTorque, f32 tStep)
-{
+void neRigidBody_::RungeKutta4Integration(const neV3 &totalTorque, f32 tStep) {
 /*	neV3 newAngularMom = State().angularMom + totalTorque * tStep;
 
 	neQ q1, q2, q3, q4;
@@ -565,8 +534,7 @@ void neRigidBody_::RungeKutta4Integration(const neV3 & totalTorque, f32 tStep)
 */
 }
 
-void neRigidBody_::AdvancePosition(f32 tStep)
-{
+void neRigidBody_::AdvancePosition(f32 tStep) {
 //	needSolveContactDynamic = true;
 
 //	totalForce.SetZero();
@@ -576,17 +544,17 @@ void neRigidBody_::AdvancePosition(f32 tStep)
 //	if (status == neRigidBody_::NE_RBSTATUS_IDLE)
 //		return;
 
-	//derive.linearVel *= 0.99;
+    //derive.linearVel *= 0.99;
 
-	neV3 newPos;
+    neV3 newPos;
 
-	newPos = GetPos() + derive.linearVel * tStep + 0.5f * acc * tStep * tStep;
+    newPos = GetPos() + derive.linearVel * tStep + 0.5f * acc * tStep * tStep;
 
-	neV3 bv = newPos - GetPos();
+    neV3 bv = newPos - GetPos();
 
-	backupVector = 0.7f * backupVector + 0.3f * bv;
+    backupVector = 0.7f * backupVector + 0.3f * bv;
 
-	SetPos(newPos);
+    SetPos(newPos);
 
 //	derive.linearVel += acc * tStep;
 /*	
@@ -614,107 +582,98 @@ void neRigidBody_::AdvancePosition(f32 tStep)
 
 	neQ tmpQDot = tmpW * tmpQ * 0.5f;
 */
-	//q = q0 + qdot * t
+    //q = q0 + qdot * t
 
-	neV3 am = State().angularMom;// * 0.95f;
+    neV3 am = State().angularMom;// * 0.95f;
 
-	SetAngMom(am);
+    SetAngMom(am);
 
-	State().q = State().q + Derive().qDot * tStep;
+    State().q = State().q + Derive().qDot * tStep;
 
-	UpdateDerive();
+    UpdateDerive();
 
-	UpdateController();
+    UpdateController();
 
-	if (sensors)
-		ClearSensor();
+    if (sensors)
+        ClearSensor();
 
-	GetVelRecord(sim->stepSoFar % NE_RB_MAX_PAST_RECORDS) = Derive().linearVel;
+    GetVelRecord(sim->stepSoFar % NE_RB_MAX_PAST_RECORDS) = Derive().linearVel;
 
-	GetAngVelRecord(sim->stepSoFar % NE_RB_MAX_PAST_RECORDS) = Derive().angularVel;
+    GetAngVelRecord(sim->stepSoFar % NE_RB_MAX_PAST_RECORDS) = Derive().angularVel;
 
-	//CheckForIdle();
+    //CheckForIdle();
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::UpdateController
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::UpdateController()
-{	
-	if (gravityOn && status != neRigidBody_::NE_RBSTATUS_IDLE)
-	{
-		gforce = sim->gravity * mass;
-	}
-	else
-	{
-		gforce.SetZero();
-	}
+void neRigidBody_::UpdateController() {
+    if (gravityOn && status != neRigidBody_::NE_RBSTATUS_IDLE) {
+        gforce = sim->gravity * mass;
+    } else {
+        gforce.SetZero();
+    }
 
-	cforce.SetZero();
+    cforce.SetZero();
 
-	ctorque.SetZero();
+    ctorque.SetZero();
 
-	neControllerItem * ci = (neControllerItem *)controllers;
+    neControllerItem *ci = (neControllerItem *) controllers;
 
-	while (ci)
-	{
-		neController * con = (neController *) ci;
+    while (ci) {
+        neController *con = (neController *) ci;
 
-		ci = ci->next;
+        ci = ci->next;
 
-		if (con->count == 0)
-		{
-			ASSERT(con->rbc);
-			
-			con->rbc->RigidBodyControllerCallback((neRigidBodyController*)con, sim->_currentTimeStep);
+        if (con->count == 0) {
+            ASSERT(con->rbc);
 
-			con->count = con->period;
-		}
-		else
-		{
-			con->count--;
-		}
-		con->rb->cforce += con->forceA;
+            con->rbc->RigidBodyControllerCallback((neRigidBodyController *) con, sim->_currentTimeStep);
 
-		con->rb->ctorque += con->torqueA;
-	}
+            con->count = con->period;
+        } else {
+            con->count--;
+        }
+        con->rb->cforce += con->forceA;
+
+        con->rb->ctorque += con->torqueA;
+    }
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::UpdateAABB
 *
-****************************************************************************/ 
+****************************************************************************/
 
-void neRigidBody_::UpdateAABB()
-{
-	if (col.convexCount == 0 && !isCustomCD)
-		return;
+void neRigidBody_::UpdateAABB() {
+    if (col.convexCount == 0 && !isCustomCD)
+        return;
 
 //	for (s32 i = 0; i < 3; i++)
-	{
+    {
 #if 0
-		if (minCoord[0])
-			minCoord[0]->value = p[0] /*- neAbs(c2w[0][0]) - neAbs(c2w[0][1]) - neAbs(c2w[0][2])*/ - col.boundingRadius;
-		if (maxCoord[0])
-			maxCoord[0]->value = p[0] /*+ neAbs(c2w[0][0]) + neAbs(c2w[0][1]) + neAbs(c2w[0][2]);//*/ + col.boundingRadius;
+        if (minCoord[0])
+            minCoord[0]->value = p[0] /*- neAbs(c2w[0][0]) - neAbs(c2w[0][1]) - neAbs(c2w[0][2])*/ - col.boundingRadius;
+        if (maxCoord[0])
+            maxCoord[0]->value = p[0] /*+ neAbs(c2w[0][0]) + neAbs(c2w[0][1]) + neAbs(c2w[0][2]);//*/ + col.boundingRadius;
 
-		if (minCoord[1])
-			minCoord[1]->value = p[1] /*- neAbs(c2w[1][0]) - neAbs(c2w[1][1]) - neAbs(c2w[1][2])*/ - col.boundingRadius;
-		if (maxCoord[1])
-			maxCoord[1]->value = p[1] /*+ neAbs(c2w[1][0]) + neAbs(c2w[1][1]) + neAbs(c2w[1][2]);*/ + col.boundingRadius;
-		
-		if (minCoord[2])
-			minCoord[2]->value = p[2] /*- neAbs(c2w[2][0]) - neAbs(c2w[2][1]) - neAbs(c2w[2][2])*/ - col.boundingRadius;
-		if (maxCoord[2])
-			maxCoord[2]->value = p[2] /*+ neAbs(c2w[2][0]) + neAbs(c2w[2][1]) + neAbs(c2w[2][2]);*/ + col.boundingRadius;
+        if (minCoord[1])
+            minCoord[1]->value = p[1] /*- neAbs(c2w[1][0]) - neAbs(c2w[1][1]) - neAbs(c2w[1][2])*/ - col.boundingRadius;
+        if (maxCoord[1])
+            maxCoord[1]->value = p[1] /*+ neAbs(c2w[1][0]) + neAbs(c2w[1][1]) + neAbs(c2w[1][2]);*/ + col.boundingRadius;
+
+        if (minCoord[2])
+            minCoord[2]->value = p[2] /*- neAbs(c2w[2][0]) - neAbs(c2w[2][1]) - neAbs(c2w[2][2])*/ - col.boundingRadius;
+        if (maxCoord[2])
+            maxCoord[2]->value = p[2] /*+ neAbs(c2w[2][0]) + neAbs(c2w[2][1]) + neAbs(c2w[2][2]);*/ + col.boundingRadius;
 #else
-		//neM3 & rot = State().rot();
+        //neM3 & rot = State().rot();
 
-		neT3 c2w = State().b2w * obb; 
+        neT3 c2w = State().b2w * obb;
 /*
 		neM3 c2w2 = rot * dobb;
 
@@ -737,190 +696,175 @@ void neRigidBody_::UpdateAABB()
 	c2w.M[2][2] = obb.M[2][0] * rot.M[0][2] + obb.M[2][1] * rot.M[1][2] + obb.M[2][2] * rot.M[2][2];
 */
 
-		neV3 &p = c2w.pos;
+        neV3 & p = c2w.pos;
 
-		f32 a = neAbs(c2w.rot[0][0]) + neAbs(c2w.rot[1][0]) + neAbs(c2w.rot[2][0]);
+        f32 a = neAbs(c2w.rot[0][0]) + neAbs(c2w.rot[1][0]) + neAbs(c2w.rot[2][0]);
 
-		minBound[0] = p[0] - a;
-		maxBound[0] = p[0] + a;
+        minBound[0] = p[0] - a;
+        maxBound[0] = p[0] + a;
 
-		if (minCoord[0])
-			minCoord[0]->value = p[0] - a ;
-		if (maxCoord[0])
-			maxCoord[0]->value = p[0] + a;
+        if (minCoord[0])
+            minCoord[0]->value = p[0] - a;
+        if (maxCoord[0])
+            maxCoord[0]->value = p[0] + a;
 
-		a = neAbs(c2w.rot[0][1]) + neAbs(c2w.rot[1][1]) + neAbs(c2w.rot[2][1]);
+        a = neAbs(c2w.rot[0][1]) + neAbs(c2w.rot[1][1]) + neAbs(c2w.rot[2][1]);
 
-		minBound[1] = p[1] - a;
-		maxBound[1] = p[1] + a;
+        minBound[1] = p[1] - a;
+        maxBound[1] = p[1] + a;
 
-		if (minCoord[1])
-			minCoord[1]->value = p[1] - a;
-		if (maxCoord[1])
-			maxCoord[1]->value = p[1] + a;
-		
-		a = neAbs(c2w.rot[0][2]) + neAbs(c2w.rot[1][2]) + neAbs(c2w.rot[2][2]);
+        if (minCoord[1])
+            minCoord[1]->value = p[1] - a;
+        if (maxCoord[1])
+            maxCoord[1]->value = p[1] + a;
 
-		minBound[2] = p[2] - a;
-		maxBound[2] = p[2] + a;
+        a = neAbs(c2w.rot[0][2]) + neAbs(c2w.rot[1][2]) + neAbs(c2w.rot[2][2]);
 
-		if (minCoord[2])
-			minCoord[2]->value = p[2] - a;
-		if (maxCoord[2])
-			maxCoord[2]->value = p[2] + a;
+        minBound[2] = p[2] - a;
+        maxBound[2] = p[2] + a;
+
+        if (minCoord[2])
+            minCoord[2]->value = p[2] - a;
+        if (maxCoord[2])
+            maxCoord[2]->value = p[2] + a;
 #endif
-	}
+    }
 }
 
-void neRigidBody_::WakeUp()
-{
-	status = neRigidBody_::NE_RBSTATUS_NORMAL;
+void neRigidBody_::WakeUp() {
+    status = neRigidBody_::NE_RBSTATUS_NORMAL;
 
-	lowEnergyCounter = 0;
+    lowEnergyCounter = 0;
 
-	SyncOldState();
+    SyncOldState();
 }
 
-void neRigidBody_::SyncOldState()
-{
-	oldPosition = State().b2w.pos;
+void neRigidBody_::SyncOldState() {
+    oldPosition = State().b2w.pos;
 
-	oldRotation = State().q;
+    oldRotation = State().q;
 
-	oldVelocity = Derive().linearVel;
+    oldVelocity = Derive().linearVel;
 
-	oldAngularVelocity = Derive().angularVel;
+    oldAngularVelocity = Derive().angularVel;
 
-	oldCounter = 0;
+    oldCounter = 0;
 }
 
-void neRigidBody_::BecomeIdle()
-{
-	//return;
+void neRigidBody_::BecomeIdle() {
+    //return;
 
-	status = neRigidBody_::NE_RBSTATUS_IDLE;
-	
-	ZeroMotion();
+    status = neRigidBody_::NE_RBSTATUS_IDLE;
+
+    ZeroMotion();
 }
 
-void neRigidBody_::ZeroMotion()
-{
-	Derive().angularVel.SetZero();
-	Derive().linearVel.SetZero();
-	Derive().qDot.Zero();
-	Derive().speed = 0.0f;
-	State().angularMom.SetZero();
+void neRigidBody_::ZeroMotion() {
+    Derive().angularVel.SetZero();
+    Derive().linearVel.SetZero();
+    Derive().qDot.Zero();
+    Derive().speed = 0.0f;
+    State().angularMom.SetZero();
 
-	for (s32 i = 0; i < NE_RB_MAX_PAST_RECORDS; i++)
-	{
-		GetVelRecord(i).SetZero();
-		GetAngVelRecord(i).SetZero();
-		dvRecord[i].SetZero();
-	}
+    for (s32 i = 0; i < NE_RB_MAX_PAST_RECORDS; i++) {
+        GetVelRecord(i).SetZero();
+        GetAngVelRecord(i).SetZero();
+        dvRecord[i].SetZero();
+    }
 }
 
 /****************************************************************************
 *
 *	neRigidBody_::ApplyCollisionImpulse
 *
-****************************************************************************/ 
+****************************************************************************/
 
-neBool neRigidBody_::ApplyCollisionImpulse(const neV3 & impulse, const neV3 & contactPoint, neImpulseType itype)
-{
-	neV3 dv, da, newAM;
+neBool neRigidBody_::ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype) {
+    neV3 dv, da, newAM;
 
-	dv = impulse * oneOnMass;
+    dv = impulse * oneOnMass;
 
-	da = contactPoint.Cross(impulse);
+    da = contactPoint.Cross(impulse);
 
-	neBool immediate = true;
+    neBool immediate = true;
 
-	if (itype == IMPULSE_CONTACT)// && sim->solverStage == 1) // only if contact and resolve penetration stage
-	{
-		immediate = false;
-	}
-	
+    if (itype == IMPULSE_CONTACT)// && sim->solverStage == 1) // only if contact and resolve penetration stage
+    {
+        immediate = false;
+    }
+
 /*	if (itype != IMPULSE_NORMAL && sim->solverStage != 2)
 	{
 		immediate = false;
 	}
-*/	
+*/
 
-	immediate = true;
+    immediate = true;
 
-	if (immediate)
-	{
-		Derive().linearVel += dv;
+    if (immediate) {
+        Derive().linearVel += dv;
 
-		dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dv;
+        dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dv;
 
-		neV3 dav = Derive().Iinv * da;
+        neV3 dav = Derive().Iinv * da;
 
-		davRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dav;
+        davRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dav;
 
-		newAM = State().angularMom + da;
+        newAM = State().angularMom + da;
 
-		SetAngMom(newAM);
+        SetAngMom(newAM);
 
-		f32 l = dv.Length();
+        f32 l = dv.Length();
 /*
 		if (id == 1 && l > sim->magicNumber)
 		{
 			sim->magicNumber = l;
 		}
 */
-		ASSERT(newAM.IsFinite());
-	}
-	else
-	{
-		totalDV += dv;
-		totalDA += da;
-		impulseCount++;
-		twistCount++;
-	}
-	return true;
+        ASSERT(newAM.IsFinite());
+    } else {
+        totalDV += dv;
+        totalDA += da;
+        impulseCount++;
+        twistCount++;
+    }
+    return true;
 }
 
-void neRigidBody_::AddRestContact(neRestRecord & rc)
-{
-	//search existing matching records
+void neRigidBody_::AddRestContact(neRestRecord & rc) {
+    //search existing matching records
 
-	s32 oldest = -1;
+    s32 oldest = -1;
 
-	s32 freeOne = -1;
+    s32 freeOne = -1;
 
-	f32 shallowest = 0.0f;
+    f32 shallowest = 0.0f;
 
-	s32 i;
+    s32 i;
 
-	for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
-	{
-		if (!GetRestRecord(i).IsValid())
-		{
-			freeOne = i;
+    for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        if (!GetRestRecord(i).IsValid()) {
+            freeOne = i;
 
-			continue;
-		}
-		if (shallowest == 0.0f)
-		{
-			shallowest = GetRestRecord(i).depth;
-			oldest = i;
-		}
-		else if (GetRestRecord(i).depth < shallowest)
-		{
-			shallowest = GetRestRecord(i).depth;
-			oldest = i;
-		}
-		neV3 diff = rc.bodyPoint - GetRestRecord(i).bodyPoint;
+            continue;
+        }
+        if (shallowest == 0.0f) {
+            shallowest = GetRestRecord(i).depth;
+            oldest = i;
+        } else if (GetRestRecord(i).depth < shallowest) {
+            shallowest = GetRestRecord(i).depth;
+            oldest = i;
+        }
+        neV3 diff = rc.bodyPoint - GetRestRecord(i).bodyPoint;
 
-		f32 dot = diff.Dot(diff);
+        f32 dot = diff.Dot(diff);
 
-		if (dot < 0.0025f) //difference of 0.05 meters, or 5 cm
-		{
-			//found
-			break;
-		}
-	}
+        if (dot < 0.0025f) //difference of 0.05 meters, or 5 cm
+        {
+            //found
+            break;
+        }
+    }
 /*	if (i < NE_RB_MAX_RESTON_RECORDS)
 	{
 		GetRestRecord(i).SetInvalid();
@@ -940,125 +884,110 @@ void neRigidBody_::AddRestContact(neRestRecord & rc)
 		}
 	}
 */
-	if (i == NE_RB_MAX_RESTON_RECORDS)
-	{	//not found
+    if (i == NE_RB_MAX_RESTON_RECORDS) {    //not found
 
-		//find a free one
-		if (freeOne != -1)
-		{
-			i = freeOne;
-		}
-		else
-		{
-			//use the olderest one
-			ASSERT(oldest != -1);
-			
-			i = oldest;
+        //find a free one
+        if (freeOne != -1) {
+            i = freeOne;
+        } else {
+            //use the olderest one
+            ASSERT(oldest != -1);
 
-			GetRestRecord(i).SetInvalid();
-		}
-	}
-	else
-	{
-		GetRestRecord(i).SetInvalid();
-	}
-	if (i >= NE_RB_MAX_RESTON_RECORDS || i < 0)
-		return;
+            i = oldest;
 
-	GetRestRecord(i).Set(this, rc);
+            GetRestRecord(i).SetInvalid();
+        }
+    } else {
+        GetRestRecord(i).SetInvalid();
+    }
+    if (i >= NE_RB_MAX_RESTON_RECORDS || i < 0)
+        return;
+
+    GetRestRecord(i).Set(this, rc);
 }
 
-neBool neRigidBody_::IsConstraintNeighbour(neRigidBodyBase * otherBody)
-{
-	neConstraintHandle * chandle = constraintCollection.GetHead();
+neBool neRigidBody_::IsConstraintNeighbour(neRigidBodyBase *otherBody) {
+    neConstraintHandle *chandle = constraintCollection.GetHead();
 
-	while (chandle)
-	{
-		_neConstraint * c = chandle->thing;
+    while (chandle) {
+        _neConstraint *c = chandle->thing;
 
-		chandle = constraintCollection.GetNext(chandle);
+        chandle = constraintCollection.GetNext(chandle);
 
-		neConstraintHandle * chandleB = otherBody->constraintCollection.GetHead();
+        neConstraintHandle *chandleB = otherBody->constraintCollection.GetHead();
 
-		while (chandleB)
-		{
-			_neConstraint * cB = chandleB->thing;
+        while (chandleB) {
+            _neConstraint *cB = chandleB->thing;
 
-			if (c == cB)
-				return true;
+            if (c == cB)
+                return true;
 
-			chandleB = otherBody->constraintCollection.GetNext(chandleB);
-		}
-	};
-	return false;
+            chandleB = otherBody->constraintCollection.GetNext(chandleB);
+        }
+    };
+    return false;
 }
 
-void neRigidBody_::SetAngMomComponent(const neV3 & angMom, const neV3 & dir)
-{
-	neV3 newMom = State().angularMom;
+void neRigidBody_::SetAngMomComponent(const neV3 &angMom, const neV3 &dir) {
+    neV3 newMom = State().angularMom;
 
-	newMom.RemoveComponent(dir);
+    newMom.RemoveComponent(dir);
 
-	newMom += angMom;
+    newMom += angMom;
 
-	SetAngMom(newMom);
+    SetAngMom(newMom);
 
-	needRecalc = true;
+    needRecalc = true;
 }
 
-void neRigidBody_::WakeUpAllJoint()
-{
-	if (!GetConstraintHeader())
-	{
-		WakeUp();
-		return;
-	}
-	neBodyHandle * bodyHandle = GetConstraintHeader()->bodies.GetHead();
-	
-	while (bodyHandle)
-	{
-		if (!bodyHandle->thing->AsRigidBody())
-		{
-			bodyHandle = bodyHandle->next;
+void neRigidBody_::WakeUpAllJoint() {
+    if (!GetConstraintHeader()) {
+        WakeUp();
+        return;
+    }
+    neBodyHandle *bodyHandle = GetConstraintHeader()->bodies.GetHead();
 
-			continue;
-		}
+    while (bodyHandle) {
+        if (!bodyHandle->thing->AsRigidBody()) {
+            bodyHandle = bodyHandle->next;
 
-		bodyHandle->thing->AsRigidBody()->WakeUp();
+            continue;
+        }
 
-		bodyHandle = bodyHandle->next;
-	}
+        bodyHandle->thing->AsRigidBody()->WakeUp();
+
+        bodyHandle = bodyHandle->next;
+    }
 }
 
-void neRigidBody_::ApplyLinearConstraint()
-{
-	neV3 dv = totalDV / (f32)impulseCount;
+void neRigidBody_::ApplyLinearConstraint() {
+    neV3 dv = totalDV / (f32) impulseCount;
 
 //	cacheImpulse = totalDV;
 
-	Derive().linearVel += dv;
+    Derive().linearVel += dv;
 
-	totalDV.SetZero();
-	
-	//dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dv;
+    totalDV.SetZero();
 
-	impulseCount = 0;
+    //dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] += dv;
+
+    impulseCount = 0;
 }
 
-void neRigidBody_::ApplyAngularConstraint()
-{
-	neV3 da = totalDA / (f32)twistCount;
+void neRigidBody_::ApplyAngularConstraint() {
+    neV3 da = totalDA / (f32) twistCount;
 
 //	cacheTwist += da;
 
-	neV3 newAM = State().angularMom + da;
+    neV3 newAM = State().angularMom + da;
 
-	SetAngMom(newAM);
+    SetAngMom(newAM);
 
-	totalDA.SetZero();
+    totalDA.SetZero();
 
-	twistCount = 0;
+    twistCount = 0;
 }
+
 /*
 void neRigidBody_::ConstraintDoSleepCheck()
 {
@@ -1086,104 +1015,94 @@ void neRigidBody_::ConstraintDoSleepCheck()
 }
 */
 
-neBool neRestRecord::CanConsiderOtherBodyIdle()
-{
-	if (rtype == REST_ON_WORLD)
-		return true;
+neBool neRestRecord::CanConsiderOtherBodyIdle() {
+    if (rtype == REST_ON_WORLD)
+        return true;
 
-	ASSERT(otherBody != NULL);
+    ASSERT(otherBody != NULL);
 
-	neRigidBody_ * rb = otherBody->AsRigidBody();
+    neRigidBody_ *rb = otherBody->AsRigidBody();
 
-	if (rb != NULL)
-	{
-		return (rb->status == neRigidBody_::NE_RBSTATUS_IDLE);
-	}
-	neCollisionBody_ * cb = otherBody->AsCollisionBody();
+    if (rb != NULL) {
+        return (rb->status == neRigidBody_::NE_RBSTATUS_IDLE);
+    }
+    neCollisionBody_ *cb = otherBody->AsCollisionBody();
 
-	ASSERT(cb);
+    ASSERT(cb);
 
-	return (!cb->moved);
+    return (!cb->moved);
 }
 
-neBool neRestRecord::CheckOtherBody(neFixedTimeStepSimulator * sim)
-{
-	ASSERT(otherBody);
+neBool neRestRecord::CheckOtherBody(neFixedTimeStepSimulator *sim) {
+    ASSERT(otherBody);
 
-	if (otherBody != sim->GetTerrainBody() && 
-		(!otherBody->IsValid() || !otherBody->isActive))
-	{
-		return false;
-	}
-	return true;
+    if (otherBody != sim->GetTerrainBody() &&
+        (!otherBody->IsValid() || !otherBody->isActive)) {
+        return false;
+    }
+    return true;
 }
 
-neV3 neRestRecord::GetOtherBodyPoint()
-{
-	ASSERT(otherBody);
+neV3 neRestRecord::GetOtherBodyPoint() {
+    ASSERT(otherBody);
 
-	neCollisionBody_ * cb = otherBody->AsCollisionBody();
+    neCollisionBody_ *cb = otherBody->AsCollisionBody();
 
-	neV3 ret;
+    neV3 ret;
 
-	if (cb)
-	{
-		normalWorld = cb->b2w.rot * normalBody;
+    if (cb) {
+        normalWorld = cb->b2w.rot * normalBody;
 
-		ret = cb->b2w * otherBodyPoint;
-	}
-	else
-	{
-		normalWorld = ((neRigidBody_*)otherBody)->State().b2w.rot * normalBody;
+        ret = cb->b2w * otherBodyPoint;
+    } else {
+        normalWorld = ((neRigidBody_ *) otherBody)->State().b2w.rot * normalBody;
 
-		ret = ((neRigidBody_*)otherBody)->State().b2w * otherBodyPoint;
-	}
-	return ret;
+        ret = ((neRigidBody_ *) otherBody)->State().b2w * otherBodyPoint;
+    }
+    return ret;
 }
 
-void neRestRecord::Set(neRigidBody_* thisBody, const neRestRecord & rc)
-{
-	bodyPoint = rc.bodyPoint;
-	otherBodyPoint = rc.otherBodyPoint;
-	otherBody = rc.otherBody;
-	counter = thisBody->sim->stepSoFar;
-	normalBody = rc.normalBody;
-	depth = rc.depth;
-	body = thisBody;
-	material = rc.material;
-	otherMaterial = rc.otherMaterial;
+void neRestRecord::Set(neRigidBody_ *thisBody, const neRestRecord &rc) {
+    bodyPoint = rc.bodyPoint;
+    otherBodyPoint = rc.otherBodyPoint;
+    otherBody = rc.otherBody;
+    counter = thisBody->sim->stepSoFar;
+    normalBody = rc.normalBody;
+    depth = rc.depth;
+    body = thisBody;
+    material = rc.material;
+    otherMaterial = rc.otherMaterial;
 
-	if (rc.otherBody->AsCollisionBody())
-		rtype = neRestRecord::REST_ON_COLLISION_BODY;
-	else
-		rtype = neRestRecord::REST_ON_RIGID_BODY;
+    if (rc.otherBody->AsCollisionBody())
+        rtype = neRestRecord::REST_ON_COLLISION_BODY;
+    else
+        rtype = neRestRecord::REST_ON_RIGID_BODY;
 
-	otherBody->rbRestingOnMe.Add(&restOnHandle);
+    otherBody->rbRestingOnMe.Add(&restOnHandle);
 }
 
-void neRestRecord::SetTmp(neRigidBodyBase * _otherBody, const neV3 & contactA, const neV3 & contactB, const neV3 & _normalBody, s32 matA, s32 matB)
-{
-	otherBody = _otherBody;
-	bodyPoint = contactA;
-	otherBodyPoint = contactB;
-	material = matA;
-	otherMaterial = matB;
-	normalBody = _normalBody;
+void
+neRestRecord::SetTmp(neRigidBodyBase *_otherBody, const neV3 &contactA, const neV3 &contactB, const neV3 &_normalBody,
+                     s32 matA, s32 matB) {
+    otherBody = _otherBody;
+    bodyPoint = contactA;
+    otherBodyPoint = contactB;
+    material = matA;
+    otherMaterial = matB;
+    normalBody = _normalBody;
 }
 
-void neRestRecord::SetInvalid()
-{
-	//ASSERT(rtype != REST_ON_NOT_VALID);
+void neRestRecord::SetInvalid() {
+    //ASSERT(rtype != REST_ON_NOT_VALID);
 
-	rtype = REST_ON_NOT_VALID;
+    rtype = REST_ON_NOT_VALID;
 
-	counter = 0;
+    counter = 0;
 
 //	body = NULL;
 
-	if (otherBody)
-	{
-		otherBody->rbRestingOnMe.Remove(&restOnHandle);
-	}
-	otherBody = NULL;
+    if (otherBody) {
+        otherBody->rbRestingOnMe.Remove(&restOnHandle);
+    }
+    otherBody = NULL;
 }

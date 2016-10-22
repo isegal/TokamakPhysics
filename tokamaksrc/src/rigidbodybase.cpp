@@ -37,7 +37,7 @@
 *
 *	neRigidBodyBase::GetConvex
 *
-****************************************************************************/ 
+****************************************************************************/
 /*
 TConvex * neRigidBodyBase::GetConvex(s32 index)
 {
@@ -57,57 +57,53 @@ TConvex * neRigidBodyBase::GetConvex(s32 index)
 	return &col.convex[index];
 }
 */
-void neRigidBodyBase::CollideConnected(neBool yes)
+void neRigidBodyBase::CollideConnected(neBool
+yes)
 {
-	isCollideConnected = yes;
+isCollideConnected = yes;
 }
 
-neBool neRigidBodyBase::CollideConnected()
-{
-	return isCollideConnected;
+neBool neRigidBodyBase::CollideConnected() {
+    return isCollideConnected;
 }
 
-void neRigidBodyBase::RecalcBB()
-{
-	col.CalcBB();
+void neRigidBodyBase::RecalcBB() {
+    col.CalcBB();
 
-	neV3 maxExt, minExt;
+    neV3 maxExt, minExt;
 
-	col.obb.GetExtend(minExt, maxExt);
+    col.obb.GetExtend(minExt, maxExt);
 
-	neSensorItem * si = (neSensorItem *)sensors;
+    neSensorItem *si = (neSensorItem *) sensors;
 
-	while (si)
-	{
-		neSensor_ * sensor = (neSensor_ *) si;
+    while (si) {
+        neSensor_ *sensor = (neSensor_ *) si;
 
-		si = si->next;
+        si = si->next;
 
-		neV3 sstart;
-		neV3 send;
+        neV3 sstart;
+        neV3 send;
 
-		sstart = sensor->pos;
-		send = sensor->pos + sensor->dir;
+        sstart = sensor->pos;
+        send = sensor->pos + sensor->dir;
 
-		for (s32 j = 0; j < 3; j++)
-		{
-			maxExt[j] = neMax(maxExt[j], sstart[j]);
-			maxExt[j] = neMax(maxExt[j], send[j]);
-			minExt[j] = neMin(minExt[j], sstart[j]);
-			minExt[j] = neMin(minExt[j], send[j]);
-		}
-	}
+        for (s32 j = 0; j < 3; j++) {
+            maxExt[j] = neMax(maxExt[j], sstart[j]);
+            maxExt[j] = neMax(maxExt[j], send[j]);
+            minExt[j] = neMin(minExt[j], sstart[j]);
+            minExt[j] = neMin(minExt[j], send[j]);
+        }
+    }
 
-	for (s32 i = 0; i < 3; i++)
-	{
-		col.obb.as.box.boxSize[i] = ( maxExt[i] - minExt[i] ) * 0.5f;
-		col.obb.c2p.pos[i] = minExt[i] + col.obb.as.box.boxSize[i];
-	}
+    for (s32 i = 0; i < 3; i++) {
+        col.obb.as.box.boxSize[i] = (maxExt[i] - minExt[i]) * 0.5f;
+        col.obb.c2p.pos[i] = minExt[i] + col.obb.as.box.boxSize[i];
+    }
 
-	obb.rot[0] = col.obb.as.box.boxSize[0] * col.obb.c2p.rot[0];
-	obb.rot[1] = col.obb.as.box.boxSize[1] * col.obb.c2p.rot[1];
-	obb.rot[2] = col.obb.as.box.boxSize[2] * col.obb.c2p.rot[2];
-	obb.pos = col.obb.c2p.pos;
+    obb.rot[0] = col.obb.as.box.boxSize[0] * col.obb.c2p.rot[0];
+    obb.rot[1] = col.obb.as.box.boxSize[1] * col.obb.c2p.rot[1];
+    obb.rot[2] = col.obb.as.box.boxSize[2] * col.obb.c2p.rot[2];
+    obb.pos = col.obb.c2p.pos;
 
 };
 
@@ -132,365 +128,375 @@ neV3 neRigidBodyBase::VelocityAtPoint(const neV3 & pt)
 	}
 }
 */
-neSensor_ * neRigidBodyBase::AddSensor()
-{
-	neSensor_ * newSensor = sim->sensorHeap.Alloc(1);
-	
-	if (!newSensor)
-	{
-		sprintf(sim->logBuffer,	MSG_RUN_OUT_SENSOR);
+neSensor_ *neRigidBodyBase::AddSensor() {
+    neSensor_ *newSensor = sim->sensorHeap.Alloc(1);
 
-		sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+    if (!newSensor) {
+        sprintf(sim->logBuffer, MSG_RUN_OUT_SENSOR);
 
-		return NULL;
-	}
-	if (sensors)
-	{
-		//((neSensorItem *)sensors)->Append((neSensorItem *)newSensor);
+        sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		neSensorItem * sitem = (neSensorItem *)sensors;
+        return NULL;
+    }
+    if (sensors) {
+        //((neSensorItem *)sensors)->Append((neSensorItem *)newSensor);
 
-		while (sitem->next)
-		{
-			sitem = sitem->next;
-		}
-		sitem->Append((neSensorItem *)newSensor);
-	}
-	else
-	{
-		sensors = newSensor;
-	}
-	return newSensor;
+        neSensorItem *sitem = (neSensorItem *) sensors;
+
+        while (sitem->next) {
+            sitem = sitem->next;
+        }
+        sitem->Append((neSensorItem *) newSensor);
+    } else {
+        sensors = newSensor;
+    }
+    return newSensor;
 }
 
-void neRigidBodyBase::BeginIterateSensor()
-{
-	sensorCursor = (neSensorItem *)sensors;
+void neRigidBodyBase::BeginIterateSensor() {
+    sensorCursor = (neSensorItem *) sensors;
 }
 
-neSensor_ * neRigidBodyBase::GetNextSensor()
-{
-	if (!sensorCursor)
-		return NULL;
+neSensor_ *neRigidBodyBase::GetNextSensor() {
+    if (!sensorCursor)
+        return NULL;
 
-	neSensor_ * ret = (neSensor_ *)sensorCursor;
+    neSensor_ *ret = (neSensor_ *) sensorCursor;
 
-	sensorCursor = sensorCursor->next;
+    sensorCursor = sensorCursor->next;
 
-	return ret;
+    return ret;
 }
 
-void neRigidBodyBase::ClearSensor()
-{
-	neSensorItem * si = (neSensorItem *)sensors;
+void neRigidBodyBase::ClearSensor() {
+    neSensorItem *si = (neSensorItem *) sensors;
 
-	while (si)
-	{
-		neSensor_ * s = (neSensor_ *) si;
+    while (si) {
+        neSensor_ *s = (neSensor_ *) si;
 
-		si = si->next;
+        si = si->next;
 
-		s->depth = 0.0f;
+        s->depth = 0.0f;
 
-		s->body = NULL;
-	}
+        s->body = NULL;
+    }
 }
 
-TConvex * neRigidBodyBase::AddGeometry()
-{
-	TConvex * newConvex = sim->geometryHeap.Alloc(1);
+TConvex *neRigidBodyBase::AddGeometry() {
+    TConvex *newConvex = sim->geometryHeap.Alloc(1);
 
-	if (!newConvex)
-	{
-		sprintf(sim->logBuffer,	MSG_RUN_OUT_GEOMETRY);
+    if (!newConvex) {
+        sprintf(sim->logBuffer, MSG_RUN_OUT_GEOMETRY);
 
-		sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+        sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-		return NULL;
-	}
-	newConvex->Initialise();
-	
-	if (col.convex)
-	{
-		TConvexItem * citem = (TConvexItem *)col.convex;
+        return NULL;
+    }
+    newConvex->Initialise();
 
-		while (citem)
-		{
-			if (!citem->next)
-			{
-				citem->Append((TConvexItem *)newConvex);		
-				
-				break;
-			}
-			else
-			{
-				citem = citem->next;
-			}
-		}
-	}
-	else
-	{
-		col.convex = newConvex;
-	}
-	col.convexCount++;
+    if (col.convex) {
+        TConvexItem *citem = (TConvexItem *) col.convex;
 
-	if (isActive && !IsInRegion())
-		sim->region.AddBody(this, NULL);
+        while (citem) {
+            if (!citem->next) {
+                citem->Append((TConvexItem *) newConvex);
 
-	return newConvex;
+                break;
+            } else {
+                citem = citem->next;
+            }
+        }
+    } else {
+        col.convex = newConvex;
+    }
+    col.convexCount++;
+
+    if (isActive && !IsInRegion())
+        sim->region.AddBody(this, NULL);
+
+    return newConvex;
 }
 
-void neRigidBodyBase::BeginIterateGeometry()
-{
-	geometryCursor = (TConvexItem *)col.convex;
+void neRigidBodyBase::BeginIterateGeometry() {
+    geometryCursor = (TConvexItem *) col.convex;
 }
 
-TConvex * neRigidBodyBase::GetNextGeometry()
-{
-	if (!geometryCursor)
-		return NULL;
+TConvex *neRigidBodyBase::GetNextGeometry() {
+    if (!geometryCursor)
+        return NULL;
 
-	TConvex * ret = (TConvex *)geometryCursor;
+    TConvex *ret = (TConvex *) geometryCursor;
 
-	geometryCursor = geometryCursor->next;
+    geometryCursor = geometryCursor->next;
 
-	return ret;
+    return ret;
 }
 
-void neRigidBodyBase::RemoveConstraintHeader()
-{
-	neConstraintHeader * h = GetConstraintHeader();
+void neRigidBodyBase::RemoveConstraintHeader() {
+    neConstraintHeader * h = GetConstraintHeader();
 
-	if (h)
-	{
-		h->bodies.Remove(&constraintHeaderItem);
+    if (h) {
+        h->bodies.Remove(&constraintHeaderItem);
 
-		h->flag = neConstraintHeader::FLAG_NEED_REORG;
+        h->flag = neConstraintHeader::FLAG_NEED_REORG;
 
-		SetConstraintHeader(NULL);
+        SetConstraintHeader(NULL);
 
-		if (h->bodies.count == 0)
-		{
-			sim->constraintHeaders.Dealloc(h);
-		}
-	}
+        if (h->bodies.count == 0) {
+            sim->constraintHeaders.Dealloc(h);
+        }
+    }
 }
 
-void neRigidBodyBase::Free()
-{
-	//free sensor
-	
-	neFreeListItem<neSensor_> * si = (neFreeListItem<neSensor_> *) sensors;
+void neRigidBodyBase::Free() {
+    //free sensor
 
-	while (si)
-	{
-		neFreeListItem<neSensor_> * next = si->next;
+    neFreeListItem<neSensor_> *si = (neFreeListItem<neSensor_> *) sensors;
 
-		//si->Remove();
+    while (si) {
+        neFreeListItem<neSensor_> *next = si->next;
 
-		sim->sensorHeap.Dealloc((neSensor_*)si, 1);
+        //si->Remove();
 
-		si = next;
-	}
-	sensors = NULL;
+        sim->sensorHeap.Dealloc((neSensor_ *) si, 1);
 
-	//remove from region
-	if (IsInRegion())
-		sim->region.RemoveBody(this);
+        si = next;
+    }
+    sensors = NULL;
 
-	//free geometry
+    //remove from region
+    if (IsInRegion())
+        sim->region.RemoveBody(this);
 
-	neFreeListItem<TConvex> * gi = (neFreeListItem<TConvex> *) col.convex;
+    //free geometry
 
-	while (gi)
-	{
-		neFreeListItem<TConvex> * next = gi->next;
+    neFreeListItem<TConvex> *gi = (neFreeListItem<TConvex> *) col.convex;
 
-		//gi->Remove();
+    while (gi) {
+        neFreeListItem<TConvex> *next = gi->next;
 
-		sim->geometryHeap.Dealloc((TConvex*)gi, 1);
+        //gi->Remove();
 
-		gi = next;
-	}
-	col.convex = NULL;
+        sim->geometryHeap.Dealloc((TConvex *) gi, 1);
 
-	col.convexCount = 0;
+        gi = next;
+    }
+    col.convex = NULL;
 
-	//free constraint
-	neConstraintHandle * chandle = constraintCollection.GetHead();
+    col.convexCount = 0;
 
-	while (chandle)
-	{
-		_neConstraint * c = chandle->thing;
+    //free constraint
+    neConstraintHandle *chandle = constraintCollection.GetHead();
 
-		chandle = constraintCollection.GetNext(chandle);
+    while (chandle) {
+        _neConstraint *c = chandle->thing;
 
-		c->bodyA->constraintCollection.Remove(&c->bodyAHandle);
+        chandle = constraintCollection.GetNext(chandle);
 
-		if (c->bodyB)
-			c->bodyB->constraintCollection.Remove(&c->bodyBHandle);
+        c->bodyA->constraintCollection.Remove(&c->bodyAHandle);
 
-		if (GetConstraintHeader())
-			GetConstraintHeader()->Remove(c);
+        if (c->bodyB)
+            c->bodyB->constraintCollection.Remove(&c->bodyBHandle);
 
-		neFreeListItem<neController> * ci = (neFreeListItem<neController> *) c->controllers;
+        if (GetConstraintHeader())
+            GetConstraintHeader()->Remove(c);
 
-		while (ci)
-		{
-			neFreeListItem<neController> * next = ci->next;
+        neFreeListItem<neController> *ci = (neFreeListItem<neController> *) c->controllers;
 
-			ci->Remove();
+        while (ci) {
+            neFreeListItem<neController> *next = ci->next;
 
-			sim->controllerHeap.Dealloc((neController *)ci, 1);
+            ci->Remove();
 
-			ci = next;
-		}
-		c->controllers = NULL;
+            sim->controllerHeap.Dealloc((neController *) ci, 1);
 
-		sim->constraintHeap.Dealloc(c, 1);
-	}
-	neRestRecordHandle * rhandle = rbRestingOnMe.GetHead();
+            ci = next;
+        }
+        c->controllers = NULL;
 
-	while (rhandle)
-	{
-		neRestRecord * r = rhandle->thing;
+        sim->constraintHeap.Dealloc(c, 1);
+    }
+    neRestRecordHandle *rhandle = rbRestingOnMe.GetHead();
 
-		rhandle = rbRestingOnMe.GetNext(rhandle);
+    while (rhandle) {
+        neRestRecord *r = rhandle->thing;
 
-		r->SetInvalid();
-	};
+        rhandle = rbRestingOnMe.GetNext(rhandle);
+
+        r->SetInvalid();
+    };
 }
 
-neBool neRigidBodyBase::IsValid()
-{
-	if (btype == NE_OBJECT_COLISION)
-	{
-		return ((neList<neCollisionBody_>::itemType *)this)->state;// sim->abHeap.IsInUse((neCollisionBody_*)this);
-	}
-	else
-	{
-		return ((neList<neRigidBody_>::itemType *)this)->state;//sim->rbHeap.IsInUse((neRigidBody_*)this);
-	}
+neBool neRigidBodyBase::IsValid() {
+    if (btype == NE_OBJECT_COLISION) {
+        return ((neList<neCollisionBody_>::itemType *) this)->state;// sim->abHeap.IsInUse((neCollisionBody_*)this);
+    } else {
+        return ((neList<neRigidBody_>::itemType *) this)->state;//sim->rbHeap.IsInUse((neRigidBody_*)this);
+    }
 }
 
-neT3 & neRigidBodyBase::GetB2W()
-{
-	if (btype == NE_OBJECT_COLISION)
-	{
-		return AsCollisionBody()->b2w;
-	}
-	else
-	{
-		return AsRigidBody()->State().b2w;
-	}
+neT3 &neRigidBodyBase::GetB2W() {
+    if (btype == NE_OBJECT_COLISION) {
+        return AsCollisionBody()->b2w;
+    } else {
+        return AsRigidBody()->State().b2w;
+    }
 }
 
-void neRigidBody_::DrawCPointLine()
-{
-	return;
+void neRigidBody_::DrawCPointLine() {
+    return;
 
 #if 0
-	neConstraintPointArray & pointArray = GetRBCData().GetCPointArray();
+    neConstraintPointArray & pointArray = GetRBCData().GetCPointArray();
 
-	for (s32 i = 0; i < pointArray.GetUsedCount(); i++)
-	{
-		for (s32 j = i + 1; j < pointArray.GetUsedCount(); j++)
-		{
+    for (s32 i = 0; i < pointArray.GetUsedCount(); i++)
+    {
+        for (s32 j = i + 1; j < pointArray.GetUsedCount(); j++)
+        {
 //			if (pointArray[i].constraint == pointArray[j].constraint)
 //				continue;
-			
-			neV3 points[2];
-			neV3 color;
 
-			points[0] = *pointArray[i].GetPtResult(this);
-			points[1] = *pointArray[j].GetPtResult(this);
-			f32 test = (points[0] - points[1]).Length();
-			DrawLine(color, points, 2);
-		}
-	}
-	if (calignMethod == ALIGN_POINT_ORIGIN ||
-		calignMethod == ALIGN_LINE_ORIGIN ||
-		calignMethod == ALIGN_TRI_AUX)
-	{
-		for (i = 0; i < pointArray.GetUsedCount(); i++)
-		{
-			neV3 points[2];
-			neV3 color;
+            neV3 points[2];
+            neV3 color;
 
-			points[0] = *pointArray[i].GetPtResult(this);
-			points[1] = auxCPoints[1];
+            points[0] = *pointArray[i].GetPtResult(this);
+            points[1] = *pointArray[j].GetPtResult(this);
+            f32 test = (points[0] - points[1]).Length();
+            DrawLine(color, points, 2);
+        }
+    }
+    if (calignMethod == ALIGN_POINT_ORIGIN ||
+        calignMethod == ALIGN_LINE_ORIGIN ||
+        calignMethod == ALIGN_TRI_AUX)
+    {
+        for (i = 0; i < pointArray.GetUsedCount(); i++)
+        {
+            neV3 points[2];
+            neV3 color;
 
-			f32 test = (points[0] - points[1]).Length();
-			DrawLine(color, points, 2);
-		}
+            points[0] = *pointArray[i].GetPtResult(this);
+            points[1] = auxCPoints[1];
 
-	}
+            f32 test = (points[0] - points[1]).Length();
+            DrawLine(color, points, 2);
+        }
+
+    }
 #endif
 }
 
-void neRigidBodyBase::Active(neBool yes, neRigidBodyBase * hint)
+void neRigidBodyBase::Active(neBool
+yes,
+neRigidBodyBase *hint
+)
 {
-	if (isActive && yes)
-		return;
+if (
+isActive &&yes
+)
+return;
 
-	if (isActive) //make inactive
-	{
-		if (AsCollisionBody())
-		{
-			sim->activeCB.Remove((neCollisionBody_*)this);
+if (isActive) //make inactive
+{
+if (
 
-			sim->inactiveCB.Add((neCollisionBody_*)this);
-		}
-		else
-		{
-			if (AsRigidBody()->IsParticle())
-			{
-				sim->activeRP.Remove((neRigidBody_*)this);
+AsCollisionBody()
 
-				sim->inactiveRP.Add((neRigidBody_*)this);
-			}
-			else
-			{
-				sim->activeRB.Remove((neRigidBody_*)this);
+)
+{
+sim->activeCB.
+Remove((neCollisionBody_
+*)this);
 
-				sim->inactiveRB.Add((neRigidBody_*)this);
-			}
-		}
-		//remove from region
+sim->inactiveCB.
+Add((neCollisionBody_
+*)this);
+}
+else
+{
+if (
 
-		if (IsInRegion())
-			sim->region.RemoveBody(this);
+AsRigidBody() -> IsParticle()
 
-		isActive = false;
-	}
-	else //make active
-	{
-		if (AsCollisionBody())
-		{
-			sim->inactiveCB.Remove((neCollisionBody_*)this);
+)
+{
+sim->activeRP.
+Remove((neRigidBody_
+*)this);
 
-			sim->activeCB.Add((neCollisionBody_*)this);
-		}
-		else
-		{
-			if (AsRigidBody()->IsParticle())
-			{
-				sim->inactiveRP.Remove((neRigidBody_*)this);
+sim->inactiveRP.
+Add((neRigidBody_
+*)this);
+}
+else
+{
+sim->activeRB.
+Remove((neRigidBody_
+*)this);
 
-				sim->activeRP.Add((neRigidBody_*)this);
-			}
-			else
-			{
-				sim->inactiveRB.Remove((neRigidBody_*)this);
+sim->inactiveRB.
+Add((neRigidBody_
+*)this);
+}
+}
+//remove from region
 
-				sim->activeRB.Add((neRigidBody_*)this);
-			}
-		}
-		//insert into the region
+if (
 
-		if (col.convexCount > 0 || isCustomCD)
-			sim->region.AddBody(this, hint);
+IsInRegion()
 
-		isActive = true;
-	}
+)
+sim->region.RemoveBody(this);
+
+isActive = false;
+}
+else //make active
+{
+if (
+
+AsCollisionBody()
+
+)
+{
+sim->inactiveCB.
+Remove((neCollisionBody_
+*)this);
+
+sim->activeCB.
+Add((neCollisionBody_
+*)this);
+}
+else
+{
+if (
+
+AsRigidBody() -> IsParticle()
+
+)
+{
+sim->inactiveRP.
+Remove((neRigidBody_
+*)this);
+
+sim->activeRP.
+Add((neRigidBody_
+*)this);
+}
+else
+{
+sim->inactiveRB.
+Remove((neRigidBody_
+*)this);
+
+sim->activeRB.
+Add((neRigidBody_
+*)this);
+}
+}
+//insert into the region
+
+if (col.convexCount > 0 || isCustomCD)
+sim->region.AddBody(this, hint);
+
+isActive = true;
+}
 }

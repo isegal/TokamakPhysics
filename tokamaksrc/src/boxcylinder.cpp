@@ -22,282 +22,250 @@
 #include <assert.h>
 #include <stdio.h>
 
-neBool BoxTestParam::CylinderFaceTest(ConvexTestResult & res, TConvex & cylinderB, neT3 & transB, s32 whichFace)
-{
-	neV3 diff = trans->pos - transB.pos;
+neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace) {
+    neV3 diff = trans->pos - transB.pos;
 
-	neV3 dir = trans->rot[whichFace];
+    neV3 dir = trans->rot[whichFace];
 
-	f32 dot = dir.Dot(diff);
+    f32 dot = dir.Dot(diff);
 
-	if (dot > 0.0f)
-	{
-		dot *= -1.0f;
-	}
-	else
-	{
-		dir *= -1.0f;
-	}
+    if (dot > 0.0f) {
+        dot *= -1.0f;
+    } else {
+        dir *= -1.0f;
+    }
 
-	f32 depth = dot + convex->BoxSize(whichFace);
+    f32 depth = dot + convex->BoxSize(whichFace);
 
-	neV3 contactPoint = transB.pos;
+    neV3 contactPoint = transB.pos;
 
-	neV3 tmp = transB.rot[1] * cylinderB.CylinderHalfHeight();
+    neV3 tmp = transB.rot[1] * cylinderB.CylinderHalfHeight();
 
-	dot = tmp.Dot(dir);
+    dot = tmp.Dot(dir);
 
-	if (dot > 0.0f)
-	{
-		depth += dot;
+    if (dot > 0.0f) {
+        depth += dot;
 
-		contactPoint += tmp;
-	}
-	else
-	{
-		depth -= dot;
-		
-		contactPoint -= tmp;
-	}
-	depth += cylinderB.CylinderRadius();
+        contactPoint += tmp;
+    } else {
+        depth -= dot;
 
-	if (depth <= 0.0f)
-		return false;
+        contactPoint -= tmp;
+    }
+    depth += cylinderB.CylinderRadius();
 
-	if (depth >= res.depth)
-		return true;
+    if (depth <= 0.0f)
+        return false;
 
-	contactPoint += dir * cylinderB.CylinderRadius();
+    if (depth >= res.depth)
+        return true;
 
-	neV3 project = contactPoint - dir * depth;
+    contactPoint += dir * cylinderB.CylinderRadius();
 
-	s32 otherAxis1 = neNextDim1[whichFace];
-	
-	s32 otherAxis2 = neNextDim2[whichFace];
-	
-	neV3 sub = project - trans->pos;
+    neV3 project = contactPoint - dir * depth;
 
-	dot = neAbs(sub.Dot(trans->rot[otherAxis1]));
+    s32 otherAxis1 = neNextDim1[whichFace];
 
-	if (dot > (convex->BoxSize(otherAxis1) * 1.001f))
-		return true;// not false ???? no it is true!!! 
+    s32 otherAxis2 = neNextDim2[whichFace];
 
-	dot = neAbs(sub.Dot(trans->rot[otherAxis2]));
+    neV3 sub = project - trans->pos;
 
-	if (dot > (convex->BoxSize(otherAxis2) * 1.001f))
-		return true;// not false ???? no it is true!!! 
-	
-	res.contactA = project;
+    dot = neAbs(sub.Dot(trans->rot[otherAxis1]));
 
-	res.contactB = contactPoint;
+    if (dot > (convex->BoxSize(otherAxis1) * 1.001f))
+        return true;// not false ???? no it is true!!!
 
-	res.contactNormal = dir;
+    dot = neAbs(sub.Dot(trans->rot[otherAxis2]));
 
-	res.depth = depth;
+    if (dot > (convex->BoxSize(otherAxis2) * 1.001f))
+        return true;// not false ???? no it is true!!!
 
-	res.valid = true;
-	
-	return true;
+    res.contactA = project;
+
+    res.contactB = contactPoint;
+
+    res.contactNormal = dir;
+
+    res.depth = depth;
+
+    res.valid = true;
+
+    return true;
 }
 
-neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult & res, TConvex & cylinderB, neT3 & transB, s32 whichEdge)
-{
-	neV3 diff = trans->pos - transB.pos;
+neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichEdge) {
+    neV3 diff = trans->pos - transB.pos;
 
-	neV3 dir = trans->rot[whichEdge].Cross(transB.rot[1]);
+    neV3 dir = trans->rot[whichEdge].Cross(transB.rot[1]);
 
-	f32 len = dir.Length();
+    f32 len = dir.Length();
 
-	if (neIsConsiderZero(len))
-		return true;
+    if (neIsConsiderZero(len))
+        return true;
 
-	dir *= (1.0f / len);
+    dir *= (1.0f / len);
 
-	f32 dot = dir.Dot(diff);
+    f32 dot = dir.Dot(diff);
 
-	if (dot > 0.0f)
-	{
-		dot *= -1.0f;
-	}
-	else
-	{
-		dir *= -1.0f;
-	}
+    if (dot > 0.0f) {
+        dot *= -1.0f;
+    } else {
+        dir *= -1.0f;
+    }
 
-	f32 depth = dot + cylinderB.CylinderRadius();
+    f32 depth = dot + cylinderB.CylinderRadius();
 
-	neV3 contactPoint = trans->pos;
+    neV3 contactPoint = trans->pos;
 
-	s32 i;
+    s32 i;
 
-	for (i = 0; i < 3; i++)
-	{
-		if (i == whichEdge)
-			continue;
+    for (i = 0; i < 3; i++) {
+        if (i == whichEdge)
+            continue;
 
-		dot = dir.Dot(radii[i]);
+        dot = dir.Dot(radii[i]);
 
-		if (dot > 0.0f)
-		{
-			depth += dot;
+        if (dot > 0.0f) {
+            depth += dot;
 
-			contactPoint -= radii[i];
-		}
-		else
-		{
-			depth -= dot;
+            contactPoint -= radii[i];
+        } else {
+            depth -= dot;
 
-			contactPoint += radii[i];
-		}
-	}
-	if (depth <= 0.0f)
-		return false;
+            contactPoint += radii[i];
+        }
+    }
+    if (depth <= 0.0f)
+        return false;
 
-	ConvexTestResult cr;
+    ConvexTestResult cr;
 
-	cr.edgeA[0] = contactPoint + radii[whichEdge];
-	cr.edgeA[1] = contactPoint - radii[whichEdge];
-	cr.edgeB[0] = transB.pos + transB.rot[1] * cylinderB.CylinderHalfHeight();
-	cr.edgeB[1] = transB.pos - transB.rot[1] * cylinderB.CylinderHalfHeight();
+    cr.edgeA[0] = contactPoint + radii[whichEdge];
+    cr.edgeA[1] = contactPoint - radii[whichEdge];
+    cr.edgeB[0] = transB.pos + transB.rot[1] * cylinderB.CylinderHalfHeight();
+    cr.edgeB[1] = transB.pos - transB.rot[1] * cylinderB.CylinderHalfHeight();
 
-	f32 au, bu;
+    f32 au, bu;
 
-	// A is the box, B is the cylinder
+    // A is the box, B is the cylinder
 
-	cr.ComputerEdgeContactPoint2(au, bu);
+    cr.ComputerEdgeContactPoint2(au, bu);
 
-	if (cr.depth >= res.depth)
-		return true;
+    if (cr.depth >= res.depth)
+        return true;
 
-	if (cr.valid)
-	{
-		depth = cylinderB.CylinderRadius() - cr.depth;
+    if (cr.valid) {
+        depth = cylinderB.CylinderRadius() - cr.depth;
 
-		if (depth <= 0.0f)
-			return false;
+        if (depth <= 0.0f)
+            return false;
 
-		if (depth >= res.depth)
-			return true;;
+        if (depth >= res.depth)
+            return true;;
 
-		res.valid = true;
+        res.valid = true;
 
-		res.contactNormal = dir;
+        res.contactNormal = dir;
 
-		res.contactA = cr.contactA;
+        res.contactA = cr.contactA;
 
-		res.contactB = cr.contactB + res.contactNormal * cylinderB.CylinderRadius();
+        res.contactB = cr.contactB + res.contactNormal * cylinderB.CylinderRadius();
 
-		res.depth = depth;
-	}
-	else
-	{
-		// A is the box, B is the cylinder
+        res.depth = depth;
+    } else {
+        // A is the box, B is the cylinder
 
-		if (au > 0.0 && au < 1.0f)
-		{
-			// box edge and cylinder end
+        if (au > 0.0 && au < 1.0f) {
+            // box edge and cylinder end
 
-			neV3 cylinderVert;
+            neV3 cylinderVert;
 
-			if (bu <= 0.0f)
-			{
-				cylinderVert = cr.edgeB[0];
-			}
-			else
-			{
-				cylinderVert = cr.edgeB[1];
-			}
-			neV3 project;
+            if (bu <= 0.0f) {
+                cylinderVert = cr.edgeB[0];
+            } else {
+                cylinderVert = cr.edgeB[1];
+            }
+            neV3 project;
 
-			f32 dist = cylinderVert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
+            f32 dist = cylinderVert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
 
-			f32 depth = cylinderB.CylinderRadius() - dist;
+            f32 depth = cylinderB.CylinderRadius() - dist;
 
-			if (depth <= 0.0f)
-				return true;
+            if (depth <= 0.0f)
+                return true;
 
-			if (depth >= res.depth)
-				return true;
+            if (depth >= res.depth)
+                return true;
 
-			res.depth = depth;
-			res.valid = true;
-			res.contactNormal = project - cylinderVert;
-			res.contactNormal.Normalize();
-			res.contactA = project;
-			res.contactB = cylinderVert + res.contactNormal * cylinderB.CylinderRadius();
-		}
-		else
-		{
-			neV3 boxVert;
+            res.depth = depth;
+            res.valid = true;
+            res.contactNormal = project - cylinderVert;
+            res.contactNormal.Normalize();
+            res.contactA = project;
+            res.contactB = cylinderVert + res.contactNormal * cylinderB.CylinderRadius();
+        } else {
+            neV3 boxVert;
 
-			if (au <= 0.0f)
-			{
-				boxVert = cr.edgeA[0];
-			}
-			else // au >= 1.0f
-			{
-				boxVert = cr.edgeA[1];
-			}
-			if (bu > 0.0f && bu < 1.0f)
-			{
-				// boxVert and cylinder edge
+            if (au <= 0.0f) {
+                boxVert = cr.edgeA[0];
+            } else // au >= 1.0f
+            {
+                boxVert = cr.edgeA[1];
+            }
+            if (bu > 0.0f && bu < 1.0f) {
+                // boxVert and cylinder edge
 
-				neV3 project;
+                neV3 project;
 
-				f32 depth = boxVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
+                f32 depth = boxVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
 
-				depth = cylinderB.CylinderRadius() - depth;
+                depth = cylinderB.CylinderRadius() - depth;
 
-				if (depth <= 0.0f)
-					return true;
+                if (depth <= 0.0f)
+                    return true;
 
-				if (depth >= res.depth)
-					return true;
+                if (depth >= res.depth)
+                    return true;
 
-				res.depth = depth;
-				res.valid = true;
-				res.contactA = boxVert;
-				res.contactNormal = boxVert - project;
-				res.contactNormal.Normalize();
-				res.contactB = project + res.contactNormal * cylinderB.CylinderRadius();
-			}
-			else
-			{
-				// box vert and cylinder end
+                res.depth = depth;
+                res.valid = true;
+                res.contactA = boxVert;
+                res.contactNormal = boxVert - project;
+                res.contactNormal.Normalize();
+                res.contactB = project + res.contactNormal * cylinderB.CylinderRadius();
+            } else {
+                // box vert and cylinder end
 
-				neV3 cylinderVert;
+                neV3 cylinderVert;
 
-				if (bu <= 0.0f)
-				{
-					cylinderVert = cr.edgeB[0];
-				}
-				else
-				{
-					cylinderVert = cr.edgeB[1];
-				}
-				neV3 diff = boxVert - cylinderVert;
+                if (bu <= 0.0f) {
+                    cylinderVert = cr.edgeB[0];
+                } else {
+                    cylinderVert = cr.edgeB[1];
+                }
+                neV3 diff = boxVert - cylinderVert;
 
-				f32 depth = diff.Dot(diff);
+                f32 depth = diff.Dot(diff);
 
-				if (depth >= cylinderB.CylinderRadiusSq())
-					return true;
+                if (depth >= cylinderB.CylinderRadiusSq())
+                    return true;
 
-				depth = sqrtf(depth);
+                depth = sqrtf(depth);
 
-				depth = cylinderB.CylinderRadius() - depth;
+                depth = cylinderB.CylinderRadius() - depth;
 
-				if (depth >= res.depth)
-					return true;
+                if (depth >= res.depth)
+                    return true;
 
-				res.depth = depth;
-				res.valid = true;
-				res.contactNormal = diff;
-				res.contactNormal.Normalize();
-				res.contactA = boxVert;
-				res.contactB = cylinderVert + res.contactNormal * cylinderB.CylinderRadius();
-			}
-		}
-	}	
+                res.depth = depth;
+                res.valid = true;
+                res.contactNormal = diff;
+                res.contactNormal.Normalize();
+                res.contactA = boxVert;
+                res.contactB = cylinderVert + res.contactNormal * cylinderB.CylinderRadius();
+            }
+        }
+    }
 
-	return true;
+    return true;
 }

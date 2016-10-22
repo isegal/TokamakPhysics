@@ -15,354 +15,341 @@
 #define CONTAINERS_H
 
 #define _CRT_SECURE_DEPRECATE_MEMORY
+
 #include <memory.h>
 
 #define PLACEMENT_MAGIC \
-	public:\
-	NEINLINE void * operator new(size_t s,void * addr)\
-	{\
-		return addr;\
-	}\
-	NEINLINE void * operator new[] (size_t s,void * addr)\
-	{\
-		return addr;\
-	}\
-	NEINLINE void operator delete(void *)\
-	{\
-	}\
-	NEINLINE void operator delete[](void *)\
-	{\
-	}\
-	NEINLINE void operator delete(void *, void *)\
-	{\
-	}\
-	NEINLINE void operator delete[](void *, void *)\
-	{\
-	}
+    public:\
+    NEINLINE void * operator new(size_t s,void * addr)\
+    {\
+        return addr;\
+    }\
+    NEINLINE void * operator new[] (size_t s,void * addr)\
+    {\
+        return addr;\
+    }\
+    NEINLINE void operator delete(void *)\
+    {\
+    }\
+    NEINLINE void operator delete[](void *)\
+    {\
+    }\
+    NEINLINE void operator delete(void *, void *)\
+    {\
+    }\
+    NEINLINE void operator delete[](void *, void *)\
+    {\
+    }
 
-template <class T, int initFixedSize = 1> class neSimpleArray
-{
+template<class T, int initFixedSize = 1>
+class neSimpleArray {
 public:
-	PLACEMENT_MAGIC
+PLACEMENT_MAGIC
 
-	NEINLINE bool IsFixedSize()
-	{
-		return (initFixedSize != 1);
-	}
+    NEINLINE bool IsFixedSize() {
+        return (initFixedSize != 1);
+    }
 
-	NEINLINE neSimpleArray()
-	{
-		if (IsFixedSize())
-		{
-			data = initArray;
-			nextFree = data;
-			size = initFixedSize;
-			alloc = NULL;
-			growBy = 0;
-			usedSize = 0;
-		}
-		else
-		{
-			data = NULL;
-			nextFree = NULL;
-			size = 0;
-			alloc = &allocDef;
-			growBy = 0;
-			usedSize = 0;
-		}
-	}
-	NEINLINE ~neSimpleArray()
-	{
-		Free();
-	}
-	NEINLINE bool Reserve(s32 n, neAllocatorAbstract * al = NULL, s32 _growBy = 0) 
-	{
-		if (IsFixedSize())
-		{
-			ASSERT(0);
-			return false;
-		}
-		Free();
+    NEINLINE neSimpleArray() {
+        if (IsFixedSize()) {
+            data = initArray;
+            nextFree = data;
+            size = initFixedSize;
+            alloc = NULL;
+            growBy = 0;
+            usedSize = 0;
+        } else {
+            data = NULL;
+            nextFree = NULL;
+            size = 0;
+            alloc = &allocDef;
+            growBy = 0;
+            usedSize = 0;
+        }
+    }
 
-		if (al)
-			alloc = al;
-		else
-			alloc = & allocDef;
-		
-		growBy = _growBy;
+    NEINLINE ~neSimpleArray() {
+        Free();
+    }
 
-		neByte * mem = alloc->Alloc(sizeof(T) * n);
+    NEINLINE bool Reserve(s32 n, neAllocatorAbstract *al = NULL, s32 _growBy = 0) {
+        if (IsFixedSize()) {
+            ASSERT(0);
+            return false;
+        }
+        Free();
 
-		data = (T*) mem;
+        if (al)
+            alloc = al;
+        else
+            alloc = &allocDef;
 
-		if (data)
-		{
-			nextFree = data;
-			size = n;
-			return true;
-		}
-		return false;
-	};
+        growBy = _growBy;
 
-	NEINLINE T * Alloc(s32 dummy = 0) 
-	{
-		if (nextFree >= (data + size))
-		{
-			if (growBy == 0)
-				return NULL;
-			
-			T * oldData = data;
+        neByte *mem = alloc->Alloc(sizeof(T) * n);
 
-			if (growBy == -1)
-				data = (T*)alloc->Alloc((size * 2) * sizeof(T));
-			else
-				data = (T*)alloc->Alloc((size + growBy) * sizeof(T));
+        data = (T *) mem;
 
-			if (!data)
-			{
-				data = oldData;
+        if (data) {
+            nextFree = data;
+            size = n;
+            return true;
+        }
+        return false;
+    };
 
-				return NULL;
-			}
+    NEINLINE T *Alloc(s32 dummy = 0) {
+        if (nextFree >= (data + size)) {
+            if (growBy == 0)
+                return NULL;
 
-			memcpy(data, oldData, size * sizeof(T));
+            T *oldData = data;
 
-			if (oldData)
-				alloc->Free((neByte*)oldData);
+            if (growBy == -1)
+                data = (T *) alloc->Alloc((size * 2) * sizeof(T));
+            else
+                data = (T *) alloc->Alloc((size + growBy) * sizeof(T));
 
-			nextFree = data + size;
+            if (!data) {
+                data = oldData;
 
-			if (growBy == -1)
-				size *= 2;
-			else
-				size += growBy;
+                return NULL;
+            }
 
-			usedSize++;
-			return nextFree++;
-		}
-		else
-		{
-			usedSize++;
-			return nextFree++;
-		}
-	}
-	NEINLINE s32 GetIndex(T * c)
-	{
-		ASSERT(c >= data);
-		ASSERT(c < nextFree);
+            memcpy(data, oldData, size * sizeof(T));
 
-		return (s32)(c - data);
-	}
-	NEINLINE s32 GetUsedCount(){
-		return (nextFree - data);
-	}
-	NEINLINE s32 GetTotalSize(){
-		return size;
-	}
-	NEINLINE void Free()
-	{
-		if (IsFixedSize())
-		{
-			return;
-		}
-		if (data)
-		{
-			alloc->Free((neByte*)data);
-		}
-		data = NULL;
-		nextFree = NULL;
-		size = 0;
-		usedSize = 0;
-	}
-	NEINLINE void Clear()
-	{
-		nextFree = data;
-		usedSize = 0;
-	}
-	NEINLINE T & operator [] (s32 index) {
-		ASSERT(index >= 0);
-		ASSERT(index < size);
-		return data[index];
-	}
-	NEINLINE void MakeFromPointer(T * pdata, s32 makeSize)
-	{
-		data = pdata;
-		size = makeSize;
-		usedSize = size;
-		nextFree = pdata + makeSize;
-		alloc = NULL;
-		growBy = 0;
-	}
+            if (oldData)
+                alloc->Free((neByte *) oldData);
+
+            nextFree = data + size;
+
+            if (growBy == -1)
+                size *= 2;
+            else
+                size += growBy;
+
+            usedSize++;
+            return nextFree++;
+        } else {
+            usedSize++;
+            return nextFree++;
+        }
+    }
+
+    NEINLINE s32 GetIndex(T *c) {
+        ASSERT(c >= data);
+        ASSERT(c < nextFree);
+
+        return (s32) (c - data);
+    }
+
+    NEINLINE s32 GetUsedCount() {
+        return (nextFree - data);
+    }
+
+    NEINLINE s32 GetTotalSize() {
+        return size;
+    }
+
+    NEINLINE void Free() {
+        if (IsFixedSize()) {
+            return;
+        }
+        if (data) {
+            alloc->Free((neByte *) data);
+        }
+        data = NULL;
+        nextFree = NULL;
+        size = 0;
+        usedSize = 0;
+    }
+
+    NEINLINE void Clear() {
+        nextFree = data;
+        usedSize = 0;
+    }
+
+    NEINLINE T &operator[](s32 index) {
+        ASSERT(index >= 0);
+        ASSERT(index < size);
+        return data[index];
+    }
+
+    NEINLINE void MakeFromPointer(T *pdata, s32 makeSize) {
+        data = pdata;
+        size = makeSize;
+        usedSize = size;
+        nextFree = pdata + makeSize;
+        alloc = NULL;
+        growBy = 0;
+    }
+
 protected:
-	T * data;
-	T * nextFree;
-	s32 size;
-	s32 usedSize;
-	neAllocatorAbstract * alloc;
-	neAllocatorDefault allocDef;
-	s32 growBy;
-	T initArray[initFixedSize];
+    T *data;
+    T *nextFree;
+    s32 size;
+    s32 usedSize;
+    neAllocatorAbstract *alloc;
+    neAllocatorDefault allocDef;
+    s32 growBy;
+    T initArray[initFixedSize];
 };
 
-template <class T, int initFixedSize = 1> class neArray
-{
+template<class T, int initFixedSize = 1>
+class neArray {
 PLACEMENT_MAGIC
+
 public:
-	NEINLINE bool IsFixedSize()
-	{
-		return (initFixedSize != 1);
-	}
-	NEINLINE neArray(){
-		if (IsFixedSize())
-		{
-			data = initArray;
-			nextFree = data;
-			size = initFixedSize;
-			alloc = NULL;
-			growBy = 0;
-		}
-		else
-		{
-			data = NULL;
-			nextFree = NULL;
-			size = 0;
-			alloc = &allocDef;
-			growBy = 0;
-		}
-	}
-	NEINLINE ~neArray()
-	{
-		Free();
-	}
-	NEINLINE bool Reserve(s32 n, neAllocatorAbstract * al = NULL, s32 _growBy = 0) 
-	{
-		if (IsFixedSize())
-		{
-			ASSERT(0);
-			return false;
-		}
-		Free();
+    NEINLINE bool IsFixedSize() {
+        return (initFixedSize != 1);
+    }
 
-		if (al)
-			alloc = al;
-		else
-			alloc = & allocDef;
-		
-		growBy = _growBy;
+    NEINLINE neArray() {
+        if (IsFixedSize()) {
+            data = initArray;
+            nextFree = data;
+            size = initFixedSize;
+            alloc = NULL;
+            growBy = 0;
+        } else {
+            data = NULL;
+            nextFree = NULL;
+            size = 0;
+            alloc = &allocDef;
+            growBy = 0;
+        }
+    }
 
-		neByte * mem = alloc->Alloc(sizeof(T) * n);
+    NEINLINE ~neArray() {
+        Free();
+    }
 
-		data = (T*) mem;
+    NEINLINE bool Reserve(s32 n, neAllocatorAbstract *al = NULL, s32 _growBy = 0) {
+        if (IsFixedSize()) {
+            ASSERT(0);
+            return false;
+        }
+        Free();
 
-		if (data)
-		{
-			nextFree = data;
-			size = n;
-			return true;
-		}
-		return false;
-	};
+        if (al)
+            alloc = al;
+        else
+            alloc = &allocDef;
 
-	NEINLINE T * Alloc() 
-	{
-		if (nextFree >= (data + size))
-		{
-			if (growBy == 0)
-				return NULL;
-			
-			T * oldData = data;
+        growBy = _growBy;
 
-			if (growBy == -1)
-				data = (T*)alloc->Alloc(sizeof(T) * (size * 2));
-			else
-				data = (T*)alloc->Alloc(sizeof(T) * (size + growBy));
+        neByte *mem = alloc->Alloc(sizeof(T) * n);
 
-			if (!data)
-			{
-				data = oldData;
+        data = (T *) mem;
 
-				return NULL;
-			}
+        if (data) {
+            nextFree = data;
+            size = n;
+            return true;
+        }
+        return false;
+    };
 
-			memcpy(data, oldData, size * sizeof(T));
+    NEINLINE T *Alloc() {
+        if (nextFree >= (data + size)) {
+            if (growBy == 0)
+                return NULL;
 
-			if (oldData)
-				alloc->Free((neByte*)oldData);
+            T *oldData = data;
 
-			nextFree = data + size;
+            if (growBy == -1)
+                data = (T *) alloc->Alloc(sizeof(T) * (size * 2));
+            else
+                data = (T *) alloc->Alloc(sizeof(T) * (size + growBy));
 
-			if (growBy == -1)
-				size *= 2;
-			else
-				size += growBy;
+            if (!data) {
+                data = oldData;
 
-		}
-		T * ret = new ((void*)(nextFree++)) T;
-		
-		return ret;
-	}
-	NEINLINE s32 GetIndex(T * c)
-	{
-		ASSERT(c >= data);
-		ASSERT(c < nextFree);
+                return NULL;
+            }
 
-		return (s32)(c - data);
-	}
-	NEINLINE s32 GetUsedCount(){
-		return (nextFree - data);
-	}
-	NEINLINE s32 GetTotalSize(){
-		return size;
-	}
-	NEINLINE void Free()
-	{
-		if (IsFixedSize())
-		{
-			return;
-		}
-		if (data)
-		{
-			//delete [] (data, (void*)data);
+            memcpy(data, oldData, size * sizeof(T));
 
-			alloc->Free((neByte*)data);
-		}
-		data = NULL;
-		nextFree = NULL;
-		size = 0;
-	}
-	NEINLINE void Clear()
-	{
-		nextFree = data;
-	}
-	NEINLINE T & operator [] (s32 index) {
-		ASSERT(index >= 0);
-		ASSERT(index < size);
-		return data[index];
-	}
-	NEINLINE void MakeFromPointer(T * pdata, s32 makeSize)
-	{
-		data = pdata;
-		size = makeSize;
-		nextFree = pdata + makeSize;
-		alloc = NULL;
-		growBy = 0;
-	}
+            if (oldData)
+                alloc->Free((neByte *) oldData);
+
+            nextFree = data + size;
+
+            if (growBy == -1)
+                size *= 2;
+            else
+                size += growBy;
+
+        }
+        T *ret = new((void *) (nextFree++)) T;
+
+        return ret;
+    }
+
+    NEINLINE s32 GetIndex(T *c) {
+        ASSERT(c >= data);
+        ASSERT(c < nextFree);
+
+        return (s32) (c - data);
+    }
+
+    NEINLINE s32 GetUsedCount() {
+        return (nextFree - data);
+    }
+
+    NEINLINE s32 GetTotalSize() {
+        return size;
+    }
+
+    NEINLINE void Free() {
+        if (IsFixedSize()) {
+            return;
+        }
+        if (data) {
+            //delete [] (data, (void*)data);
+
+            alloc->Free((neByte *) data);
+        }
+        data = NULL;
+        nextFree = NULL;
+        size = 0;
+    }
+
+    NEINLINE void Clear() {
+        nextFree = data;
+    }
+
+    NEINLINE T &operator[](s32 index) {
+        ASSERT(index >= 0);
+        ASSERT(index < size);
+        return data[index];
+    }
+
+    NEINLINE void MakeFromPointer(T *pdata, s32 makeSize) {
+        data = pdata;
+        size = makeSize;
+        nextFree = pdata + makeSize;
+        alloc = NULL;
+        growBy = 0;
+    }
+
 protected:
-	T * data;
-	T * nextFree;
-	s32 size;
-	neAllocatorAbstract * alloc;
-	neAllocatorDefault allocDef;
-	s32 growBy;
+    T *data;
+    T *nextFree;
+    s32 size;
+    neAllocatorAbstract *alloc;
+    neAllocatorDefault allocDef;
+    s32 growBy;
 
-	T initArray[initFixedSize];
+    T initArray[initFixedSize];
 };
 
 /////////////////////////////////////////////////////////////
 
-template <class T> class neFreeListItem
-{
+template<class T>
+class neFreeListItem {
 PLACEMENT_MAGIC
+
 public:
 /*
 	NEINLINE void * operator new (size_t s,void * addr)
@@ -379,383 +366,355 @@ public:
 	NEINLINE void operator delete[](void *, void *)
 	{
 	}
-*/	T thing;
-	neFreeListItem * next;
-	neFreeListItem * prev;
-	bool state;
+*/    T thing;
+    neFreeListItem *next;
+    neFreeListItem *prev;
+    bool state;
 
-	NEINLINE neFreeListItem()
-	{
-		prev = NULL;
-		next = NULL;
-		state = false;
-	}
+    NEINLINE neFreeListItem() {
+        prev = NULL;
+        next = NULL;
+        state = false;
+    }
 
-	NEINLINE void Remove()
-	{
-		if (next != NULL)
-		{
-			next->prev = prev;
-		}
-		if (prev != NULL)
-		{
-			prev->next = next;
-		}
-		Solo();
-	}
-	NEINLINE void Insert(neFreeListItem * newItem)
-	{
-		newItem->next = this;
-		newItem->prev = prev;
-		if (prev)
-		{
-			prev->next = newItem;
-		}
-		prev = newItem;
-	}
-	NEINLINE void Append(neFreeListItem * newItem)
-	{
-		newItem->next = next;
-		newItem->prev = this;
-		if (next)
-		{
-			next->prev = newItem;
-		}
-		next = newItem;
-	}
-	NEINLINE void Concat(neFreeListItem * newItem)
-	{
-		ASSERT(next == NULL);
+    NEINLINE void Remove() {
+        if (next != NULL) {
+            next->prev = prev;
+        }
+        if (prev != NULL) {
+            prev->next = next;
+        }
+        Solo();
+    }
 
-		next = newItem;
+    NEINLINE void Insert(neFreeListItem *newItem) {
+        newItem->next = this;
+        newItem->prev = prev;
+        if (prev) {
+            prev->next = newItem;
+        }
+        prev = newItem;
+    }
 
-		newItem->prev = this;
-	}
-	NEINLINE void Solo()
-	{
-		prev = NULL;
-		next = NULL;
-	}
+    NEINLINE void Append(neFreeListItem *newItem) {
+        newItem->next = next;
+        newItem->prev = this;
+        if (next) {
+            next->prev = newItem;
+        }
+        next = newItem;
+    }
+
+    NEINLINE void Concat(neFreeListItem *newItem) {
+        ASSERT(next == NULL);
+
+        next = newItem;
+
+        newItem->prev = this;
+    }
+
+    NEINLINE void Solo() {
+        prev = NULL;
+        next = NULL;
+    }
 };
 
 /////////////////////////////////////////////////////////////
 
-template <class T, int initFixedSize = 1> class neDLinkList
-{
+template<class T, int initFixedSize = 1>
+class neDLinkList {
 public:
-	typedef neFreeListItem<T> listItem;
+    typedef neFreeListItem<T> listItem;
 
-	NEINLINE bool IsFixedSize()
-	{
-		return (initFixedSize != 1);
-	}
-	NEINLINE neBool CheckBelongAndInUse(T * t)
-	{
-		listItem * item = (listItem *)t;
+    NEINLINE bool IsFixedSize() {
+        return (initFixedSize != 1);
+    }
 
-		if (item < data)
-			return false;
+    NEINLINE neBool CheckBelongAndInUse(T *t) {
+        listItem *item = (listItem *) t;
 
-		if (item >= (data + size))
-			return false;
+        if (item < data)
+            return false;
 
-		return item->state; //1 = in use
-	}
-	NEINLINE void Init()
-	{
-		if (!IsFixedSize())
-		{
-			data = NULL;
-			unused = NULL;
-			used = NULL;
-			unusedTail = NULL;
-			usedTail = NULL;
-			size = 0;
-			usedCount = 0;
-			unusedCount = 0;
-		}
-		else
-		{
-			data = initArray;
-			size = initFixedSize;
-			for (int i = 0; i < size; i++)
-			{
-				data[i].next = &(data[i+1]);
-				data[i].prev = &(data[i-1]);
-				data[i].state = false;
-			}
-			data[0].prev = NULL;
-			data[size-1].next = NULL;
+        if (item >= (data + size))
+            return false;
 
-			unused = data;
-			unusedTail = data + size;
-			unusedCount = size;
+        return item->state; //1 = in use
+    }
 
-			used = NULL;
-			usedTail = NULL;
-			usedCount = 0;
-		}
-	}
-	NEINLINE neDLinkList()
-	{
-		alloc = &allocDef;
+    NEINLINE void Init() {
+        if (!IsFixedSize()) {
+            data = NULL;
+            unused = NULL;
+            used = NULL;
+            unusedTail = NULL;
+            usedTail = NULL;
+            size = 0;
+            usedCount = 0;
+            unusedCount = 0;
+        } else {
+            data = initArray;
+            size = initFixedSize;
+            for (int i = 0; i < size; i++) {
+                data[i].next = &(data[i + 1]);
+                data[i].prev = &(data[i - 1]);
+                data[i].state = false;
+            }
+            data[0].prev = NULL;
+            data[size - 1].next = NULL;
 
-		Init();
-	}
-	NEINLINE void Free()
-	{
-		if (IsFixedSize())
-			return;
+            unused = data;
+            unusedTail = data + size;
+            unusedCount = size;
 
-		//delete [] (data, (void*) data);
+            used = NULL;
+            usedTail = NULL;
+            usedCount = 0;
+        }
+    }
 
-		if (data)
-			alloc->Free((neByte*)data-mallocNewDiff);
+    NEINLINE neDLinkList() {
+        alloc = &allocDef;
 
-		Init();
-	}
-	NEINLINE s32 Size()
-	{
-		return size;
-	}
-	NEINLINE ~neDLinkList()
-	{
-		Free();
-	}
-	NEINLINE T * Alloc(s32 flag = 0)
-	{
-		if (!unused)
-			return NULL;
-		
-		T * ret = &(unused->thing);
+        Init();
+    }
 
-		ASSERT(unused->state == false);
+    NEINLINE void Free() {
+        if (IsFixedSize())
+            return;
 
-		unused->state = true;
+        //delete [] (data, (void*) data);
 
-		listItem * newUnusedHead;
+        if (data)
+            alloc->Free((neByte *) data - mallocNewDiff);
 
-		newUnusedHead = unused->next;
-		
-		unused->Remove();
+        Init();
+    }
 
-		if (flag == 0)
-		{
-			if (usedTail)
-			{
-				usedTail->Append(unused);
-				usedTail = unused;
-			}
-			else
-			{
-				used = unused;
-				used->Solo();
-				usedTail = used;
-			}
-		}
-		else
-		{
-			unused->Solo();
-		}
+    NEINLINE s32 Size() {
+        return size;
+    }
 
-		if (unused == unusedTail)
-		{
-			unusedTail = NULL;
-			unused = NULL;;
-			ASSERT(newUnusedHead == NULL);
-		}
-		else
-			unused = newUnusedHead;
+    NEINLINE ~neDLinkList() {
+        Free();
+    }
 
-		unusedCount--;
-		usedCount++;
-		return ret;
-	}
-	NEINLINE bool Reserve(s32 n, neAllocatorAbstract * al = NULL)
-	{
-		if (IsFixedSize())
-		{
-			ASSERT(0);
-			return false;
-		}
-		Free();
+    NEINLINE T *Alloc(s32 flag = 0) {
+        if (!unused)
+            return NULL;
 
-		if (n == 0)
-			return true;
+        T *ret = &(unused->thing);
 
-		if (al)
-			alloc = al;
+        ASSERT(unused->state == false);
 
-		neByte * mem = alloc->Alloc(sizeof(listItem) * n + 4);
+        unused->state = true;
 
-		data = new (mem) listItem[n];
+        listItem *newUnusedHead;
 
-		mallocNewDiff = (neByte*)data - mem;
-		
-		size = n;
+        newUnusedHead = unused->next;
 
-		for (int i = 0; i < n; i++)
-		{
-			data[i].next = &(data[i+1]);
-			data[i].prev = &(data[i-1]);
-			data[i].state = false;
-		}
-		data[0].prev = NULL;
-		data[n-1].next = NULL;
+        unused->Remove();
 
-		unused = data;
-		unusedTail = data + size;
-		unusedCount = n;
+        if (flag == 0) {
+            if (usedTail) {
+                usedTail->Append(unused);
+                usedTail = unused;
+            } else {
+                used = unused;
+                used->Solo();
+                usedTail = used;
+            }
+        } else {
+            unused->Solo();
+        }
 
-		used = NULL;
-		usedTail = NULL;
-		usedCount = 0;
+        if (unused == unusedTail) {
+            unusedTail = NULL;
+            unused = NULL;;
+            ASSERT(newUnusedHead == NULL);
+        } else
+            unused = newUnusedHead;
 
-		return true;
-	}
-	NEINLINE void Dealloc(T * thing, s32 flag = 0)
-	{
-		if (!flag && !used)
-		{
-			ASSERT(0);
-			return;
-		}
+        unusedCount--;
+        usedCount++;
+        return ret;
+    }
 
-		s32 n = GetID(thing);
+    NEINLINE bool Reserve(s32 n, neAllocatorAbstract *al = NULL) {
+        if (IsFixedSize()) {
+            ASSERT(0);
+            return false;
+        }
+        Free();
 
-		ASSERT(n >= 0);
-		ASSERT(n < size);
+        if (n == 0)
+            return true;
 
-		listItem * newUnused = &(data[n]);
-		
-		ASSERT(newUnused->state == true);
+        if (al)
+            alloc = al;
 
-		newUnused->state = false;
+        neByte *mem = alloc->Alloc(sizeof(listItem) * n + 4);
 
-		if (flag == 0)
-		{
-			if (newUnused == used) // dealloc head of used
-			{
-				used = newUnused->next;
-			}
-			if (newUnused == usedTail) // dealloc tail of used
-			{
-				usedTail = newUnused->prev;
-			}
-		}
+        data = new(mem) listItem[n];
 
-		newUnused->Remove();
+        mallocNewDiff = (neByte *) data - mem;
 
-		if (unused)
-		{
-			unused->Insert(newUnused);
-		}
-		else
-		{
-			newUnused->Solo();
-			unusedTail = newUnused;
-		}
-		unused = newUnused;
-		
-		unusedCount++;
-		usedCount--;
-	}
-	NEINLINE s32 GetID(T * t)
-	{
-		return ((listItem*)t - data);
-	}
-	NEINLINE s32 GetUsedCount()
-	{
-		return usedCount;
-	}
-	class iterator;
+        size = n;
 
-	NEINLINE void Clear()
-	{
-		iterator iter;
+        for (int i = 0; i < n; i++) {
+            data[i].next = &(data[i + 1]);
+            data[i].prev = &(data[i - 1]);
+            data[i].state = false;
+        }
+        data[0].prev = NULL;
+        data[n - 1].next = NULL;
 
-		for (iter = BeginUsed(); iter.Valid();)
-		{
-			iterator next = BeginNext(iter);
+        unused = data;
+        unusedTail = data + size;
+        unusedCount = n;
 
-			Dealloc(*iter);
+        used = NULL;
+        usedTail = NULL;
+        usedCount = 0;
 
-			iter = next;
-		}
-	}
-	NEINLINE iterator BeginUsed()
-	{
-		iterator iter;
-		
-		iter.cur = used;
+        return true;
+    }
 
-		return iter;
-	}
-	NEINLINE iterator BeginUnused()
-	{
-		iterator iter;
-		
-		iter.cur = unused;
+    NEINLINE void Dealloc(T *thing, s32 flag = 0) {
+        if (!flag && !used) {
+            ASSERT(0);
+            return;
+        }
 
-		return iter;
-	}
-	NEINLINE iterator BeginNext(const iterator & it)
-	{
-		iterator next;
+        s32 n = GetID(thing);
 
-		next.cur = it.cur->next;
+        ASSERT(n >= 0);
+        ASSERT(n < size);
 
-		return next;
-	}
-	class iterator
-	{
-	public:
-		NEINLINE T * operator * () const
-		{
-			if (cur)
-				return &(cur->thing);
-			return NULL;
-		}
-		NEINLINE bool operator ++ (int) 
-		{
-			if (cur)
-			{
-				cur = cur->next;
-				return true;
-			}
-			return false;
-		}
-		NEINLINE bool operator -- () 
-		{
-			if (cur)
-			{
-				cur = cur->prev;
-				return true;
-			}
-			return false;
-		}
-		NEINLINE bool Valid()
-		{
-			return (cur != NULL);
-		}
-	public:
-		listItem * cur;
-	};
+        listItem *newUnused = &(data[n]);
+
+        ASSERT(newUnused->state == true);
+
+        newUnused->state = false;
+
+        if (flag == 0) {
+            if (newUnused == used) // dealloc head of used
+            {
+                used = newUnused->next;
+            }
+            if (newUnused == usedTail) // dealloc tail of used
+            {
+                usedTail = newUnused->prev;
+            }
+        }
+
+        newUnused->Remove();
+
+        if (unused) {
+            unused->Insert(newUnused);
+        } else {
+            newUnused->Solo();
+            unusedTail = newUnused;
+        }
+        unused = newUnused;
+
+        unusedCount++;
+        usedCount--;
+    }
+
+    NEINLINE s32 GetID(T *t) {
+        return ((listItem *) t - data);
+    }
+
+    NEINLINE s32 GetUsedCount() {
+        return usedCount;
+    }
+
+    class iterator;
+
+    NEINLINE void Clear() {
+        iterator iter;
+
+        for (iter = BeginUsed(); iter.Valid();) {
+            iterator next = BeginNext(iter);
+
+            Dealloc(*iter);
+
+            iter = next;
+        }
+    }
+
+    NEINLINE iterator BeginUsed() {
+        iterator iter;
+
+        iter.cur = used;
+
+        return iter;
+    }
+
+    NEINLINE iterator BeginUnused() {
+        iterator iter;
+
+        iter.cur = unused;
+
+        return iter;
+    }
+
+    NEINLINE iterator BeginNext(const iterator &it) {
+        iterator next;
+
+        next.cur = it.cur->next;
+
+        return next;
+    }
+
+    class iterator {
+    public:
+        NEINLINE T *operator*() const {
+            if (cur)
+                return &(cur->thing);
+            return NULL;
+        }
+
+        NEINLINE bool operator++(int) {
+            if (cur) {
+                cur = cur->next;
+                return true;
+            }
+            return false;
+        }
+
+        NEINLINE bool operator--() {
+            if (cur) {
+                cur = cur->prev;
+                return true;
+            }
+            return false;
+        }
+
+        NEINLINE bool Valid() {
+            return (cur != NULL);
+        }
+
+    public:
+        listItem *cur;
+    };
 
 public:
-	listItem * data;
-	listItem * unused;
-	listItem * used;
-	listItem * unusedTail;
-	listItem * usedTail;
-	s32 size;
-	s32 unusedCount;
-	s32 usedCount;
-	neAllocatorAbstract * alloc;
-	neAllocatorDefault allocDef;
-	s32 mallocNewDiff;
-	listItem initArray[initFixedSize];
+    listItem *data;
+    listItem *unused;
+    listItem *used;
+    listItem *unusedTail;
+    listItem *usedTail;
+    s32 size;
+    s32 unusedCount;
+    s32 usedCount;
+    neAllocatorAbstract *alloc;
+    neAllocatorDefault allocDef;
+    s32 mallocNewDiff;
+    listItem initArray[initFixedSize];
 };
+
 /*
 template <class T, int initFixedSize = 1> class neHeap
 {
@@ -941,330 +900,292 @@ protected:
 	T initArray[initFixedSize];
 };
 */
-template <class T> class neCollection
-{
+template<class T>
+class neCollection {
 public:
-	typedef neFreeListItem<T*> itemType;
+    typedef neFreeListItem<T *> itemType;
 
-	neCollection()
-	{
-		Reset();
-	}
-	void Reset()
-	{
-		headItem = NULL;
-		tailItem = NULL;
-		count = 0;
-	}
-	void Add(itemType * add)
-	{
-		ASSERT(add);
-		
-		if (headItem)
-		{
-			tailItem->Append(add);
+    neCollection() {
+        Reset();
+    }
 
-			tailItem = add;
-		}
-		else
-		{
-			headItem = add;
-			tailItem = add;
-		}
-		count++;
-	}
-	void Remove(itemType * rem)
-	{
-		ASSERT(count > 0);
+    void Reset() {
+        headItem = NULL;
+        tailItem = NULL;
+        count = 0;
+    }
 
-		ASSERT(rem);
+    void Add(itemType *add) {
+        ASSERT(add);
 
-		if (rem == headItem)
-		{
-			headItem = rem->next;
-		}
-		if (rem == tailItem)
-		{
-			tailItem = rem->prev;
-		}
-		rem->Remove();
+        if (headItem) {
+            tailItem->Append(add);
 
-		count --;
-	}
-	itemType * GetHead()
-	{
-		return headItem;
-	}
-	itemType * GetNext(itemType * cur)
-	{
-		return cur->next;
-	}
-	itemType * GetPrev(itemType * cur)
-	{
-		return cur->prev;
-	}
+            tailItem = add;
+        } else {
+            headItem = add;
+            tailItem = add;
+        }
+        count++;
+    }
+
+    void Remove(itemType *rem) {
+        ASSERT(count > 0);
+
+        ASSERT(rem);
+
+        if (rem == headItem) {
+            headItem = rem->next;
+        }
+        if (rem == tailItem) {
+            tailItem = rem->prev;
+        }
+        rem->Remove();
+
+        count--;
+    }
+
+    itemType *GetHead() {
+        return headItem;
+    }
+
+    itemType *GetNext(itemType *cur) {
+        return cur->next;
+    }
+
+    itemType *GetPrev(itemType *cur) {
+        return cur->prev;
+    }
 
 public:
-	neFreeListItem<T*> * headItem;
-	neFreeListItem<T*> * tailItem;
-	s32 count;
+    neFreeListItem<T *> *headItem;
+    neFreeListItem<T *> *tailItem;
+    s32 count;
 };
 
-template <class T> class neList
-{
+template<class T>
+class neList {
 public:
-	typedef neFreeListItem<T> itemType;
+    typedef neFreeListItem<T> itemType;
 
-	neList()
-	{
-		Reset();
-	}
-	void Reset()
-	{
-		headItem = NULL;
-		tailItem = NULL;
-		count = 0;
-	}
-	void Add(T * add)
-	{
-		ASSERT(add);
+    neList() {
+        Reset();
+    }
 
-		itemType * addItem = (itemType *)add;
-		
-		if (headItem)
-		{
-			tailItem->Append(addItem);
+    void Reset() {
+        headItem = NULL;
+        tailItem = NULL;
+        count = 0;
+    }
 
-			tailItem = addItem;
-		}
-		else
-		{
-			headItem = addItem;
-			tailItem = addItem;
-		}
-		count++;
-	}
-	void AddOrder(T * add)
-	{
-		ASSERT(add);
+    void Add(T *add) {
+        ASSERT(add);
 
-		itemType * addItem = (itemType *)add;
+        itemType *addItem = (itemType *) add;
 
-		if (!headItem)
-		{
-			headItem = addItem;
+        if (headItem) {
+            tailItem->Append(addItem);
 
-			tailItem = addItem;
+            tailItem = addItem;
+        } else {
+            headItem = addItem;
+            tailItem = addItem;
+        }
+        count++;
+    }
 
-			count = 1;
+    void AddOrder(T *add) {
+        ASSERT(add);
 
-			return;
-		}
+        itemType *addItem = (itemType *) add;
 
-		itemType * curItem = tailItem;
+        if (!headItem) {
+            headItem = addItem;
 
-		neBool done = false;
+            tailItem = addItem;
 
-		while (curItem)
-		{
-			T * curT = (T *)curItem;
+            count = 1;
 
-			if (add->Value() <= curT->Value())
-			{
-				done = true;
+            return;
+        }
 
-				curItem->Append(addItem);
+        itemType *curItem = tailItem;
 
-				if (curItem == tailItem)
-				{
-					tailItem = addItem;
-				}
-				break;
-			}
-			curItem = curItem->prev;
-		}
-		if (!done)
-		{
-			headItem->Insert(addItem);
+        neBool done = false;
 
-			headItem = addItem;
-		}
-		count++;
-	}
-	void UpdateOrder(T * u)
-	{
-		if (count == 1)
-			return;
+        while (curItem) {
+            T *curT = (T *) curItem;
 
-		itemType * uItem = (itemType *) u;
+            if (add->Value() <= curT->Value()) {
+                done = true;
 
-		itemType * cItem;
+                curItem->Append(addItem);
 
-		neBool done = false;
+                if (curItem == tailItem) {
+                    tailItem = addItem;
+                }
+                break;
+            }
+            curItem = curItem->prev;
+        }
+        if (!done) {
+            headItem->Insert(addItem);
 
-		if (uItem == tailItem) // move up
-		{
-			cItem = uItem->prev;
+            headItem = addItem;
+        }
+        count++;
+    }
 
-			Remove(u);
+    void UpdateOrder(T *u) {
+        if (count == 1)
+            return;
 
-			while (cItem)
-			{
-				if (((T*)cItem)->Value() >= u->Value())
-				{
-					cItem->Append(uItem);
+        itemType *uItem = (itemType *) u;
 
-					if (cItem == tailItem)
-					{
-						tailItem = uItem;
-					}
-					done = true;
+        itemType *cItem;
 
-					break;
-				}
-				cItem = cItem->prev;
-			}
-			if (!done)
-			{
-				headItem->Insert(uItem);
+        neBool done = false;
 
-				headItem = uItem;
-			}
-			count++; // because Remove dec count;
-		}
-		else if (uItem == headItem) // move down
-		{
-			cItem = uItem->next;
+        if (uItem == tailItem) // move up
+        {
+            cItem = uItem->prev;
 
-			Remove(u);
+            Remove(u);
 
-			while (cItem)
-			{
-				if (((T*)cItem)->Value() <= u->Value())
-				{
-					cItem->Insert(uItem);
+            while (cItem) {
+                if (((T *) cItem)->Value() >= u->Value()) {
+                    cItem->Append(uItem);
 
-					if (cItem == headItem)
-					{
-						headItem = uItem;
-					}
-					done = true;
+                    if (cItem == tailItem) {
+                        tailItem = uItem;
+                    }
+                    done = true;
 
-					break;
-				}
-				cItem = cItem->next;
-			}
-			if (!done)
-			{
-				tailItem->Append(uItem);
+                    break;
+                }
+                cItem = cItem->prev;
+            }
+            if (!done) {
+                headItem->Insert(uItem);
 
-				tailItem = uItem;
-			}
-			count ++;
-		}
-		else
-		{
-			itemType * nextItem = uItem->next;
+                headItem = uItem;
+            }
+            count++; // because Remove dec count;
+        } else if (uItem == headItem) // move down
+        {
+            cItem = uItem->next;
 
-			T * nextT = (T*) nextItem;
+            Remove(u);
 
-			if (u->Value() < nextT->Value())
-			{
-				//move down
-				cItem = nextItem;
+            while (cItem) {
+                if (((T *) cItem)->Value() <= u->Value()) {
+                    cItem->Insert(uItem);
 
-				Remove(u);
+                    if (cItem == headItem) {
+                        headItem = uItem;
+                    }
+                    done = true;
 
-				while (cItem)
-				{
-					if (((T*)cItem)->Value() <= u->Value())
-					{
-						cItem->Insert(uItem);
+                    break;
+                }
+                cItem = cItem->next;
+            }
+            if (!done) {
+                tailItem->Append(uItem);
 
-						done = true;
+                tailItem = uItem;
+            }
+            count++;
+        } else {
+            itemType *nextItem = uItem->next;
 
-						break;
-					}
-					cItem = cItem->next;
-				}
-				if (!done)
-				{
-					tailItem->Append(uItem);
+            T *nextT = (T *) nextItem;
 
-					tailItem = uItem;
-				}
-				count ++;
-			}
-			else
-			{
-				//move up
-				cItem = uItem->prev;
+            if (u->Value() < nextT->Value()) {
+                //move down
+                cItem = nextItem;
 
-				Remove(u);
+                Remove(u);
 
-				while (cItem)
-				{
-					if (((T*)cItem)->Value() >= u->Value())
-					{
-						cItem->Append(uItem);
+                while (cItem) {
+                    if (((T *) cItem)->Value() <= u->Value()) {
+                        cItem->Insert(uItem);
 
-						if (cItem == tailItem)
-						{
-							tailItem = uItem;
-						}
-						done = true;
+                        done = true;
 
-						break;
-					}
-					cItem = cItem->prev;
-				}
-				if (!done)
-				{
-					headItem->Insert(uItem);
+                        break;
+                    }
+                    cItem = cItem->next;
+                }
+                if (!done) {
+                    tailItem->Append(uItem);
 
-					headItem = uItem;
-				}
-				count++; // because Remove dec count;
-			}
-		}
-	}
-	void Remove(T * rem)
-	{
-		ASSERT(count > 0);
+                    tailItem = uItem;
+                }
+                count++;
+            } else {
+                //move up
+                cItem = uItem->prev;
 
-		ASSERT(rem);
+                Remove(u);
 
-		itemType * remItem = (itemType *)rem;
+                while (cItem) {
+                    if (((T *) cItem)->Value() >= u->Value()) {
+                        cItem->Append(uItem);
 
-		if (remItem == headItem)
-		{
-			headItem = remItem->next;
-		}
-		if (remItem == tailItem)
-		{
-			tailItem = remItem->prev;
-		}
-		remItem->Remove();
+                        if (cItem == tailItem) {
+                            tailItem = uItem;
+                        }
+                        done = true;
 
-		count --;
-	}
-	T * GetHead()
-	{
-		return(T*)headItem;
-	}
-	T * GetNext(T * cur)
-	{
-		return (T*)((itemType*)cur)->next;
-	}
-	T * GetPrev(T * cur)
-	{
-		return (T*)((itemType*)cur)->prev;
-	}
+                        break;
+                    }
+                    cItem = cItem->prev;
+                }
+                if (!done) {
+                    headItem->Insert(uItem);
+
+                    headItem = uItem;
+                }
+                count++; // because Remove dec count;
+            }
+        }
+    }
+
+    void Remove(T *rem) {
+        ASSERT(count > 0);
+
+        ASSERT(rem);
+
+        itemType *remItem = (itemType *) rem;
+
+        if (remItem == headItem) {
+            headItem = remItem->next;
+        }
+        if (remItem == tailItem) {
+            tailItem = remItem->prev;
+        }
+        remItem->Remove();
+
+        count--;
+    }
+
+    T *GetHead() {
+        return (T *) headItem;
+    }
+
+    T *GetNext(T *cur) {
+        return (T *) ((itemType *) cur)->next;
+    }
+
+    T *GetPrev(T *cur) {
+        return (T *) ((itemType *) cur)->prev;
+    }
 
 public:
-	itemType * headItem;
-	itemType * tailItem;
-	s32 count;
+    itemType *headItem;
+    itemType *tailItem;
+    s32 count;
 };
 
 #endif //CONTAINERS_H

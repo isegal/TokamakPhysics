@@ -12,9 +12,13 @@
  *************************************************************************/
 
 class _neConstraint;
+
 class neRigidBodyBase;
+
 class neRigidBody_;
+
 class neJointSolver;
+
 class neFixedTimeStepSimulator;
 
 /****************************************************************************
@@ -25,15 +29,15 @@ class neFixedTimeStepSimulator;
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neJointPoint
-{
+class neJointPoint {
 public:
-	neV3 points[2];
+    neV3 points[2];
 
-	neV3 & PtBody() {return points[0];}
-	neV3 & PtWorld() {return points[1];}
+    neV3 &PtBody() { return points[0]; }
+
+    neV3 &PtWorld() { return points[1]; }
 };
 
 
@@ -45,7 +49,7 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 class neController;
 
 typedef neFreeListItem<neController> neControllerItem;
@@ -54,284 +58,265 @@ typedef neCollection<_neConstraint>::itemType neConstraintHandle;
 
 typedef struct neLimitState neLimitState;
 
-struct neLimitState
-{
-	s32 limitType;
+struct neLimitState {
+    s32 limitType;
 
-	neBool applyLimitImpulse;
+    neBool applyLimitImpulse;
 
-	neV3 limitAxis;
+    neV3 limitAxis;
 
-	neV3 limitNormalA;
+    neV3 limitNormalA;
 
-	neV3 limitNormalB;
+    neV3 limitNormalB;
 
-	neBool lowerLimitOn; // false means upper limit
+    neBool lowerLimitOn; // false means upper limit
 
-	neBool enableLimit;
+    neBool enableLimit;
 
-	f32 limitAngularPenetration;
+    f32 limitAngularPenetration;
 
-	f32 limitAngularPenetration2;
+    f32 limitAngularPenetration2;
 
-	f32 upperLimit;
+    f32 upperLimit;
 
-	f32 lowerLimit;
+    f32 lowerLimit;
 
-	_neConstraint * constr;
+    _neConstraint *constr;
 
-	void Reset(_neConstraint * c, s32 ltype = 0)
-	{
-		constr = c;
-		
-		applyLimitImpulse = false;
-		
-		limitType = ltype;
+    void Reset(_neConstraint *c, s32 ltype = 0) {
+        constr = c;
 
-		enableLimit = false;
+        applyLimitImpulse = false;
 
-		upperLimit = 0.0f;
+        limitType = ltype;
 
-		lowerLimit = 0.0f;
-	}
+        enableLimit = false;
 
-	void CheckLimitPrimary();
+        upperLimit = 0.0f;
 
-	void CheckLimitSecondary();
+        lowerLimit = 0.0f;
+    }
 
-	void CheckLimitPrimarySlider();
+    void CheckLimitPrimary();
+
+    void CheckLimitSecondary();
+
+    void CheckLimitPrimarySlider();
 };
 
-struct neMotor
-{
-	neBool enable;
+struct neMotor {
+    neBool enable;
 
-	neJoint::MotorType motorType;
+    neJoint::MotorType motorType;
 
-	f32 desireVelocity;
+    f32 desireVelocity;
 
-	f32 maxForce;
+    f32 maxForce;
 
-	neV3 axis;//for ball joint
+    neV3 axis;//for ball joint
 
-	void Reset()
-	{
-		enable = false;
+    void Reset() {
+        enable = false;
 
-		motorType = neJoint::NE_MOTOR_SPEED;
-		
-		desireVelocity = 0.0f;
+        motorType = neJoint::NE_MOTOR_SPEED;
 
-		maxForce = 0.0f;
+        desireVelocity = 0.0f;
 
-		axis.Set(1.0f, 0.0f, 0.0f);
-	}
+        maxForce = 0.0f;
 
-	void PrepareForSolver(_neConstraint * constraint);
+        axis.Set(1.0f, 0.0f, 0.0f);
+    }
+
+    void PrepareForSolver(_neConstraint *constraint);
 };
 
-class _neConstraint
-{
+class _neConstraint {
 public:
-	enum
-	{
-		NE_CPOINT_TYPE_BODY,
-		NE_CPOINT_TYPE_WORLD,
-		NE_CPOINT_TYPE_RESULT,
-	};
-	neT3 frameA;
-	neT3 frameB;
+    enum {
+        NE_CPOINT_TYPE_BODY,
+        NE_CPOINT_TYPE_WORLD,
+        NE_CPOINT_TYPE_RESULT,
+    };
+    neT3 frameA;
+    neT3 frameB;
 
-	neT3 frameAWorld;
-	neT3 frameBWorld;
+    neT3 frameAWorld;
+    neT3 frameBWorld;
 
-	neFixedTimeStepSimulator * sim;
+    neFixedTimeStepSimulator *sim;
 
-	neController * controllers;
+    neController *controllers;
 
-	neControllerItem * controllerCursor;
+    neControllerItem *controllerCursor;
 
-	neRigidBody_ * bodyA;
+    neRigidBody_ *bodyA;
 
-	neRigidBodyBase * bodyB;
+    neRigidBodyBase *bodyB;
 
-	neConstraintHandle bodyAHandle;
-	neConstraintHandle bodyBHandle;
+    neConstraintHandle bodyAHandle;
+    neConstraintHandle bodyBHandle;
 
-	s32 pointCount;
-	
-	neJointPoint cpointsA[2];
-	neJointPoint cpointsB[2];
+    s32 pointCount;
+
+    neJointPoint cpointsA[2];
+    neJointPoint cpointsB[2];
 /*	
 	neV3 cpointResults[2][2];
 
 	f32 clength[2];
 	f32 clengthSq[2];
 */
-	neBool enable;
+    neBool enable;
 
-	neBool infiniteMassB;
+    neBool infiniteMassB;
 
-	f32 accuracy;
+    f32 accuracy;
 
-	s32 iteration;
+    s32 iteration;
 
-	f32 jointLength;
+    f32 jointLength;
 
-	f32 pos;
+    f32 pos;
 
-	f32 pos2;
+    f32 pos2;
 
-	f32 jointDampingFactor;
+    f32 jointDampingFactor;
 
-	neBool alreadySetup;
-	/*
-	
-	  apply limit
+    neBool alreadySetup;
+    /*
 
-	*/
-	neLimitState limitStates[2];
+      apply limit
 
-	neMotor motors[2];
+    */
+    neLimitState limitStates[2];
 
-	neJoint::ConstraintType type;
+    neMotor motors[2];
 
-	void Enable(neBool yes);
+    neJoint::ConstraintType type;
 
-	void GeneratePointsFromFrame();
-	
-	void Reset();
+    void Enable(neBool yes);
 
-	void SetType(neJoint::ConstraintType t);
+    void GeneratePointsFromFrame();
+
+    void Reset();
+
+    void SetType(neJoint::ConstraintType t);
 
 //	neV3 * GetPoint(neRigidBodyBase * body, s32 index, s32 ptType);
 
 //	void ChooseRigidConstraints();
 
-	void UpdateConstraintPoint();
+    void UpdateConstraintPoint();
 
 //	f32 ApplyConstraintImpulse(neFixedTimeStepSimulator & sim);
 
-	void InfiniteMassB(neBool yes);
+    void InfiniteMassB(neBool yes);
 
-	void AddToRigidBody();
+    void AddToRigidBody();
 
-	neController * AddController(neJointControllerCallback * jc, s32 period);
+    neController *AddController(neJointControllerCallback *jc, s32 period);
 
-	void BeginIterateController();
+    void BeginIterateController();
 
-	neController * GetNextController();
+    neController *GetNextController();
 
-	void UpdateController();
+    void UpdateController();
 
-	void FindGreatest();
+    void FindGreatest();
 
-	neRigidBodyBase * GetNotThisBody(neRigidBody_ * notThis)
-	{
-		if (bodyA == notThis)
-		{
-			return bodyB;
-		}
-		else
-		{
-			return (neRigidBodyBase *)bodyA;
-		}
-	}
+    neRigidBodyBase *GetNotThisBody(neRigidBody_ *notThis) {
+        if (bodyA == notThis) {
+            return bodyB;
+        } else {
+            return (neRigidBodyBase *) bodyA;
+        }
+    }
 
-	void CheckLimit();
+    void CheckLimit();
 
-	void DrawCPointLine();
+    void DrawCPointLine();
 
-	neT3 GetFrameBWorld();
+    neT3 GetFrameBWorld();
 
-	neT3 GetBodyB2W();
+    neT3 GetBodyB2W();
 
-	void SetupLimitCollision();
+    void SetupLimitCollision();
 
-	void UpdateCurrentPosition();
+    void UpdateCurrentPosition();
 
-	void ApplyDamping();
+    void ApplyDamping();
 
 //	void SolveAngularConstraint();
 };
 
 typedef neFreeListItem<neRigidBodyBase *> neCBodyItem;
 
-class neConstraintHeader
-{
+class neConstraintHeader {
 public:
-	enum
-	{
-		FLAG_NONE = 0,
-		FLAG_NEED_SETUP = 1,
-		FLAG_NEED_REORG = 2,
-	};
+    enum {
+        FLAG_NONE = 0,
+        FLAG_NEED_SETUP = 1,
+        FLAG_NEED_REORG = 2,
+    };
 
-	_neConstraint * head;
-	_neConstraint * tail;
-	
-	neBool solved;
+    _neConstraint *head;
+    _neConstraint *tail;
 
-	s32 flag;
+    neBool solved;
 
-	neCollection<neRigidBodyBase> bodies;
+    s32 flag;
 
-	neConstraintHeader() { Reset();}
+    neCollection<neRigidBodyBase> bodies;
 
-	void AddToSolver(f32 & epsilon, s32 & iteration);
+    neConstraintHeader() { Reset(); }
 
-	void Reset() 
-	{
-		head = NULL; 
-		
-		tail = NULL;
+    void AddToSolver(f32 &epsilon, s32 &iteration);
 
-		flag = FLAG_NEED_SETUP;
+    void Reset() {
+        head = NULL;
 
-		solved = false;
+        tail = NULL;
 
-		bodies.Reset();
-	}
-	void Add(_neConstraint * c)
-	{
-		if (tail)
-		{
-			((neFreeListItem<_neConstraint> *)tail)->Append((neFreeListItem<_neConstraint>*)c);
+        flag = FLAG_NEED_SETUP;
 
-			tail = c;
-		}
-		else
-		{
-			head = tail = c;
-			
-			((neFreeListItem<_neConstraint> *)c)->Solo();
-		}
-	}
+        solved = false;
 
-	void Remove(_neConstraint * c)
-	{
-		neFreeListItem<_neConstraint> * item = (neFreeListItem<_neConstraint> *) c;
+        bodies.Reset();
+    }
 
-		if (c == head)
-		{
-			head = (_neConstraint *)item->next;
-		}
-		if (c == tail)
-		{
-			tail = (_neConstraint *)item->prev;
-		}
-		item->Remove();
-	}
-	//void Purge(neFixedTimeStepSimulator * sim);
+    void Add(_neConstraint *c) {
+        if (tail) {
+            ((neFreeListItem<_neConstraint> *) tail)->Append((neFreeListItem<_neConstraint> *) c);
 
-	void TraverseApplyConstraint(neBool autoSleep);
+            tail = c;
+        } else {
+            head = tail = c;
 
-	neBool StationaryCheck();
+            ((neFreeListItem<_neConstraint> *) c)->Solo();
+        }
+    }
 
-	void BecomeIdle(neBool checkResting = false);
+    void Remove(_neConstraint *c) {
+        neFreeListItem<_neConstraint> *item = (neFreeListItem<_neConstraint> *) c;
 
-	void WakeUp();
+        if (c == head) {
+            head = (_neConstraint *) item->next;
+        }
+        if (c == tail) {
+            tail = (_neConstraint *) item->prev;
+        }
+        item->Remove();
+    }
+    //void Purge(neFixedTimeStepSimulator * sim);
 
-	void RemoveAll();
+    void TraverseApplyConstraint(neBool autoSleep);
+
+    neBool StationaryCheck();
+
+    void BecomeIdle(neBool checkResting = false);
+
+    void WakeUp();
+
+    void RemoveAll();
 };
 

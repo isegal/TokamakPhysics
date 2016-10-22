@@ -26,11 +26,11 @@ class neFixedTimeStepSimulator;
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neTriangle_: public neTriangle
-{
+class neTriangle_ : public neTriangle {
 PLACEMENT_MAGIC
+
 public:
 //	void * operator new (size_t s, void * addr) {
 //		return addr;
@@ -47,56 +47,56 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
 //#define NE_TREE_DIM 2
 
 //#define NE_TREE_SECTOR_COUNT  (2 * 2)
 
-class neTreeNode
-{
+class neTreeNode {
 public:
-	void Initialise(neTriangleTree * _tree, s32 _parent, const neV3 & minBound, const neV3 & maxBound);
+    void Initialise(neTriangleTree *_tree, s32 _parent, const neV3 &minBound, const neV3 &maxBound);
 
-	void Build(neSimpleArray<s32> & triIndex, s32 level);
+    void Build(neSimpleArray<s32> &triIndex, s32 level);
 
-	void CountTriangleInSector(neSimpleArray<s32> &tris, neSimpleArray<s32> &sectorTris, const neV3 & com, s32 i);
+    void CountTriangleInSector(neSimpleArray<s32> &tris, neSimpleArray<s32> &sectorTris, const neV3 &com, s32 i);
 
-	s32 CountTriangleInSector2(neSimpleArray<s32> &tris, const neV3 & com, s32 sector);
+    s32 CountTriangleInSector2(neSimpleArray<s32> &tris, const neV3 &com, s32 sector);
 
-	void MakeLeaf(neSimpleArray<s32> &tris);
+    void MakeLeaf(neSimpleArray<s32> &tris);
 
-	bool IsOverlapped(const neV3 & minBound, const neV3 & maxBound);
+    bool IsOverlapped(const neV3 &minBound, const neV3 &maxBound);
 
-	void GetCandidateNodes(neSimpleArray<neTreeNode*> & nodes, const neV3 & minBound, const neV3 & maxBound, s32 level);
+    void GetCandidateNodes(neSimpleArray<neTreeNode *> &nodes, const neV3 &minBound, const neV3 &maxBound, s32 level);
 
-	void SelectBound(const neV3 & com, neV3 & minBound, neV3 & maxBound, s32 sector);
+    void SelectBound(const neV3 &com, neV3 &minBound, neV3 &maxBound, s32 sector);
 
-	void DrawTriangles();
+    void DrawTriangles();
 
-	void DrawBounds();
+    void DrawBounds();
 
 public:
-	static s32 numOfChildren;
+    static s32 numOfChildren;
 
-	void * operator new (size_t t, void * addr){
-		return addr;
-	}
-	void operator delete [] (void *, void *){}
+    void *operator new(size_t t, void *addr) {
+        return addr;
+    }
 
-	void operator delete (void *, void *){}
+    void operator delete[](void *, void *) {}
 
-	neTreeNode();
+    void operator delete(void *, void *) {}
 
-	neTriangleTree * tree;
+    neTreeNode();
 
-	s32 parent;
+    neTriangleTree *tree;
 
-	s32 children[4];
-	
-	neV3 bounds[3];//min/max x,y,z
+    s32 parent;
 
-	neSimpleArray<s32> triangleIndices; //leaf only
+    s32 children[4];
+
+    neV3 bounds[3];//min/max x,y,z
+
+    neSimpleArray<s32> triangleIndices; //leaf only
 };
 
 /****************************************************************************
@@ -107,41 +107,40 @@ public:
 *
 *	Desc:
 *
-****************************************************************************/ 
+****************************************************************************/
 
-class neTriangleTree
-{
-public: 
-	neTriangleTree();
+class neTriangleTree {
+public:
+    neTriangleTree();
 
-	~neTriangleTree();
+    ~neTriangleTree();
 
-	neBool BuildTree(neV3 * vertices, s32 vertexCount, neTriangle * tris, s32 triCount, neAllocatorAbstract * _alloc);
+    neBool BuildTree(neV3 *vertices, s32 vertexCount, neTriangle *tris, s32 triCount, neAllocatorAbstract *_alloc);
 
-	void FreeTree();
+    void FreeTree();
 
-	neTreeNode & GetRoot(){ return root;}
+    neTreeNode &GetRoot() { return root; }
 
-	bool HasTerrain() {return nodes.GetUsedCount() > 0;};
+    bool HasTerrain() { return nodes.GetUsedCount() > 0; };
 
-	neTreeNode & GetNode(s32 nodeIndex);
+    neTreeNode &GetNode(s32 nodeIndex);
 
 public:
-	neV3 * vertices;
+    neV3 *vertices;
 
-	s32 vertexCount;
+    s32 vertexCount;
 
-	neArray<neTriangle_> triangles;
+    neArray<neTriangle_> triangles;
 
-	neArray<neTreeNode> nodes;
+    neArray<neTreeNode> nodes;
 
-	neAllocatorAbstract * alloc;
+    neAllocatorAbstract *alloc;
 
-	neAllocatorDefault allocDef;
+    neAllocatorDefault allocDef;
 
-	neTreeNode root;
+    neTreeNode root;
 
-	neFixedTimeStepSimulator * sim;
+    neFixedTimeStepSimulator *sim;
 };
 
 #endif //NE_SCENERY_H
