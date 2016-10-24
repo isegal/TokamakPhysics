@@ -18,7 +18,6 @@ set(SOURCE_FILES
         src/sphere.cpp
         src/stack.cpp
         src/tricollision.cpp
-        src/useopcode.cpp
         )
 
 add_library(tokamaksrc ${SOURCE_FILES})
