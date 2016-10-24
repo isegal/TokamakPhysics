@@ -875,7 +875,9 @@ f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
         case IMPULSE_ANGULAR_LIMIT_SECONDARY: {
             //do nothing
         }
+            break;
 
+        default:
             break;
     }
     switch (cr->impulseType) {
@@ -929,6 +931,14 @@ f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
         case IMPULSE_RELATIVE_LINEAR_VELOCITY:
 
             ret = cr->SolveRelativeLinear(this);
+
+            break;
+
+        case IMPULSE_NORMAL:
+
+            break;
+
+        case IMPULSE_IGNORE:
 
             break;
     }

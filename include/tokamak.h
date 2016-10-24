@@ -606,7 +606,6 @@ NE_INTERFACE(neJoint)
 public:
     typedef enum {
         NE_JOINT_BALLSOCKET,
-        NE_JOINT_BALLSOCKET2,
         NE_JOINT_HINGE,
         NE_JOINT_SLIDE,
 

@@ -379,7 +379,7 @@ neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *conve
 
     neBool found = false;
 
-    while (con = originalBody->GetNextGeometry()) {
+    while ((con = originalBody->GetNextGeometry())) {
         if (con == convex) {
             found = true;
         }
@@ -1760,6 +1760,8 @@ neBool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TC
         case neGeometry::NE_BREAK_NEIGHBOUR:
         case neGeometry::NE_BREAK_NEIGHBOUR_PARTICLE:
 
+            break;
+        case neGeometry::NE_BREAK_DISABLE:
             break;
     }
     if (originalBodyType == NE_ANIMATED_BODY) {

@@ -268,7 +268,7 @@ public:
                 return NULL;
             }
 
-            memcpy(data, oldData, size * sizeof(T));
+            memcpy((void*)data, (const void*)oldData, size * sizeof(T));
 
             if (oldData)
                 alloc->Free((neByte *) oldData);

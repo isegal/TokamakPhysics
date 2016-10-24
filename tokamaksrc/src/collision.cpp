@@ -334,6 +334,14 @@ void neCollisionResult::PrepareForSolver(neBool aIdle, neBool bIdle) {
             kInv[0][0] = 1.0f / (oneOnMassA + oneOnMassB);
         }
             break;
+        case IMPULSE_IGNORE: {
+
+        }
+            break;
+
+        case IMPULSE_ANGULAR_MOTOR_SECONDARY:
+            break;
+
     }
 }
 
