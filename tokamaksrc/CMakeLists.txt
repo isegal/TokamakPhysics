@@ -20,8 +20,8 @@ set(SOURCE_FILES
         src/tricollision.cpp
         )
 
-add_library(tokamaksrc ${SOURCE_FILES})
-target_include_directories(tokamaksrc
+add_library(tokamak ${SOURCE_FILES})
+target_include_directories(tokamak
         PUBLIC ../include
         PRIVATE src)
 
