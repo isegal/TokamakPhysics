@@ -386,117 +386,60 @@ void neRigidBody_::DrawCPointLine() {
 }
 
 void neRigidBodyBase::Active(neBool
-yes,
-neRigidBodyBase *hint
-)
-{
-if (
-isActive &&yes
-)
-return;
+                             yes,
+                             neRigidBodyBase *hint
+) {
+    if (isActive && yes)
+        return;
 
-if (isActive) //make inactive
-{
-if (
+    if (isActive) //make inactive
+    {
+        if (
 
-AsCollisionBody()
+                AsCollisionBody()
 
-)
-{
-sim->activeCB.
-Remove((neCollisionBody_
-*)this);
+                ) {
+            sim->activeCB.Remove((neCollisionBody_ *) this);
+            sim->inactiveCB.Add((neCollisionBody_ *) this);
+        } else {
+            if (AsRigidBody()->IsParticle()) {
+                sim->activeRP.Remove((neRigidBody_ *) this);
 
-sim->inactiveCB.
-Add((neCollisionBody_
-*)this);
-}
-else
-{
-if (
+                sim->inactiveRP.Add((neRigidBody_ *) this);
+            } else {
+                sim->activeRB.Remove((neRigidBody_ *) this);
 
-AsRigidBody() -> IsParticle()
-
-)
-{
-sim->activeRP.
-Remove((neRigidBody_
-*)this);
-
-sim->inactiveRP.
-Add((neRigidBody_
-*)this);
-}
-else
-{
-sim->activeRB.
-Remove((neRigidBody_
-*)this);
-
-sim->inactiveRB.
-Add((neRigidBody_
-*)this);
-}
-}
+                sim->inactiveRB.Add((neRigidBody_ *) this);
+            }
+        }
 //remove from region
 
-if (
+        if (IsInRegion())
+            sim->region.RemoveBody(this);
 
-IsInRegion()
+        isActive = false;
+    } else {
+        // make active
+        if (AsCollisionBody()) {
+            sim->inactiveCB.Remove((neCollisionBody_*) this);
 
-)
-sim->region.RemoveBody(this);
+            sim->activeCB.Add((neCollisionBody_ *) this);
+        } else {
+            if (AsRigidBody()->IsParticle()) {
+                sim->inactiveRP.Remove((neRigidBody_ *) this);
 
-isActive = false;
-}
-else //make active
-{
-if (
+                sim->activeRP.Add((neRigidBody_ *) this);
+            } else {
+                sim->inactiveRB.Remove((neRigidBody_ *) this);
 
-AsCollisionBody()
-
-)
-{
-sim->inactiveCB.
-Remove((neCollisionBody_
-*)this);
-
-sim->activeCB.
-Add((neCollisionBody_
-*)this);
-}
-else
-{
-if (
-
-AsRigidBody() -> IsParticle()
-
-)
-{
-sim->inactiveRP.
-Remove((neRigidBody_
-*)this);
-
-sim->activeRP.
-Add((neRigidBody_
-*)this);
-}
-else
-{
-sim->inactiveRB.
-Remove((neRigidBody_
-*)this);
-
-sim->activeRB.
-Add((neRigidBody_
-*)this);
-}
-}
+                sim->activeRB.Add((neRigidBody_ *) this);
+            }
+        }
 //insert into the region
 
-if (col.convexCount > 0 || isCustomCD)
-sim->region.AddBody(this, hint);
+        if (col.convexCount > 0 || isCustomCD)
+            sim->region.AddBody(this, hint);
 
-isActive = true;
-}
+        isActive = true;
+    }
 }
