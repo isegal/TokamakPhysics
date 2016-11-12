@@ -20,6 +20,7 @@
 
 //#define _DEBUG_REGION
 
+#include <functional>
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -348,6 +349,8 @@ public:
     void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = NULL);
 
     void Advance(nePerformanceReport *_perfReport = NULL);
+
+    void ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback);
 
     bool SetMaterial(s32 index, f32 friction, f32 restitution, f32 density);
 

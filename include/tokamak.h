@@ -20,6 +20,7 @@
 #define TOKAMAK_VERSION  (( TOKAMAK_VERSION_MAJOR <<24)+(TOKAMAK_VERSION_MINOR <<16)+(TOKAMAK_VERSION_BUGFIX <<8) + 0)
 
 #include <memory>
+#include <functional>
 
 #include "math/ne_math.h"
 
@@ -1007,6 +1008,8 @@ public:
     void Advance(f32 sec, s32 nSteps = 1, nePerformanceReport *perfReport = NULL);
 
     void Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *perfReport = NULL);
+
+    void ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback);
 
     /*
         Terrain setup function

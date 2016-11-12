@@ -1980,6 +1980,11 @@ void neSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerforman
     sim.Advance(sec, minTimeStep, maxTimeStep, perfReport);
 }
 
+void neSimulator::ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback) {
+    CAST_THIS(neFixedTimeStepSimulator, sim);
+    sim.ForeachActiveRB(rbCallback);
+}
+
 /****************************************************************************
 *
 *	neSimulator::SetTerrainMesh
