@@ -22,5 +22,7 @@
 #include "../tokamaksrc/src/collision2.h"
 #include "../tokamaksrc/src/constraint.h"
 #include "../tokamaksrc/src/rigidbody.h"
+#include "../tokamaksrc/src/stack.h"
+#include "../tokamaksrc/src/simulator.h"
 
 #endif //TOKAMAK_EXT_H_H
