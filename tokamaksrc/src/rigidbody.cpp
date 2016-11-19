@@ -340,10 +340,9 @@ neController *neRigidBody_::GetNextController() {
 *
 ****************************************************************************/
 
-void neRigidBody_::GravityEnable(neBool
-yes)
+void neRigidBody_::GravityEnable(neBool yes)
 {
-gravityOn = yes;
+    gravityOn = yes;
 }
 
 /****************************************************************************

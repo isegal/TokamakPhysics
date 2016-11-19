@@ -395,414 +395,246 @@ s32 neRigidBody_::CheckContactValidity() {
     return validCount;
 }
 
-s32 neRigidBody_::AddContactImpulseRecord(neBool
-withConstraint)
-{
-s32 i = 0;
-static neV3 world1[NE_RB_MAX_RESTON_RECORDS];
-static neV3 world2[NE_RB_MAX_RESTON_RECORDS];
-static neV3 diff[NE_RB_MAX_RESTON_RECORDS];
-static f32 height[NE_RB_MAX_RESTON_RECORDS];
-s32 validCount = 0;
-static s32 validIndices[NE_RB_MAX_RESTON_RECORDS];
-s32 deepestIndex = -1;
-f32 deepest = -1.0e6f;
+s32 neRigidBody_::AddContactImpulseRecord(neBool withConstraint) {
+    s32 i = 0;
+    static neV3 world1[NE_RB_MAX_RESTON_RECORDS];
+    static neV3 world2[NE_RB_MAX_RESTON_RECORDS];
+    static neV3 diff[NE_RB_MAX_RESTON_RECORDS];
+    static f32 height[NE_RB_MAX_RESTON_RECORDS];
+    s32 validCount = 0;
+    static s32 validIndices[NE_RB_MAX_RESTON_RECORDS];
+    s32 deepestIndex = -1;
+    f32 deepest = -1.0e6f;
 
-for (
-i = 0;
-i<NE_RB_MAX_RESTON_RECORDS;
-i++)
-{
-if (!
-GetRestRecord(i)
-.
+    for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
+        if (!GetRestRecord(i).IsValid())
+            continue;
 
-IsValid()
+        if (!GetRestRecord(i).CheckOtherBody(sim)) {
+            GetRestRecord(i).SetInvalid();
+            continue;
+        }
+        GetRestRecord(i).Update();
 
-)
-continue;
+        world1[i] = State().b2w * GetRestRecord(i).bodyPoint;
 
-if (!
-GetRestRecord(i)
-.
-CheckOtherBody(sim)
-)
-{
-GetRestRecord(i)
-.
+        world2[i] = GetRestRecord(i).GetOtherBodyPoint();
 
-SetInvalid();
+        diff[i] = world1[i] - world2[i];
 
-continue;
-}
-GetRestRecord(i)
-.
+        neV3 d;
+        d = diff[i];
 
-Update();
+        d.RemoveComponent(GetRestRecord(i).normalWorld);
 
-world1[i] =
+        if (d.Dot(d) > 0.025f) {
+            GetRestRecord(i).SetInvalid();
 
-State()
+            GetRestHull().htype = neRestHull::NONE;
 
-.
-b2w *GetRestRecord(i)
-.
-bodyPoint;
+            continue;
+        }
 
-world2[i] =
-GetRestRecord(i)
-.
+        height[i] = diff[i].Dot(GetRestRecord(i).normalWorld);
 
-GetOtherBodyPoint();
+        validIndices[validCount] = i;
 
-diff[i] = world1[i] - world2[i];
+        validCount++;
 
-neV3 d;
-d = diff[i];
+        if (height[i] > deepest) {
+            deepest = height[i];
 
-d.
-RemoveComponent(GetRestRecord(i)
-.normalWorld);
+            deepestIndex = i;
+        }
+    }
+    if (validCount == 0) {
+        GetRestHull().htype = neRestHull::NONE;
+        return 0;
+    }
 
-if (d.
-Dot(d)
-> 0.025f)
-{
-GetRestRecord(i)
-.
+    if (0)//subType == NE_RIGID_PARTICLE)
+    {
+        ASSERT(deepestIndex != -1);
 
-SetInvalid();
+        i = deepestIndex;
 
-GetRestHull()
+        neCollisionResult tmpcr;
+        neCollisionResult *cresult = &tmpcr;
 
-.
-htype = neRestHull::NONE;
+        cresult->bodyA = (neRigidBodyBase *) this;
+        cresult->bodyB = GetRestRecord(i).GetOtherBody();
+        cresult->collisionFrame[2] = GetRestRecord(i).normalWorld;
+        cresult->contactA = world1[i] - GetPos();
+        cresult->contactB = world2[i] - GetRestRecord(i).GetOtherBody()->GetB2W().pos;
+        cresult->materialIdA = GetRestRecord(i).material;
+        cresult->materialIdB = GetRestRecord(i).otherMaterial;
+        cresult->depth = -GetRestRecord(i).normalDiff;//GetRestRecord(i).depth;
+        cresult->impulseType = IMPULSE_CONTACT;
+        cresult->impulseScale = 1.0f;
+        cresult->PrepareForSolver();
 
-continue;
-}
+        if (withConstraint || !cresult->CheckIdle()) {
+            sim->AddCollisionResult(tmpcr);
+        }
+    }
 
-height[i] = diff[i].
-Dot(GetRestRecord(i)
-.normalWorld);
+    s32 j;
+    f32 heightScale = 1.0f;
 
-validIndices[validCount] =
-i;
-
-validCount++;
-
-if (height[i] > deepest)
-{
-deepest = height[i];
-
-deepestIndex = i;
-}
-}
-if (validCount == 0)
-{
-GetRestHull()
-
-.
-htype = neRestHull::NONE;
-return 0;
-}
-
-if (0)//subType == NE_RIGID_PARTICLE)
-{
-ASSERT(deepestIndex != -1);
-
-i = deepestIndex;
-
-neCollisionResult tmpcr;
-neCollisionResult *cresult = &tmpcr;
-
-cresult->
-bodyA = (neRigidBodyBase *) this;
-cresult->
-bodyB = GetRestRecord(i).GetOtherBody();
-cresult->collisionFrame[2] =
-GetRestRecord(i)
-.
-normalWorld;
-cresult->
-contactA = world1[i] - GetPos();
-cresult->
-contactB = world2[i] - GetRestRecord(i).GetOtherBody()->GetB2W().pos;
-cresult->
-materialIdA = GetRestRecord(i).material;
-cresult->
-materialIdB = GetRestRecord(i).otherMaterial;
-cresult->
-depth = -GetRestRecord(i).normalDiff;//GetRestRecord(i).depth;
-cresult->
-impulseType = IMPULSE_CONTACT;
-cresult->
-impulseScale = 1.0f;
-cresult->
-
-PrepareForSolver();
-
-if (withConstraint || !cresult->
-
-CheckIdle()
-
-)
-{
-sim->
-AddCollisionResult(tmpcr);
-}
-}
-
-s32 j;
-
-f32 heightScale = 1.0f;
-
-if (validCount == 1 && height[validIndices[0]] < 0.0f)
-{
+    if (validCount == 1 && height[validIndices[0]] < 0.0f) {
 //if (subType == NE_RIGID_NORMAL)
-{
-i = validIndices[0];
+        {
+            i = validIndices[0];
 
-neCollisionResult tmpcr;
-neCollisionResult *cresult = &tmpcr;
+            neCollisionResult tmpcr;
+            neCollisionResult *cresult = &tmpcr;
 
-cresult->
-bodyA = (neRigidBodyBase *) this;
-cresult->
-bodyB = GetRestRecord(i).GetOtherBody();
-cresult->collisionFrame[2] =
-GetRestRecord(i)
-.
-normalWorld;
-ASSERT(cresult->collisionFrame[2].IsFinite());
-cresult->
-contactA = world1[i] - GetPos();
-cresult->
-contactB = world2[i] - GetRestRecord(i).GetOtherBody()->GetB2W().pos;
-cresult->
-materialIdA = GetRestRecord(i).material;
-cresult->
-materialIdB = GetRestRecord(i).otherMaterial;
-cresult->
-depth = -GetRestRecord(i).normalDiff;//GetRestRecord(i).depth;
-cresult->
-impulseType = IMPULSE_CONTACT;
+            cresult->bodyA = (neRigidBodyBase *) this;
+            cresult->bodyB = GetRestRecord(i).GetOtherBody();
+            cresult->collisionFrame[2] = GetRestRecord(i).normalWorld;
+            ASSERT(cresult->collisionFrame[2].IsFinite());
+            cresult->contactA = world1[i] - GetPos();
+            cresult->contactB = world2[i] - GetRestRecord(i).GetOtherBody()->GetB2W().pos;
+            cresult->materialIdA = GetRestRecord(i).material;
+            cresult->materialIdB = GetRestRecord(i).otherMaterial;
+            cresult->depth = -GetRestRecord(i).normalDiff;//GetRestRecord(i).depth;
+            cresult->impulseType = IMPULSE_CONTACT;
 //cresult->UpdateConstraintRelativeSpeed();
-cresult->
+            cresult->PrepareForSolver();
 
-PrepareForSolver();
+            cresult->impulseScale = 1.0f;
 
-cresult->
-impulseScale = 1.0f;
-
-if (withConstraint || !cresult->
-
-CheckIdle()
-
-)
-{
+            if (withConstraint || !cresult->CheckIdle()) {
 //*sim->cresultHeap.Alloc(0) = tmpcr;
-sim->
-AddCollisionResult(tmpcr);
-}
-}
+                sim->AddCollisionResult(tmpcr);
+            }
+        }
 
-GetRestHull()
+        GetRestHull().htype = neRestHull::NONE;
+        return 1;
+    } else if (validCount == 2) {
+        s32 v1 = validIndices[0];
+        s32 v2 = validIndices[1];
 
-.
-htype = neRestHull::NONE;
-return 1;
-}
-else if (validCount == 2)
-{
-s32 v1 = validIndices[0];
-s32 v2 = validIndices[1];
+        neV3 d1 = world1[v1] - world1[v2];
+        neV3 d2 = world2[v1] - world2[v2];
 
-neV3 d1 = world1[v1] - world1[v2];
-neV3 d2 = world2[v1] - world2[v2];
+        f32 len1 = d1.Length();
 
-f32 len1 = d1.Length();
+        if (neIsConsiderZero(len1)) {
+            heightScale = 1.0f;
+        } else {
+            f32 len2 = d2.Length();
 
-if (
-neIsConsiderZero(len1)
-)
-{
-heightScale = 1.0f;
-}
-else
-{
-f32 len2 = d2.Length();
+            if (neIsConsiderZero(len2)) {
+                heightScale = 1.0f;
+            } else {
+                d1 *= (1.0f / len1);
+                d2 *= (1.0f / len2);
 
-if (
-neIsConsiderZero(len2)
-)
-{
-heightScale = 1.0f;
-}
-else
-{
-d1 *= (1.0f / len1);
+                heightScale = neAbs(d1.Dot(d2));
+            }
+        }
 
-d2 *= (1.0f / len2);
-
-heightScale = neAbs(d1.Dot(d2));
-}
-}
-
-ASSERT(neIsFinite(heightScale));
+        ASSERT(neIsFinite(heightScale));
 //if (!neIsFinite(heightScale))
 //	heightScale = 1.0f;
-}
-else if (validCount == 3)
-{
-neV3 tri1[3];
-neV3 tri2[3];
+    } else if (validCount == 3) {
+        neV3 tri1[3];
+        neV3 tri2[3];
 
-tri1[0] = world1[1] - world1[0];
-tri1[1] = world1[2] - world1[1];
-tri1[2] = world1[0] - world1[2];
+        tri1[0] = world1[1] - world1[0];
+        tri1[1] = world1[2] - world1[1];
+        tri1[2] = world1[0] - world1[2];
 
-tri2[0] = world2[1] - world2[0];
-tri2[1] = world2[2] - world2[1];
-tri2[2] = world2[0] - world2[2];
+        tri2[0] = world2[1] - world2[0];
+        tri2[1] = world2[2] - world2[1];
+        tri2[2] = world2[0] - world2[2];
 
-neV3 normal1 = tri1[1].Cross(tri1[0]);
-neV3 normal2 = tri2[1].Cross(tri2[0]);
+        neV3 normal1 = tri1[1].Cross(tri1[0]);
+        neV3 normal2 = tri2[1].Cross(tri2[0]);
 
-f32 len1 = normal1.Length();
+        f32 len1 = normal1.Length();
 
-if (
-neIsConsiderZero(len1)
-)
-{
-heightScale = 1.0f;
-}
-else
-{
-f32 len2 = normal2.Length();
+        if (neIsConsiderZero(len1)) {
+            heightScale = 1.0f;
+        } else {
+            f32 len2 = normal2.Length();
 
-if (
-neIsConsiderZero(len2)
-)
-{
-heightScale = 1.0f;
-}
-else
-{
-normal1 *= (1.0f / len1);
-
-normal2 *= (1.0f / len2);
-
-heightScale = neAbs(normal1.Dot(normal2));
-}
-}
-ASSERT(neIsFinite(heightScale));
+            if (neIsConsiderZero(len2)) {
+                heightScale = 1.0f;
+            } else {
+                normal1 *= (1.0f / len1);
+                normal2 *= (1.0f / len2);
+                heightScale = neAbs(normal1.Dot(normal2));
+            }
+        }
+        ASSERT(neIsFinite(heightScale));
 //if (!neIsFinite(heightScale))
 //	heightScale = 1.0f;
-}
+    }
 
-f32 e = 0.0005f;
-f32 f = 1.0f - e;
+    f32 e = 0.0005f;
+    f32 f = 1.0f - e;
 
-heightScale = (heightScale - f) / e;
+    heightScale = (heightScale - f) / e;
 
-if (heightScale < 0.0f)
-{
-heightScale = e;
-}
-s32 actualValidCount = 0;
+    if (heightScale < 0.0f) {
+        heightScale = e;
+    }
+    s32 actualValidCount = 0;
 //f32 limit = 0.05f;
-f32 limit = 0.01f;
+    f32 limit = 0.01f;
 
-for (
-i = 0;
-i<validCount;
-i++)
-{
-f32 scale = 1.0f;
-
-j = validIndices[i];
-
-f32 scaleLimit = 0.01f;//limit * heightScale;
-
-if (height[j] > 0)
-{
-if (height[j] > scaleLimit)
-{
+    for (i = 0; i < validCount; i++) {
+        f32 scale = 1.0f;
+        j = validIndices[i];
+        f32 scaleLimit = 0.01f;//limit * heightScale;
+        if (height[j] > 0) {
+            if (height[j] > scaleLimit) {
 //GetRestRecord(j).rtype = neRestRecord::REST_ON_NOT_VALID;
 //GetRestHull().htype = neRestHull::NONE;
-continue;
-}
-scale = (scaleLimit - height[j]) / scaleLimit;
-
-scale = scale * scale * scale;
-}
+                continue;
+            }
+            scale = (scaleLimit - height[j]) / scaleLimit;
+            scale = scale * scale * scale;
+        }
 //if (subType == NE_RIGID_NORMAL)
-{
-neCollisionResult tmpcr;
-neCollisionResult *cresult = &tmpcr;//sim->cresultHeap.Alloc(0);
+        {
+            neCollisionResult tmpcr;
+            neCollisionResult *cresult = &tmpcr;//sim->cresultHeap.Alloc(0);
 
-cresult->
-bodyA = (neRigidBodyBase *) this;
-cresult->
-bodyB = GetRestRecord(j).GetOtherBody();
-cresult->collisionFrame[2] =
-GetRestRecord(j)
-.
-normalWorld;
-cresult->
-contactA = world1[j] - GetPos();
-cresult->
-contactB = world2[j] - GetRestRecord(j).GetOtherBody()->GetB2W().pos;
-cresult->
-materialIdA = GetRestRecord(j).material;
-cresult->
-materialIdB = GetRestRecord(j).otherMaterial;
-cresult->
-depth = -GetRestRecord(j).normalDiff;//GetRestRecord(j).depth;
-cresult->
-impulseType = IMPULSE_CONTACT;
+            cresult->bodyA = (neRigidBodyBase *) this;
+            cresult->bodyB = GetRestRecord(j).GetOtherBody();
+            cresult->collisionFrame[2] = GetRestRecord(j).normalWorld;
+            cresult->contactA = world1[j] - GetPos();
+            cresult->contactB = world2[j] - GetRestRecord(j).GetOtherBody()->GetB2W().pos;
+            cresult->materialIdA = GetRestRecord(j).material;
+            cresult->materialIdB = GetRestRecord(j).otherMaterial;
+            cresult->depth = -GetRestRecord(j).normalDiff;//GetRestRecord(j).depth;
+            cresult->impulseType = IMPULSE_CONTACT;
 //cresult->UpdateConstraintRelativeSpeed();
-cresult->
+            cresult->PrepareForSolver();
 
-PrepareForSolver();
-
-cresult->
-impulseScale = scale;
-if (withConstraint || !cresult->
-
-CheckIdle()
-
-)
-{
+            cresult->impulseScale = scale;
+            if (withConstraint || !cresult->CheckIdle()) {
 //*sim->cresultHeap.Alloc(0) = tmpcr;
-sim->
-AddCollisionResult(tmpcr);
-}
-}
+                sim->AddCollisionResult(tmpcr);
+            }
+        }
 //sim->HandleCollision(this, GetRestRecord(j).otherBody, cresult, IMPULSE_NORMAL, scale);
 
-GetRestHull()
+        GetRestHull().indices[actualValidCount++] = j;
+    }
+    if (actualValidCount >= 2) {
+        if (actualValidCount == 2) {
+            GetRestHull().htype = neRestHull::LINE;
 
-.indices[actualValidCount++] =
-j;
-}
-if (actualValidCount >= 2)
-{
-if (actualValidCount == 2)
-{
-GetRestHull()
+            ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
+            ASSERT(GetRestRecord(GetRestHull().indices[1]).IsValid());
 
-.
-htype = neRestHull::LINE;
-
-ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
-ASSERT(GetRestRecord(GetRestHull().indices[1]).IsValid());
-
-GetRestHull()
-
-.
-normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
-         GetRestRecord(GetRestHull().indices[1]).normalWorld;
+            GetRestHull().normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
+                                     GetRestRecord(GetRestHull().indices[1]).normalWorld;
 
 /*
 			neV3 diff = world2[GetRestHull().indices[0]] - world2[GetRestHull().indices[1]];
@@ -811,41 +643,20 @@ normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
 
 			GetRestHull().normal= cross.Cross(diff);
 */
-GetRestHull()
+            GetRestHull().normal.Normalize();
 
-.normal.
+            if (GetRestHull().normal.Dot(sim->gravityVector) < 0.0f)
+                GetRestHull().normal *= -1.0f;
+        } else {
+            GetRestHull().htype = neRestHull::TRIANGLE;
 
-Normalize();
+            ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
+            ASSERT(GetRestRecord(GetRestHull().indices[1]).IsValid());
+            ASSERT(GetRestRecord(GetRestHull().indices[2]).IsValid());
 
-if (
-
-GetRestHull()
-
-.normal.
-Dot(sim
-->gravityVector) < 0.0f)
-
-GetRestHull()
-
-.normal *= -1.0f;
-}
-else
-{
-GetRestHull()
-
-.
-htype = neRestHull::TRIANGLE;
-
-ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
-ASSERT(GetRestRecord(GetRestHull().indices[1]).IsValid());
-ASSERT(GetRestRecord(GetRestHull().indices[2]).IsValid());
-
-GetRestHull()
-
-.
-normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
-         GetRestRecord(GetRestHull().indices[1]).normalWorld +
-         GetRestRecord(GetRestHull().indices[2]).normalWorld;
+            GetRestHull().normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
+                                     GetRestRecord(GetRestHull().indices[1]).normalWorld +
+                                     GetRestRecord(GetRestHull().indices[2]).normalWorld;
 
 /*
 			neV3 diff1 = world2[GetRestHull().indices[0]] - world2[GetRestHull().indices[1]];
@@ -854,63 +665,28 @@ normal = GetRestRecord(GetRestHull().indices[0]).normalWorld +
 
 			GetRestHull().normal = diff1.Cross(diff2);
 */
-GetRestHull()
+            GetRestHull().normal.Normalize();
 
-.normal.
+            if (GetRestHull().normal.Dot(sim->gravityVector) < 0.0f)
+                GetRestHull().normal *= -1.0f;
+        }
+    } else {
+        if (actualValidCount == 1) {
+            GetRestHull().htype = neRestHull::POINT;
 
-Normalize();
+            ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
 
-if (
+            GetRestHull().normal = GetRestRecord(GetRestHull().indices[0]).normalWorld;
 
-GetRestHull()
+            if (GetRestHull().normal.Dot(sim->gravityVector) < 0.0f)
 
-.normal.
-Dot(sim
-->gravityVector) < 0.0f)
-
-GetRestHull()
-
-.normal *= -1.0f;
-}
-}
-else
-{
-if (actualValidCount == 1)
-{
-GetRestHull()
-
-.
-htype = neRestHull::POINT;
-
-ASSERT(GetRestRecord(GetRestHull().indices[0]).IsValid());
-
-GetRestHull()
-
-.
-normal = GetRestRecord(GetRestHull().indices[0]).normalWorld;
-
-if (
-
-GetRestHull()
-
-.normal.
-Dot(sim
-->gravityVector) < 0.0f)
-
-GetRestHull()
-
-.normal *= -1.0f;
-}
-else
-{
-GetRestHull()
-
-.
-htype = neRestHull::NONE;
-}
-}
-return
-actualValidCount;
+                GetRestHull().normal *= -1.0f;
+        } else {
+            GetRestHull().htype = neRestHull::NONE;
+        }
+    }
+    return
+            actualValidCount;
 }
 
 void neRigidBody_::AddContactConstraint() {
@@ -1336,7 +1112,7 @@ void neRigidBody_::ResolveRestingPenetration()
 		if (!GetRestRecord(i).IsValid())
 			continue;
 
-		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) && 
+		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) &&
 			(!GetRestRecord(i).otherBody->IsValid() || !GetRestRecord(i).otherBody->isActive))
 		{
 			GetRestRecord(i).rtype = neRestRecord::REST_ON_NOT_VALID;
@@ -1475,44 +1251,31 @@ void neRigidBody_::CorrectRotation(f32 massOther, neV3 & pointThis, neV3 & point
 #endif
 
 
-void neRigidBody_::CorrectPosition(neV3 & pointThis, neV3 & pointDest, s32
-flag,
-s32 changeLast
-)
-{
-neV3 shift = pointDest - pointThis;
+void neRigidBody_::CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast) {
+    neV3 shift = pointDest - pointThis;
 
-if (flag == 1)
+    if (flag == 1)
 //if (1)
-{
-State()
-
-.b2w.
-pos = GetPos() + shift;
+    {
+        State().b2w.pos = GetPos() + shift;
 //SetPos(GetPos() + shift);
-}
-else
-{
-totalTrans +=
-shift;
+    } else {
+        totalTrans += shift;
 
-transCount++;
+        transCount++;
 
-if (changeLast)
-{
-totalLastTrans +=
-shift;
-
-lastTransCount++;
-}
-}
+        if (changeLast) {
+            totalLastTrans += shift;
+            lastTransCount++;
+        }
+    }
 }
 /*
 void neRigidBody_::CorrectPenetrationRotation()
 {
 	if (!stackInfo)
 		return;
-	
+
 	s32 i;
 
 	s32 deepestIndex = -1;
@@ -1524,7 +1287,7 @@ void neRigidBody_::CorrectPenetrationRotation()
 		if (GetRestRecord(i).rtype == neRestRecord::REST_ON_NOT_VALID)
 			continue;
 
-		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) && 
+		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) &&
 			(!GetRestRecord(i).otherBody->IsValid() || !GetRestRecord(i).otherBody->isActive))
 		{
 			GetRestRecord(i).rtype = neRestRecord::REST_ON_NOT_VALID;
@@ -1537,7 +1300,7 @@ void neRigidBody_::CorrectPenetrationRotation()
 
 		if (GetRestRecord(i).normalDiff >= 0.0f)
 			continue;
-		
+
 		if (GetRestRecord(i).normalDiff >= -0.005f) // never move things out completely
 			continue;
 
@@ -1552,7 +1315,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 {
 	if (!stackInfo)
 		return;
-	
+
 	s32 i;
 
 	s32 deepestIndex = -1;
@@ -1564,7 +1327,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 		if (GetRestRecord(i).rtype == neRestRecord::REST_ON_NOT_VALID)
 			continue;
 
-		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) && 
+		if ((GetRestRecord(i).otherBody != sim->GetTerrainBody()) &&
 			(!GetRestRecord(i).otherBody->IsValid() || !GetRestRecord(i).otherBody->isActive))
 		{
 			GetRestRecord(i).rtype = neRestRecord::REST_ON_NOT_VALID;
@@ -1577,7 +1340,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 
 		if (GetRestRecord(i).normalDiff >= 0.0f)
 			continue;
-		
+
 		if (GetRestRecord(i).normalDiff >= -0.005f) // never move things out completely
 			continue;
 
@@ -1588,10 +1351,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 	}
 }
 */
-void neRigidBody_::CorrectPenetrationRotation2(s32
-index,
-neBool slide
-)
+void neRigidBody_::CorrectPenetrationRotation2(s32 index, neBool slide)
 {
 /*	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
 
@@ -1650,10 +1410,7 @@ neBool slide
 */
 }
 
-void neRigidBody_::CorrectPenetrationTranslation2(s32
-index,
-neBool slide
-)
+void neRigidBody_::CorrectPenetrationTranslation2(s32 index, neBool slide)
 {
 /*
 	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
@@ -1688,7 +1445,7 @@ neBool slide
 	neV3 diff = pointA - pointB;
 
 	slide = 0;
-	
+
 	if (slide)
 	{
 		f32 dot = diff.Dot(GetRestRecord(index).normalWorld);
@@ -1706,7 +1463,7 @@ neBool slide
 		midA = pointA - (effectiveMassA) / (effectiveMassA + effectiveMassB) * diff * scale * alinear;
 
 	midB = pointB + (effectiveMassB) / (effectiveMassA + effectiveMassB) * diff * scale * blinear;
-	
+
 	CorrectPosition(pointA, midA, 0, true);
 
 	if (rb->AsRigidBody())
