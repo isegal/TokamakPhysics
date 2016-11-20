@@ -1090,18 +1090,8 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
 
             rb->isShifted = false;
             if (v == 0) {
-                /*			char ss[256];
-                            sprintf(ss, "%d disconnected\n", rb->id);
-                            OutputDebugString(ss);
-                */        }
-            if (v == 0) {
                 if (rb->stackInfo->stackHeader->isHeaderX) {
                     stackHeaderX.Remove(rb->stackInfo);
-                    /*
-                                    char ss[256];
-                                    sprintf(ss, "disconnect %d from ground\n", rb->id);
-                                    OutputDebugString(ss);
-                    */
                     stackInfoHeap.Dealloc(rb->stackInfo, 1);
 
                     ASSERT(rb->AllRestRecordInvalid());
@@ -1120,21 +1110,6 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
         }
     }
 
-/*
-	hitem = (neStackHeaderItem *)(*stackHeaderHeap.BeginUsed());
-	
-	while (hitem)
-	{		
-		neStackHeader * sheader = (neStackHeader *) hitem;
-
-		sheader->CheckHeader();
-
-		hitem = hitem->next;
-	}
-
-	CheckStackHeader();
-*/
-
     // check if the stack set is disconnected
 
     s32 thisFrame = stepSoFar % 5; //check stack disconnection once every 3 frames
@@ -1151,18 +1126,6 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
         }
     }
 
-/*	
-	hitem = (neStackHeaderItem *)(*stackHeaderHeap.BeginUsed());
-	
-	while (hitem)
-	{		
-		neStackHeader * sheader = (neStackHeader *) hitem;
-
-		sheader->CheckHeader();
-
-		hitem = hitem->next;
-	}
-*/
     // apply collision impulse
 
     // check for empty stack sets
@@ -1180,18 +1143,6 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
         }
     }
 
-/*
-	hitem = (neStackHeaderItem *)(*stackHeaderHeap.BeginUsed());
-
-	while (hitem)
-	{		
-		neStackHeader * sheader = (neStackHeader *) hitem;
-
-		sheader->CheckHeader();
-
-		hitem = hitem->next;
-	}
-*/
 }
 
 /****************************************************************************
