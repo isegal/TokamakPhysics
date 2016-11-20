@@ -63,9 +63,9 @@ bool TestZeroInTriangle(const neV3 &_p1, const neV3 &_p2, const neV3 &_p3) {
     const s32 x = 0;
     const s32 z = 2;
 
-    f32 cross12 = p1[z] * p2[x] - p1[x] * p2[z];
-    f32 cross23 = p2[z] * p3[x] - p2[x] * p3[z];
-    f32 cross31 = p3[z] * p1[x] - p3[x] * p1[z];
+    neReal cross12 = p1[z] * p2[x] - p1[x] * p2[z];
+    neReal cross23 = p2[z] * p3[x] - p2[x] * p3[z];
+    neReal cross31 = p3[z] * p1[x] - p3[x] * p1[z];
 
     if (cross12 > 0.0f && cross23 > 0.0f && cross31 > 0.0f) {
         return true;
@@ -101,9 +101,9 @@ void neRigidBody_::CheckForIdle() {
 void neRigidBody_::CheckForIdleNonJoint() {
     //return;
 
-    f32 e = Derive().linearVel.Dot(Derive().linearVel);
+    neReal e = Derive().linearVel.Dot(Derive().linearVel);
 
-    f32 f = (Derive().angularVel.Dot(Derive().angularVel)) * 1.0f;
+    neReal f = (Derive().angularVel.Dot(Derive().angularVel)) * 1.0f;
 
     if (e < sim->highEnergy && f < sim->highEnergy) {
         lowEnergyCounter++;
@@ -123,14 +123,14 @@ void neRigidBody_::CheckForIdleNonJoint() {
 
         ASSERT(total.IsFinite());
 
-        f32 g;
+        neReal g;
         g = total.Dot(sim->gravityVector);
 
         if (g > 0.0f) {
             total.RemoveComponent(sim->gravityVector);
         }
 
-        f32 v = total.Dot(total);
+        neReal v = total.Dot(total);
 
         if (v > 2.0f)//5
         {
@@ -170,9 +170,9 @@ void neRigidBody_::CheckForIdleNonJoint() {
 #pragma optimize( "", on )
 
 void neRigidBody_::CheckForIdleJoint() {
-    f32 e = Derive().linearVel.Length();
+    neReal e = Derive().linearVel.Length();
 
-    f32 f = col.boundingRadius * Derive().angularVel.Length();
+    neReal f = col.boundingRadius * Derive().angularVel.Length();
 
     e += f;
 
@@ -195,9 +195,9 @@ void neRigidBody_::CheckForIdleJoint() {
 
         ASSERT(sum.IsFinite());
 
-        neV3 average = sum;// / (f32)NE_RB_MAX_PAST_RECORDS;
+        neV3 average = sum;// / (neReal)NE_RB_MAX_PAST_RECORDS;
 
-        f32 len1 = average.Length();
+        neReal len1 = average.Length();
 
         if (len1 < sleepingParam/*0.3f*/) {
             BecomeIdle();
@@ -275,7 +275,7 @@ s32 neRigidBody_::CheckRestHull() {
 
         p[2].SetZero();
 
-        f32 d = p[2].GetDistanceFromLine(p[0], p[1]);
+        neReal d = p[2].GetDistanceFromLine(p[0], p[1]);
 
         if (d < 0.005f)
             return 2;
@@ -298,7 +298,7 @@ s32 neRigidBody_::CheckRestHull() {
 
         p[0][1] = 0.0f;
 
-        f32 d = sqrtf(p[0][0] * p[0][0] + p[0][2] * p[0][2]);
+        neReal d = sqrtf(p[0][0] * p[0][0] + p[0][2] * p[0][2]);
 
         if (d < 0.005f)
             return 1;
@@ -368,7 +368,7 @@ s32 neRigidBody_::CheckContactValidity() {
 
         GetRestRecord(i).Update();
 
-        f32 d = GetRestRecord(i).normalWorld.Dot(sim->gravityVector);
+        neReal d = GetRestRecord(i).normalWorld.Dot(sim->gravityVector);
 
         if (d > 0.0f/*-TILT_TOLERANCE*/) {
             GetRestRecord(i).SetInvalid();
@@ -400,11 +400,11 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
     static neV3 world1[NE_RB_MAX_RESTON_RECORDS];
     static neV3 world2[NE_RB_MAX_RESTON_RECORDS];
     static neV3 diff[NE_RB_MAX_RESTON_RECORDS];
-    static f32 height[NE_RB_MAX_RESTON_RECORDS];
+    static neReal height[NE_RB_MAX_RESTON_RECORDS];
     s32 validCount = 0;
     static s32 validIndices[NE_RB_MAX_RESTON_RECORDS];
     s32 deepestIndex = -1;
-    f32 deepest = -1.0e6f;
+    neReal deepest = -1.0e6f;
 
     for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
         if (!GetRestRecord(i).IsValid())
@@ -479,7 +479,7 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
     }
 
     s32 j;
-    f32 heightScale = 1.0f;
+    neReal heightScale = 1.0f;
 
     if (validCount == 1 && height[validIndices[0]] < 0.0f) {
 //if (subType == NE_RIGID_NORMAL)
@@ -519,12 +519,12 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
         neV3 d1 = world1[v1] - world1[v2];
         neV3 d2 = world2[v1] - world2[v2];
 
-        f32 len1 = d1.Length();
+        neReal len1 = d1.Length();
 
         if (neIsConsiderZero(len1)) {
             heightScale = 1.0f;
         } else {
-            f32 len2 = d2.Length();
+            neReal len2 = d2.Length();
 
             if (neIsConsiderZero(len2)) {
                 heightScale = 1.0f;
@@ -554,12 +554,12 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
         neV3 normal1 = tri1[1].Cross(tri1[0]);
         neV3 normal2 = tri2[1].Cross(tri2[0]);
 
-        f32 len1 = normal1.Length();
+        neReal len1 = normal1.Length();
 
         if (neIsConsiderZero(len1)) {
             heightScale = 1.0f;
         } else {
-            f32 len2 = normal2.Length();
+            neReal len2 = normal2.Length();
 
             if (neIsConsiderZero(len2)) {
                 heightScale = 1.0f;
@@ -574,8 +574,8 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
 //	heightScale = 1.0f;
     }
 
-    f32 e = 0.0005f;
-    f32 f = 1.0f - e;
+    neReal e = 0.0005f;
+    neReal f = 1.0f - e;
 
     heightScale = (heightScale - f) / e;
 
@@ -583,13 +583,13 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
         heightScale = e;
     }
     s32 actualValidCount = 0;
-//f32 limit = 0.05f;
-    f32 limit = 0.01f;
+//neReal limit = 0.05f;
+    neReal limit = 0.01f;
 
     for (i = 0; i < validCount; i++) {
-        f32 scale = 1.0f;
+        neReal scale = 1.0f;
         j = validIndices[i];
-        f32 scaleLimit = 0.01f;//limit * heightScale;
+        neReal scaleLimit = 0.01f;//limit * heightScale;
         if (height[j] > 0) {
             if (height[j] > scaleLimit) {
 //GetRestRecord(j).rtype = neRestRecord::REST_ON_NOT_VALID;
@@ -711,9 +711,9 @@ void neRigidBody_::AddContactConstraint() {
 }
 
 bool neRigidBody_::CheckHighEnergy() {
-    f32 e;
+    neReal e;
 
-    f32 m;
+    neReal m;
 
     if (0)//_constraintHeader)
     {
@@ -741,10 +741,10 @@ bool neRigidBody_::CheckStationary() {
 
     const s32 oldCounterMax = 60;
 
-    const f32 StationarySpeed = sleepingParam;//0.2f;
-    const f32 StationaryAcc = 5.0f;
-    const f32 StationaryW = 10.f;
-    const f32 StationaryAngAcc = 10.5f;
+    const neReal StationarySpeed = sleepingParam;//0.2f;
+    const neReal StationaryAcc = 5.0f;
+    const neReal StationaryW = 10.f;
+    const neReal StationaryAngAcc = 10.5f;
 
     if (oldCounter < oldCounterMax)
         return FALSE;
@@ -753,7 +753,7 @@ bool neRigidBody_::CheckStationary() {
 
     neV3 vel = deltaPos / (sim->_currentTimeStep * oldCounterMax);
 
-    f32 speed = vel.Length();
+    neReal speed = vel.Length();
 
     if (speed > StationarySpeed) {
         SyncOldState();
@@ -765,7 +765,7 @@ bool neRigidBody_::CheckStationary() {
 
     neV3 acc = deltaVel / (sim->_currentTimeStep * oldCounterMax);
 
-    f32 accMag = acc.Length();
+    neReal accMag = acc.Length();
 
     if (accMag > StationaryAcc) {
         SyncOldState();
@@ -780,11 +780,11 @@ bool neRigidBody_::CheckStationary() {
     neQ deltaQ = State().q * oldQInvert;
 
     neV3 axis;
-    f32 angle;
+    neReal angle;
 
     deltaQ.GetAxisAngle(axis, angle);
 
-    f32 angularVel = angle / (sim->_currentTimeStep * oldCounterMax);
+    neReal angularVel = angle / (sim->_currentTimeStep * oldCounterMax);
 
     if (angularVel > StationaryW) {
         SyncOldState();
@@ -794,7 +794,7 @@ bool neRigidBody_::CheckStationary() {
 
     neV3 deltaW = Derive().angularVel - oldAngularVelocity;
 
-    f32 angularAcc = deltaW.Length();
+    neReal angularAcc = deltaW.Length();
 
     angularAcc /= (sim->_currentTimeStep * oldCounterMax);
 
@@ -1086,7 +1086,7 @@ bool neRigidBody_::IsRestPointStillValid() {
 
         //diff.RemoveComponent(sim->gravityVector); //remove the vertical component
 
-        f32 d = diff.Dot(diff);
+        neReal d = diff.Dot(diff);
 
         //if (d > 0.02f) // 0.05 M or 5 cm
         if (d > 0.002f) // 0.05 M or 5 cm
@@ -1140,18 +1140,18 @@ void neRigidBody_::ResolveRestingPenetration()
 */
 #if 1
 
-void neRigidBody_::CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag,
+void neRigidBody_::CorrectRotation(neReal massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag,
                                    s32 changeLast) {
     neV3 dir1 = pointThis - GetPos();
 
     neV3 dir2 = pointDest - GetPos();
 
-    f32 len1 = dir1.Length();
+    neReal len1 = dir1.Length();
 
     if (neIsConsiderZero(len1) || !neIsFinite(len1))
         return;
 
-    f32 len2 = dir2.Length();
+    neReal len2 = dir2.Length();
 
     if (neIsConsiderZero(len2) || !neIsFinite(len2))
         return;
@@ -1160,7 +1160,7 @@ void neRigidBody_::CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDe
 
     dir2 *= (1.0f / len2);
 
-    f32 dot = dir1.Dot(dir2);
+    neReal dot = dir1.Dot(dir2);
 
     if (neIsConsiderZero(neAbs(dot) - 1.0f))
         return;
@@ -1169,7 +1169,7 @@ void neRigidBody_::CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDe
 
     axis.Normalize();
 
-    f32 angle = acosf(dot);
+    neReal angle = acosf(dot);
 
     neQ quat;
     quat.Set(angle, axis);
@@ -1197,17 +1197,17 @@ void neRigidBody_::CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDe
 
 #else
 
-void neRigidBody_::CorrectRotation(f32 massOther, neV3 & pointThis, neV3 & pointDest, neV3 & pointDest2, s32 flag, s32 changeLast)
+void neRigidBody_::CorrectRotation(neReal massOther, neV3 & pointThis, neV3 & pointDest, neV3 & pointDest2, s32 flag, s32 changeLast)
 {
     neV3 p1 = pointThis - GetPos();
 
     neV3 p2 = pointDest2 - pointThis;
 
-    f32 dot = p1.Dot(p2);
+    neReal dot = p1.Dot(p2);
 
     neV3 cross = p1.Cross(p2);
 
-    f32 len = cross.Length();
+    neReal len = cross.Length();
 
     if (!neIsFinite(len) || neIsConsiderZero(len))
     {
@@ -1218,7 +1218,7 @@ void neRigidBody_::CorrectRotation(f32 massOther, neV3 & pointThis, neV3 & point
 
     neV3 deltaR = (mass * massOther) / (mass + massOther) * magic;
 
-    f32 angle = deltaR.Length();
+    neReal angle = deltaR.Length();
 
     deltaR *= (1.0f / angle);
 
@@ -1280,7 +1280,7 @@ void neRigidBody_::CorrectPenetrationRotation()
 
 	s32 deepestIndex = -1;
 
-	f32 deepest = 0.0f;
+	neReal deepest = 0.0f;
 
 	for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
 	{
@@ -1320,7 +1320,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 
 	s32 deepestIndex = -1;
 
-	f32 deepest = 0.0f;
+	neReal deepest = 0.0f;
 
 	for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
 	{
@@ -1355,7 +1355,7 @@ void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
 {
 /*	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
 
-	f32 effectiveMassA, effectiveMassB, mass2;
+	neReal effectiveMassA, effectiveMassB, mass2;
 
 	neV3 dir = GetRestRecord(index).normalWorld;
 
@@ -1363,9 +1363,9 @@ void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
 
 	neV3 pointB = GetRestRecord(index).worldOtherBody;
 
-	f32 alinear, arotate;
+	neReal alinear, arotate;
 
-	f32 blinear, brotate;
+	neReal blinear, brotate;
 
 	effectiveMassA = TestImpulse(dir, pointA, alinear, arotate);
 
@@ -1384,7 +1384,7 @@ void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
 
 	neV3 diff = pointA - pointB;
 
-	f32 dot;
+	neReal dot;
 
 	slide = 0;
 
@@ -1395,7 +1395,7 @@ void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
 		diff = dot * GetRestRecord(index).normalWorld;
 	}
 
-	f32 scale = 0.5f;
+	neReal scale = 0.5f;
 
 	neV3 midA = pointA - (effectiveMassA) / (effectiveMassA + effectiveMassB) * diff * scale * arotate;
 
@@ -1415,7 +1415,7 @@ void neRigidBody_::CorrectPenetrationTranslation2(s32 index, bool slide)
 /*
 	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
 
-	f32 effectiveMassA, effectiveMassB, mass2;
+	neReal effectiveMassA, effectiveMassB, mass2;
 
 	neV3 pointA = State().b2w * GetRestRecord(index).bodyPoint;
 
@@ -1423,9 +1423,9 @@ void neRigidBody_::CorrectPenetrationTranslation2(s32 index, bool slide)
 
 	neV3 dir = GetRestRecord(index).normalWorld;
 
-	f32 alinear, arotate;
+	neReal alinear, arotate;
 
-	f32 blinear, brotate;
+	neReal blinear, brotate;
 
 	effectiveMassA = TestImpulse(dir, pointA, alinear, arotate);
 
@@ -1448,14 +1448,14 @@ void neRigidBody_::CorrectPenetrationTranslation2(s32 index, bool slide)
 
 	if (slide)
 	{
-		f32 dot = diff.Dot(GetRestRecord(index).normalWorld);
+		neReal dot = diff.Dot(GetRestRecord(index).normalWorld);
 
 		diff = dot * GetRestRecord(index).normalWorld;
 	}
 
 	neV3 midA, midB;
 
-	f32 scale = 0.5f;
+	neReal scale = 0.5f;
 
 	if (!slide)
 		midA = pointA - (effectiveMassA) / (effectiveMassA + effectiveMassB) * diff * scale * alinear;
@@ -1480,7 +1480,7 @@ void neRigidBody_::CorrectPenetrationDrift()
 
     s32 deepestIndex = -1;
 
-    f32 deepest = 0.0f;
+    neReal deepest = 0.0f;
 
     for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++)
     {
@@ -1548,11 +1548,11 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
                                 currentQ;
     }
 */
-    f32 err = 0.0f;
+    neReal err = 0.0f;
 
     neRigidBodyBase * rb = GetRestRecord(index).otherBody;
 
-    f32 effectiveMassA, effectiveMassB, mass2;
+    neReal effectiveMassA, effectiveMassB, mass2;
 
     neV3 dir = GetRestRecord(index).normalWorld;
 
@@ -1560,9 +1560,9 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 
     neV3 pointB = GetRestRecord(index).worldOtherBody;
 
-    f32 alinear, arotate;
+    neReal alinear, arotate;
 
-    f32 blinear, brotate;
+    neReal blinear, brotate;
 
     effectiveMassA = TestImpulse(dir, pointA, alinear, arotate);
 
@@ -1588,7 +1588,7 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 
     neV3 diff = pointA - pointB;
 
-    f32 dot;
+    neReal dot;
 
     if (slide)
     {
@@ -1597,9 +1597,9 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
         diff = dot * GetRestRecord(index).normalWorld;
     }
 
-    f32 scaleA = 0.8f;
+    neReal scaleA = 0.8f;
 
-    f32 scaleB = 0.1f;
+    neReal scaleB = 0.1f;
 
     neV3 midA = pointA - (effectiveMassA) / (effectiveMassA + effectiveMassB) * diff * arotate * scaleA;
 
@@ -1655,7 +1655,7 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 }
 #endif
 
-f32 neRigidBody_::TestImpulse(neV3 & dir, neV3 & pt, f32 & linear, f32 & angular) {
+neReal neRigidBody_::TestImpulse(neV3 & dir, neV3 & pt, neReal & linear, neReal & angular) {
     neV3 point = pt - GetPos();
 
     neV3 dv = dir * oneOnMass;
@@ -1672,17 +1672,17 @@ f32 neRigidBody_::TestImpulse(neV3 & dir, neV3 & pt, f32 & linear, f32 & angular
 
     //neV3 dist = vel;// / sim->currentTimeStep;
 
-    f32 linearSpeed = dv.Length();
+    neReal linearSpeed = dv.Length();
 
-    f32 angularSpeed = dav.Length();
+    neReal angularSpeed = dav.Length();
 
-    f32 totalSpeed = linearSpeed + angularSpeed;
+    neReal totalSpeed = linearSpeed + angularSpeed;
 
     linear = linearSpeed / totalSpeed;
 
     angular = angularSpeed / totalSpeed;
 
-    f32 ret = linearSpeed + angularSpeed;//dist.Length();
+    neReal ret = linearSpeed + angularSpeed;//dist.Length();
 
     if (neIsFinite(ret))
         return ret;

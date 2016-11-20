@@ -60,7 +60,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 *
 ****************************************************************************/
 
-void neGeometry::SetBoxSize(f32 width, f32 height, f32 depth) {
+void neGeometry::SetBoxSize(neReal width, neReal height, neReal depth) {
     CAST_THIS(TConvex, con);
 
     con.SetBoxSize(width, height, depth);
@@ -84,7 +84,7 @@ void neGeometry::SetBoxSize(const neV3 &boxSize) {
 *
 ****************************************************************************/
 
-void neGeometry::SetCylinder(f32 diameter, f32 height) {
+void neGeometry::SetCylinder(neReal diameter, neReal height) {
     CAST_THIS(TConvex, con);
 
     con.type = TConvex::CYLINDER;
@@ -102,7 +102,7 @@ void neGeometry::SetCylinder(f32 diameter, f32 height) {
 *
 ****************************************************************************/
 
-bool neGeometry::GetCylinder(f32 &diameter, f32 &height) // return false if geometry is not a cylinder
+bool neGeometry::GetCylinder(neReal &diameter, neReal &height) // return false if geometry is not a cylinder
 {
     CAST_THIS(TConvex, con);
 
@@ -241,7 +241,7 @@ bool neGeometry::GetBoxSize(neV3 &boxSize) // return false if geometry is not a 
 *
 ****************************************************************************/
 
-void neGeometry::SetSphereDiameter(f32 diameter) {
+void neGeometry::SetSphereDiameter(neReal diameter) {
     CAST_THIS(TConvex, con);
 
     con.type = TConvex::SPHERE;
@@ -257,7 +257,7 @@ void neGeometry::SetSphereDiameter(f32 diameter) {
 *
 ****************************************************************************/
 
-bool neGeometry::GetSphereDiameter(f32 &diameter) // return false if geometry is not a sphere
+bool neGeometry::GetSphereDiameter(neReal &diameter) // return false if geometry is not a sphere
 {
     CAST_THIS(TConvex, con);
 
@@ -299,7 +299,7 @@ neGeometry::neBreakFlag neGeometry::GetBreakageFlag() {
 *
 ****************************************************************************/
 
-void neGeometry::SetBreakageMass(f32 mass) {
+void neGeometry::SetBreakageMass(neReal mass) {
     CAST_THIS(TConvex, con);
 
     con.breakInfo.mass = mass;
@@ -311,7 +311,7 @@ void neGeometry::SetBreakageMass(f32 mass) {
 *
 ****************************************************************************/
 
-f32 neGeometry::GetBreakageMass() {
+neReal neGeometry::GetBreakageMass() {
     CAST_THIS(TConvex, con);
 
     return con.breakInfo.mass;
@@ -347,7 +347,7 @@ neV3 neGeometry::GetBreakageInertiaTensor() {
 *
 ****************************************************************************/
 
-void neGeometry::SetBreakageMagnitude(f32 mag) {
+void neGeometry::SetBreakageMagnitude(neReal mag) {
     CAST_THIS(TConvex, con);
 
     con.breakInfo.breakMagnitude = mag;
@@ -359,7 +359,7 @@ void neGeometry::SetBreakageMagnitude(f32 mag) {
 *
 ****************************************************************************/
 
-f32 neGeometry::GetBreakageMagnitude() {
+neReal neGeometry::GetBreakageMagnitude() {
     CAST_THIS(TConvex, con);
 
     return con.breakInfo.breakMagnitude;
@@ -371,7 +371,7 @@ f32 neGeometry::GetBreakageMagnitude() {
 *
 ****************************************************************************/
 
-void neGeometry::SetBreakageAbsorption(f32 absorb) {
+void neGeometry::SetBreakageAbsorption(neReal absorb) {
     CAST_THIS(TConvex, con);
 
     con.breakInfo.breakAbsorb = absorb;
@@ -395,7 +395,7 @@ neV3 neGeometry::GetBreakagePlane() {
 *
 ****************************************************************************/
 
-f32 neGeometry::GetBreakageAbsorption() {
+neReal neGeometry::GetBreakageAbsorption() {
     CAST_THIS(TConvex, con);
 
     return con.breakInfo.breakAbsorb;
@@ -407,7 +407,7 @@ f32 neGeometry::GetBreakageAbsorption() {
 *
 ****************************************************************************/
 
-void neGeometry::SetBreakageNeighbourRadius(f32 radius) {
+void neGeometry::SetBreakageNeighbourRadius(neReal radius) {
     CAST_THIS(TConvex, con);
 
     con.breakInfo.neighbourRadius = radius;
@@ -419,7 +419,7 @@ void neGeometry::SetBreakageNeighbourRadius(f32 radius) {
 *
 ****************************************************************************/
 
-f32 neGeometry::GetBreakageNeighbourRadius() {
+neReal neGeometry::GetBreakageNeighbourRadius() {
     CAST_THIS(TConvex, con);
 
     return con.breakInfo.neighbourRadius;
@@ -766,7 +766,7 @@ neRigidBody *neAnimatedBody::BreakGeometry(neGeometry *g) {
 *
 ****************************************************************************/
 
-void neAnimatedBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius) {
+void neAnimatedBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
     CAST_THIS(neCollisionBody_, ab);
 
     if (yes) {
@@ -912,7 +912,7 @@ bool neAnimatedBody::Active() {
 *
 ****************************************************************************/
 
-f32 neRigidBody::GetMass() {
+neReal neRigidBody::GetMass() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.mass;
@@ -924,7 +924,7 @@ f32 neRigidBody::GetMass() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetMass(f32 mass) {
+void neRigidBody::SetMass(neReal mass) {
     CAST_THIS(neRigidBody_, rb);
 
     ASSERT(neIsFinite(mass));
@@ -1032,37 +1032,37 @@ s32 neRigidBody::GetGeometryCount() {
     return rb.col.convexCount;
 }
 
-void neRigidBody::SetLinearDamping(f32 damp) {
+void neRigidBody::SetLinearDamping(neReal damp) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.linearDamp = neAbs(damp);
 }
 
-f32 neRigidBody::GetLinearDamping() {
+neReal neRigidBody::GetLinearDamping() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.linearDamp;
 }
 
-void neRigidBody::SetAngularDamping(f32 damp) {
+void neRigidBody::SetAngularDamping(neReal damp) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.angularDamp = neAbs(damp);
 }
 
-f32 neRigidBody::GetAngularDamping() {
+neReal neRigidBody::GetAngularDamping() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.angularDamp;
 }
 
-void neRigidBody::SetSleepingParameter(f32 sleepingParam) {
+void neRigidBody::SetSleepingParameter(neReal sleepingParam) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.sleepingParam = sleepingParam;
 }
 
-f32 neRigidBody::GetSleepingParameter() {
+neReal neRigidBody::GetSleepingParameter() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.sleepingParam;
@@ -1658,7 +1658,7 @@ neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
 *
 ****************************************************************************/
 
-void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius) {
+void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
     CAST_THIS(neRigidBody_, rb);
 
     if (yes) {
@@ -1944,7 +1944,7 @@ neCollisionTable *neSimulator::GetCollisionTable() {
 *
 ****************************************************************************/
 
-bool neSimulator::SetMaterial(s32 index, f32 friction, f32 restitution) {
+bool neSimulator::SetMaterial(s32 index, neReal friction, neReal restitution) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     return sim.SetMaterial(index, friction, restitution, 0.0f);
@@ -1956,10 +1956,10 @@ bool neSimulator::SetMaterial(s32 index, f32 friction, f32 restitution) {
 *
 ****************************************************************************/
 
-bool neSimulator::GetMaterial(s32 index, f32 &friction, f32 &restitution) {
+bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
-    f32 density;
+    neReal density;
 
     return sim.GetMaterial(index, friction, restitution, density);
 }
@@ -1970,13 +1970,13 @@ bool neSimulator::GetMaterial(s32 index, f32 &friction, f32 &restitution) {
 *
 ****************************************************************************/
 
-void neSimulator::Advance(f32 sec, s32 step, nePerformanceReport *perfReport) {
+void neSimulator::Advance(neReal sec, s32 step, nePerformanceReport *perfReport) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     sim.Advance(sec, step, perfReport);
 }
 
-void neSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *perfReport) {
+void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *perfReport) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     sim.Advance(sec, minTimeStep, maxTimeStep, perfReport);
@@ -2301,7 +2301,7 @@ void neSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
     sim.SetLogOutputCallback(fn);
 }
 /*
-f32 neSimulator::GetMagicNumber()
+neReal neSimulator::GetMagicNumber()
 {
 	CAST_THIS(neFixedTimeStepSimulator, sim);
 
@@ -2551,7 +2551,7 @@ neT3 neJoint::GetJointFrameB() {
 *
 ****************************************************************************/
 
-void neJoint::SetJointLength(f32 length) {
+void neJoint::SetJointLength(neReal length) {
     CAST_THIS(_neConstraint, c);
 
     c.jointLength = length;
@@ -2563,7 +2563,7 @@ void neJoint::SetJointLength(f32 length) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetJointLength() {
+neReal neJoint::GetJointLength() {
     CAST_THIS(_neConstraint, c);
 
     return c.jointLength;
@@ -2612,7 +2612,7 @@ void neJoint::InfiniteMassB(bool yes)
 *
 ****************************************************************************/
 
-void neJoint::SetDampingFactor(f32 damp) {
+void neJoint::SetDampingFactor(neReal damp) {
     CAST_THIS(_neConstraint, c);
 
     c.jointDampingFactor = damp;
@@ -2624,7 +2624,7 @@ void neJoint::SetDampingFactor(f32 damp) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetDampingFactor() {
+neReal neJoint::GetDampingFactor() {
     CAST_THIS(_neConstraint, c);
 
     return c.jointDampingFactor;
@@ -2636,7 +2636,7 @@ f32 neJoint::GetDampingFactor() {
 *
 ****************************************************************************/
 
-void neJoint::SetEpsilon(f32 t) {
+void neJoint::SetEpsilon(neReal t) {
     CAST_THIS(_neConstraint, c);
 
     c.accuracy = t;
@@ -2648,7 +2648,7 @@ void neJoint::SetEpsilon(f32 t) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetEpsilon() {
+neReal neJoint::GetEpsilon() {
     CAST_THIS(_neConstraint, c);
 
     if (c.accuracy <= 0.0f)
@@ -2687,7 +2687,7 @@ s32 neJoint::GetIteration() {
 *
 ****************************************************************************/
 
-f32 neJoint::GetUpperLimit() {
+neReal neJoint::GetUpperLimit() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[0].upperLimit;
@@ -2699,7 +2699,7 @@ f32 neJoint::GetUpperLimit() {
 *
 ****************************************************************************/
 
-void neJoint::SetUpperLimit(f32 upperLimit) {
+void neJoint::SetUpperLimit(neReal upperLimit) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[0].upperLimit = upperLimit;
@@ -2711,7 +2711,7 @@ void neJoint::SetUpperLimit(f32 upperLimit) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetLowerLimit() {
+neReal neJoint::GetLowerLimit() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[0].lowerLimit;
@@ -2723,7 +2723,7 @@ f32 neJoint::GetLowerLimit() {
 *
 ****************************************************************************/
 
-void neJoint::SetLowerLimit(f32 lowerLimit) {
+void neJoint::SetLowerLimit(neReal lowerLimit) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[0].lowerLimit = lowerLimit;
@@ -2759,7 +2759,7 @@ void neJoint::EnableLimit(bool yes) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetUpperLimit2() {
+neReal neJoint::GetUpperLimit2() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[1].upperLimit;
@@ -2771,7 +2771,7 @@ f32 neJoint::GetUpperLimit2() {
 *
 ****************************************************************************/
 
-void neJoint::SetUpperLimit2(f32 upperLimit) {
+void neJoint::SetUpperLimit2(neReal upperLimit) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[1].upperLimit = upperLimit;
@@ -2783,7 +2783,7 @@ void neJoint::SetUpperLimit2(f32 upperLimit) {
 *
 ****************************************************************************/
 
-f32 neJoint::GetLowerLimit2() {
+neReal neJoint::GetLowerLimit2() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[1].lowerLimit;
@@ -2795,7 +2795,7 @@ f32 neJoint::GetLowerLimit2() {
 *
 ****************************************************************************/
 
-void neJoint::SetLowerLimit2(f32 lowerLimit) {
+void neJoint::SetLowerLimit2(neReal lowerLimit) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[1].lowerLimit = lowerLimit;
@@ -2843,7 +2843,7 @@ void neJoint::EnableMotor(bool yes) {
 *
 ****************************************************************************/
 
-void neJoint::SetMotor(MotorType motorType, f32 desireValue, f32 maxForce) {
+void neJoint::SetMotor(MotorType motorType, neReal desireValue, neReal maxForce) {
     CAST_THIS(_neConstraint, c);
 
     c.motors[0].motorType = motorType;
@@ -2859,7 +2859,7 @@ void neJoint::SetMotor(MotorType motorType, f32 desireValue, f32 maxForce) {
 *
 ****************************************************************************/
 
-void neJoint::GetMotor(MotorType &motorType, f32 &desireValue, f32 &maxForce) {
+void neJoint::GetMotor(MotorType &motorType, neReal &desireValue, neReal &maxForce) {
     CAST_THIS(_neConstraint, c);
 
     motorType = c.motors[0].motorType;
@@ -2899,7 +2899,7 @@ void neJoint::EnableMotor2(bool yes) {
 *
 ****************************************************************************/
 
-void neJoint::SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce) {
+void neJoint::SetMotor2(MotorType motorType, neReal desireValue, neReal maxForce) {
     CAST_THIS(_neConstraint, c);
 
     c.motors[1].motorType = motorType;
@@ -2915,7 +2915,7 @@ void neJoint::SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce) {
 *
 ****************************************************************************/
 
-void neJoint::GetMotor2(MotorType &motorType, f32 &desireValue, f32 &maxForce) {
+void neJoint::GetMotor2(MotorType &motorType, neReal &desireValue, neReal &maxForce) {
     CAST_THIS(_neConstraint, c);
 
     motorType = c.motors[1].motorType;
@@ -3135,7 +3135,7 @@ neV3 neSensor::GetLinePos() {
 *
 ****************************************************************************/
 
-f32 neSensor::GetDetectDepth() {
+neReal neSensor::GetDetectDepth() {
     CAST_THIS(neSensor_, sensor);
 
     return sensor.depth;
@@ -3484,14 +3484,14 @@ s32 neCollisionTable::GetMaxCollisionID() {
 *
 ****************************************************************************/
 
-neV3 neBoxInertiaTensor(const neV3 &boxSize, f32 mass) {
+neV3 neBoxInertiaTensor(const neV3 &boxSize, neReal mass) {
     return neBoxInertiaTensor(boxSize[0], boxSize[1], boxSize[2], mass);
 }
 
-neV3 neBoxInertiaTensor(f32 width, f32 height, f32 depth, f32 mass) {
+neV3 neBoxInertiaTensor(neReal width, neReal height, neReal depth, neReal mass) {
     neV3 ret;
 
-    f32 maxdim = width;
+    neReal maxdim = width;
 
     if (height > maxdim)
         maxdim = height;
@@ -3499,13 +3499,13 @@ neV3 neBoxInertiaTensor(f32 width, f32 height, f32 depth, f32 mass) {
     if (depth > maxdim)
         maxdim = depth;
 #if 0
-    f32	xsq = width;
-    f32	ysq = height;
-    f32	zsq = depth;
+    neReal	xsq = width;
+    neReal	ysq = height;
+    neReal	zsq = depth;
 #else
-    f32 xsq = maxdim;
-    f32 ysq = maxdim;
-    f32 zsq = maxdim;
+    neReal xsq = maxdim;
+    neReal ysq = maxdim;
+    neReal zsq = maxdim;
 #endif
 
     xsq *= xsq;
@@ -3519,10 +3519,10 @@ neV3 neBoxInertiaTensor(f32 width, f32 height, f32 depth, f32 mass) {
     return ret;
 }
 
-neV3 neSphereInertiaTensor(f32 diameter, f32 mass) {
-    f32 radius = diameter * 0.5f;
+neV3 neSphereInertiaTensor(neReal diameter, neReal mass) {
+    neReal radius = diameter * 0.5f;
 
-    f32 value = 2.0f / 5.0f * mass * radius * radius;
+    neReal value = 2.0f / 5.0f * mass * radius * radius;
 
     neV3 ret;
 
@@ -3531,18 +3531,18 @@ neV3 neSphereInertiaTensor(f32 diameter, f32 mass) {
     return ret;
 }
 
-neV3 neCylinderInertiaTensor(f32 diameter, f32 height, f32 mass) {
+neV3 neCylinderInertiaTensor(neReal diameter, neReal height, neReal mass) {
 //	if (height > diameter)
 //	{
 //		diameter = height;
 //	}
-    f32 radius = diameter * 0.5f;
+    neReal radius = diameter * 0.5f;
 
-    f32 radiusSq = radius * radius;
+    neReal radiusSq = radius * radius;
 
-    f32 Ixz = 1.0f / 12.0f * mass * height * height + 0.25f * mass * radiusSq;
+    neReal Ixz = 1.0f / 12.0f * mass * height * height + 0.25f * mass * radiusSq;
 
-    f32 Iyy = 0.5f * mass * radiusSq;
+    neReal Iyy = 0.5f * mass * radiusSq;
 
     neV3 ret;
 
@@ -3556,11 +3556,11 @@ neV3 neCylinderInertiaTensor(f32 diameter, f32 height, f32 mass) {
 
 	void EnableLimit(bool yes);
 
-	f32 GetUpperLimit();
+	neReal GetUpperLimit();
 
-	void SetUpperLimit(f32 upperLimit);
+	void SetUpperLimit(neReal upperLimit);
 
-	f32 GetLowerLimit();
+	neReal GetLowerLimit();
 
-	void SetLowerLimit(f32 lowerLimit);
+	void SetLowerLimit(neReal lowerLimit);
 */

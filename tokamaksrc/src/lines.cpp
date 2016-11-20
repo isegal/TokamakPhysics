@@ -128,7 +128,7 @@ NEINLINE bool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const neV3
 
     neV3 cp2 = edge.Cross(p2 - a);
 
-    f32 dot = cp1.Dot(cp2);
+    neReal dot = cp1.Dot(cp2);
 
     return (dot >= 0.0f);
 }
@@ -137,7 +137,7 @@ NEINLINE bool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const neV3
  *	
 		bool found = false;
 
-		f32 dist, ratio, factor, depth;
+		neReal dist, ratio, factor, depth;
 
 		neV3 contact;
 
@@ -278,11 +278,11 @@ void SensorTest(neSensor_ &sensorA, TConvex &convexB, neT3 &transB) {
 
         neV3 sensorEnd = sensorA.pos + sensorA.dir;
 
-        f32 depth = (sensorEnd - contact).Length();
+        neReal depth = (sensorEnd - contact).Length();
 
         sensorA.depth = depth;
 
-        f32 factor = (sensorA.dir[nearDim] >= 0) ? -1.0f : 1.0f;
+        neReal factor = (sensorA.dir[nearDim] >= 0) ? -1.0f : 1.0f;
         sensorA.normal = transB.rot[nearDim] * factor;
 
         sensorA.contactPoint = contact;
@@ -306,7 +306,7 @@ void SensorTest(neSensor_ &sensorA, TConvex &convexB, neT3 &transB) {
 
             neV3 normal;
 
-            f32 d;
+            neReal d;
 
             vert[0] = &convexB.vertices[t->indices[0]];
             vert[1] = &convexB.vertices[t->indices[1]];
@@ -321,11 +321,11 @@ void SensorTest(neSensor_ &sensorA, TConvex &convexB, neT3 &transB) {
 
             d = normal.Dot(*vert[0]);
 
-            f32 nd = normal.Dot(sensorA.dir);
+            neReal nd = normal.Dot(sensorA.dir);
 
-            f32 np = normal.Dot(sensorA.pos);
+            neReal np = normal.Dot(sensorA.pos);
 
-            f32 t1;
+            neReal t1;
 
             t1 = (d - np) / nd;
 

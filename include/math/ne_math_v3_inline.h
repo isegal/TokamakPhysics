@@ -13,16 +13,16 @@
 
 //=========================================================================
 
-NEINLINE f32 &neV3::operator[](s32 I) {
+NEINLINE neReal &neV3::operator[](s32 I) {
     ASSERT(I >= 0);
     ASSERT(I <= 2);
-    // return ((f32*)this)[I];
+    // return ((neReal*)this)[I];
     return v[I];
 }
 
 //=========================================================================
 
-NEINLINE f32 neV3::operator[](s32 I) const {
+NEINLINE neReal neV3::operator[](s32 I) const {
     ASSERT(I >= 0);
     ASSERT(I <= 2);
     return v[I];
@@ -30,7 +30,7 @@ NEINLINE f32 neV3::operator[](s32 I) const {
 
 //=========================================================================
 
-NEINLINE neV3 &neV3::Set(f32 x, f32 y, f32 z) {
+NEINLINE neV3 &neV3::Set(neReal x, neReal y, neReal z) {
     this->v[0] = x;
     this->v[1] = y;
     this->v[2] = z;
@@ -65,7 +65,7 @@ NEINLINE void neV3::SetAbs(const neV3 &a) {
 
 //=========================================================================
 
-NEINLINE void neV3::Set(f32 val[3]) {
+NEINLINE void neV3::Set(neReal val[3]) {
     this->v[0] = val[0];
     this->v[1] = val[1];
     this->v[2] = val[2];
@@ -73,7 +73,7 @@ NEINLINE void neV3::Set(f32 val[3]) {
 
 //=========================================================================
 
-NEINLINE void neV3::Get(f32 val[3]) {
+NEINLINE void neV3::Get(neReal val[3]) {
     val[0] = X();
     val[1] = Y();
     val[2] = Z();
@@ -81,19 +81,19 @@ NEINLINE void neV3::Get(f32 val[3]) {
 
 //=========================================================================
 
-NEINLINE f32 neV3::Length(void) const {
-    f32 dot = this->Dot(*this);
+NEINLINE neReal neV3::Length(void) const {
+    neReal dot = this->Dot(*this);
 
     if (neIsConsiderZero(dot))
         return 0.0f;
 
-    return (f32) sqrtf(dot);
+    return (neReal) sqrtf(dot);
 }
 
 //=========================================================================
 
 NEINLINE void neV3::Normalize(void) {
-    f32 l = Length();
+    neReal l = Length();
 
     if (l == 0.0f) {
         SetZero();
@@ -105,10 +105,10 @@ NEINLINE void neV3::Normalize(void) {
 //=========================================================================
 
 NEINLINE void neV3::RotateX(neRadian Rx) {
-    f32 s = (f32) sinf(Rx);
-    f32 c = (f32) cosf(Rx);
-    f32 y = v[1];
-    f32 z = v[2];
+    neReal s = (neReal) sinf(Rx);
+    neReal c = (neReal) cosf(Rx);
+    neReal y = v[1];
+    neReal z = v[2];
 
     v[1] = (c * y) - (s * z);
     v[2] = (c * z) + (s * y);
@@ -117,10 +117,10 @@ NEINLINE void neV3::RotateX(neRadian Rx) {
 //=========================================================================
 
 NEINLINE void neV3::RotateY(neRadian Ry) {
-    f32 s = (f32) sinf(Ry);
-    f32 c = (f32) cosf(Ry);
-    f32 x = X();
-    f32 z = Z();
+    neReal s = (neReal) sinf(Ry);
+    neReal c = (neReal) cosf(Ry);
+    neReal x = X();
+    neReal z = Z();
 
     this->v[0] = (c * x) + (s * z);
     this->v[2] = (c * z) - (s * x);
@@ -129,10 +129,10 @@ NEINLINE void neV3::RotateY(neRadian Ry) {
 //=========================================================================
 
 NEINLINE void neV3::RotateZ(neRadian Rz) {
-    f32 s = (f32) sinf(Rz);
-    f32 c = (f32) cosf(Rz);
-    f32 x = X();
-    f32 y = Y();
+    neReal s = (neReal) sinf(Rz);
+    neReal c = (neReal) cosf(Rz);
+    neReal x = X();
+    neReal y = Y();
 
     this->v[0] = (c * x) - (s * y);
     this->v[1] = (c * y) + (s * x);
@@ -156,14 +156,14 @@ NEINLINE neV3 &neV3::SetHalf(void) {
     return (*this);
 }
 
-NEINLINE neV3 &neV3::Set(f32 value) {
+NEINLINE neV3 &neV3::Set(neReal value) {
     this->v[0] = this->v[1] = this->v[2] = value;
     return (*this);
 }
 
 //=========================================================================
 
-NEINLINE f32 neV3::Dot(const neV3 &V) const {
+NEINLINE neReal neV3::Dot(const neV3 &V) const {
     return X() * V.X() + Y() * V.Y() + Z() * V.Z();
 }
 
@@ -199,14 +199,14 @@ NEINLINE neV3 &neV3::operator-=(const neV3 &V) {
 
 //=========================================================================
 
-NEINLINE neV3 &neV3::operator/=(f32 S) {
+NEINLINE neV3 &neV3::operator/=(neReal S) {
     *this = *this / S;
     return *this;
 }
 
 //=========================================================================
 
-NEINLINE neV3 &neV3::operator*=(f32 S) {
+NEINLINE neV3 &neV3::operator*=(neReal S) {
     *this = *this * S;
     return *this;
 }
@@ -214,13 +214,13 @@ NEINLINE neV3 &neV3::operator*=(f32 S) {
 //=========================================================================
 
 NEINLINE neRadian neV3::GetPitch(void) const {
-    return (f32) -atan2(Y(), (f32) sqrt(X() * X() + Z() * Z()));
+    return (neReal) -atan2(Y(), (neReal) sqrt(X() * X() + Z() * Z()));
 }
 
 //=========================================================================
 
 NEINLINE neRadian neV3::GetYaw(void) const {
-    return (f32) atan2(X(), Z());
+    return (neReal) atan2(X(), Z());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -259,25 +259,25 @@ NEINLINE neV3 operator-(const neV3 &V1, const neV3 &V2) {
 
 //=========================================================================
 
-NEINLINE neV3 operator/(const neV3 &V, f32 S) {
+NEINLINE neV3 operator/(const neV3 &V, neReal S) {
     return V * (1.0f / S);
 }
 
 //=========================================================================
 
-NEINLINE neV3 operator*(const neV3 &V, const f32 S) {
+NEINLINE neV3 operator*(const neV3 &V, const neReal S) {
     neV3 tmp;
     return tmp.Set(V.X() * S, V.Y() * S, V.Z() * S);
 }
 
 //=========================================================================
 
-NEINLINE neV3 operator*(f32 S, const neV3 &V) {
+NEINLINE neV3 operator*(neReal S, const neV3 &V) {
     return V * S;
 }
 
 //=========================================================================
-NEINLINE void neV3::SetBoxTensor(f32 width, f32 height, f32 length, f32 mass) {
+NEINLINE void neV3::SetBoxTensor(neReal width, neReal height, neReal length, neReal mass) {
     v[0] = mass * (length * length + height * height) / 12.0f;
     v[1] = mass * (width * width + height * height) / 12.0f;
     v[2] = mass * (length * length + width * width) / 12.0f;
@@ -333,10 +333,10 @@ NEINLINE bool neV3::IsFinite() const {
     return false;
 }
 
-NEINLINE f32 neV3::GetDistanceFromLine(const neV3 &pointA, const neV3 &pointB) {
+NEINLINE neReal neV3::GetDistanceFromLine(const neV3 &pointA, const neV3 &pointB) {
     neV3 ba = pointB - pointA;
 
-    f32 len = ba.Length();
+    neReal len = ba.Length();
 
     if (neIsConsiderZero(len))
         ba.SetZero();
@@ -345,7 +345,7 @@ NEINLINE f32 neV3::GetDistanceFromLine(const neV3 &pointA, const neV3 &pointB) {
 
     neV3 pa = (*this) - pointA;
 
-    f32 k = pa.Dot(ba);
+    neReal k = pa.Dot(ba);
 
     neV3 q = pointA + k * ba;
 
@@ -354,10 +354,10 @@ NEINLINE f32 neV3::GetDistanceFromLine(const neV3 &pointA, const neV3 &pointB) {
     return diff.Length();
 }
 
-NEINLINE f32 neV3::GetDistanceFromLine2(neV3 &project, const neV3 &pointA, const neV3 &pointB) {
+NEINLINE neReal neV3::GetDistanceFromLine2(neV3 &project, const neV3 &pointA, const neV3 &pointB) {
     neV3 ba = pointB - pointA;
 
-    f32 len = ba.Length();
+    neReal len = ba.Length();
 
     if (neIsConsiderZero(len))
         ba.SetZero();
@@ -366,7 +366,7 @@ NEINLINE f32 neV3::GetDistanceFromLine2(neV3 &project, const neV3 &pointA, const
 
     neV3 pa = (*this) - pointA;
 
-    f32 k = pa.Dot(ba);
+    neReal k = pa.Dot(ba);
 
     project = pointA + k * ba;
 
@@ -375,10 +375,10 @@ NEINLINE f32 neV3::GetDistanceFromLine2(neV3 &project, const neV3 &pointA, const
     return diff.Length();
 }
 
-NEINLINE f32 neV3::GetDistanceFromLineAndProject(neV3 &result, const neV3 &startPoint, const neV3 &dir) {
+NEINLINE neReal neV3::GetDistanceFromLineAndProject(neV3 &result, const neV3 &startPoint, const neV3 &dir) {
     neV3 pa = (*this) - startPoint;
 
-    f32 k = pa.Dot(dir);
+    neReal k = pa.Dot(dir);
 
     result = startPoint + k * dir;
 
@@ -388,13 +388,13 @@ NEINLINE f32 neV3::GetDistanceFromLineAndProject(neV3 &result, const neV3 &start
 }
 
 NEINLINE void neV3::RemoveComponent(const neV3 &V) {
-    f32 dot = (*this).Dot(V);
+    neReal dot = (*this).Dot(V);
 
     (*this) = (*this) - V * dot;
 }
 
 NEINLINE neV3 neV3::Project(const neV3 &v) const {
-    f32 dot = (*this).Dot(v);
+    neReal dot = (*this).Dot(v);
 
     return (v * dot);
 }
@@ -402,33 +402,33 @@ NEINLINE neV3 neV3::Project(const neV3 &v) const {
 NEINLINE bool neV3::GetIntersectPlane(neV3 &normal, neV3 &pointOnPlane, neV3 &point1, neV3 &point2) {
     neV3 diff = point2 - point1;
 
-    f32 d2 = normal.Dot(diff);
+    neReal d2 = normal.Dot(diff);
 
     if (neIsConsiderZero(d2))
         return false;
 
-    f32 d1 = normal.Dot(pointOnPlane - point1);
+    neReal d1 = normal.Dot(pointOnPlane - point1);
 
-    f32 u = d1 / d2;
+    neReal u = d1 / d2;
 
     *this = point1 + diff * u;
 
     return true;
 }
 
-NEINLINE f32 neV3::X() const {
+NEINLINE neReal neV3::X() const {
     return v[0];
 }
 
-NEINLINE f32 neV3::Y() const {
+NEINLINE neReal neV3::Y() const {
     return v[1];
 }
 
-NEINLINE f32 neV3::Z() const {
+NEINLINE neReal neV3::Z() const {
     return v[2];
 }
 
-NEINLINE f32 neV3::W() const {
+NEINLINE neReal neV3::W() const {
     return v[3];
 }
 

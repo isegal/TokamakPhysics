@@ -124,8 +124,8 @@ public:
         NE_PERF_RUNNING_AVERAGE = 0,
         NE_PERF_SAMPLE,
     };
-    f32 time[NE_PERF_LAST];
-    f32 accTime[NE_PERF_LAST];
+    neReal time[NE_PERF_LAST];
+    neReal accTime[NE_PERF_LAST];
 
     void Reset() {
         for (s32 i = 0; i < NE_PERF_LAST; i++) {
@@ -193,7 +193,7 @@ public:
     /*
         Box
     */
-    void SetBoxSize(f32 width, f32 height, f32 depth);
+    void SetBoxSize(neReal width, neReal height, neReal depth);
 
     void SetBoxSize(const neV3 &boxSize);
 
@@ -202,16 +202,16 @@ public:
     /*
         Sphere
     */
-    void SetSphereDiameter(f32 diameter);
+    void SetSphereDiameter(neReal diameter);
 
-    bool GetSphereDiameter(f32 &diameter); // return false if geometry is not a sphere
+    bool GetSphereDiameter(neReal &diameter); // return false if geometry is not a sphere
 
     /*
         Cylinder
     */
-    void SetCylinder(f32 diameter, f32 height);
+    void SetCylinder(neReal diameter, neReal height);
 
-    bool GetCylinder(f32 &diameter, f32 &height); // return false if geometry is not a cylinder
+    bool GetCylinder(neReal &diameter, neReal &height); // return false if geometry is not a cylinder
 
     /*
         Convex
@@ -227,29 +227,29 @@ public:
 
     neBreakFlag GetBreakageFlag();
 
-    void SetBreakageMass(f32 mass);
+    void SetBreakageMass(neReal mass);
 
-    f32 GetBreakageMass();
+    neReal GetBreakageMass();
 
     void SetBreakageInertiaTensor(const neV3 &tensor);
 
     neV3 GetBreakageInertiaTensor();
 
-    void SetBreakageMagnitude(f32 mag);
+    void SetBreakageMagnitude(neReal mag);
 
-    f32 GetBreakageMagnitude();
+    neReal GetBreakageMagnitude();
 
-    void SetBreakageAbsorption(f32 absorb);
+    void SetBreakageAbsorption(neReal absorb);
 
-    f32 GetBreakageAbsorption();
+    neReal GetBreakageAbsorption();
 
     void SetBreakagePlane(const neV3 &planeNormal);
 
     neV3 GetBreakagePlane();
 
-    void SetBreakageNeighbourRadius(f32 radius);
+    void SetBreakageNeighbourRadius(neReal radius);
 
-    f32 GetBreakageNeighbourRadius();
+    neReal GetBreakageNeighbourRadius();
 };
 
 /****************************************************************************
@@ -323,7 +323,7 @@ public:
 
     neV3 GetLinePos();
 
-    f32 GetDetectDepth();
+    neReal GetDetectDepth();
 
     neV3 GetDetectNormal();
 
@@ -397,7 +397,7 @@ public:
 
     neSensor *GetNextSensor();
 
-    void UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius);
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius);
 
     bool UseCustomCollisionDetection();
 
@@ -453,9 +453,9 @@ NE_INTERFACE(neRigidBody)
 public:
 
 //physical properties
-    f32 GetMass();
+    neReal GetMass();
 
-    void SetMass(f32 mass);
+    void SetMass(neReal mass);
 
     void SetInertiaTensor(const neM3 &tensor);
 
@@ -472,17 +472,17 @@ public:
 
     s32 GetGeometryCount();
 
-    void SetLinearDamping(f32 damp);
+    void SetLinearDamping(neReal damp);
 
-    f32 GetLinearDamping();
+    neReal GetLinearDamping();
 
-    void SetAngularDamping(f32 damp);
+    void SetAngularDamping(neReal damp);
 
-    f32 GetAngularDamping();
+    neReal GetAngularDamping();
 
-    void SetSleepingParameter(f32 sleepingParam);
+    void SetSleepingParameter(neReal sleepingParam);
 
-    f32 GetSleepingParameter();
+    neReal GetSleepingParameter();
 
 //collision geometries, sensors and controllers
 
@@ -496,7 +496,7 @@ public:
 
     neRigidBody *BreakGeometry(neGeometry *g);
 
-    void UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius);
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius);
 
     bool UseCustomCollisionDetection();
 
@@ -625,9 +625,9 @@ public:
 
     neT3 GetJointFrameB();
 
-    void SetJointLength(f32 length);
+    void SetJointLength(neReal length);
 
-    f32 GetJointLength();
+    neReal GetJointLength();
 
     neRigidBody *GetRigidBodyA();
 
@@ -639,17 +639,17 @@ public:
 
     bool Enable();
 
-    void SetDampingFactor(f32 damp);
+    void SetDampingFactor(neReal damp);
 
-    f32 GetDampingFactor();
+    neReal GetDampingFactor();
 
     /*
         Query Joint position
     */
 
-    f32 GetPosition();
+    neReal GetPosition();
 
-    f32 GetPosition2();
+    neReal GetPosition2();
 
     /*
         Constraint primary limit functions
@@ -658,13 +658,13 @@ public:
 
     void EnableLimit(bool yes);
 
-    f32 GetUpperLimit();
+    neReal GetUpperLimit();
 
-    void SetUpperLimit(f32 upperLimit);
+    void SetUpperLimit(neReal upperLimit);
 
-    f32 GetLowerLimit();
+    neReal GetLowerLimit();
 
-    void SetLowerLimit(f32 lowerLimit);
+    void SetLowerLimit(neReal lowerLimit);
 
     /*
         Constraint secondary limit functions (only apply to some Constraint types)
@@ -674,20 +674,20 @@ public:
 
     void EnableLimit2(bool yes);
 
-    f32 GetUpperLimit2();
+    neReal GetUpperLimit2();
 
-    void SetUpperLimit2(f32 upperLimit);
+    void SetUpperLimit2(neReal upperLimit);
 
-    f32 GetLowerLimit2();
+    neReal GetLowerLimit2();
 
-    void SetLowerLimit2(f32 lowerLimit);
+    void SetLowerLimit2(neReal lowerLimit);
 
     /*
         relates to accuracy and speed of the joint solver
     */
-    void SetEpsilon(f32 e);
+    void SetEpsilon(neReal e);
 
-    f32 GetEpsilon();
+    neReal GetEpsilon();
 
     void SetIteration(s32 i);
 
@@ -717,17 +717,17 @@ public:
 
     void EnableMotor(bool yes);
 
-    void SetMotor(MotorType motorType, f32 desireValue, f32 maxForce);
+    void SetMotor(MotorType motorType, neReal desireValue, neReal maxForce);
 
-    void GetMotor(MotorType &motorType, f32 &desireValue, f32 &maxForce);
+    void GetMotor(MotorType &motorType, neReal &desireValue, neReal &maxForce);
 
     bool EnableMotor2();
 
     void EnableMotor2(bool yes);
 
-    void SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce);
+    void SetMotor2(MotorType motorType, neReal desireValue, neReal maxForce);
 
-    void GetMotor2(MotorType &motorType, f32 &desireValue, f32 &maxForce);
+    void GetMotor2(MotorType &motorType, neReal &desireValue, neReal &maxForce);
 };
 
 /****************************************************************************
@@ -940,7 +940,7 @@ struct neCustomCDInfo {
     neV3 collisionNormal;
     neV3 worldContactPointA;
     neV3 worldContactPointB;
-    f32 penetrationDepth;
+    neReal penetrationDepth;
     s32 materialIdA;
     s32 materialIdB;
 };
@@ -990,17 +990,17 @@ public:
         Material managment functions
     */
 
-    bool SetMaterial(s32 index, f32 friction, f32 restitution);
+    bool SetMaterial(s32 index, neReal friction, neReal restitution);
 
-    bool GetMaterial(s32 index, f32 &friction, f32 &restitution);
+    bool GetMaterial(s32 index, neReal &friction, neReal &restitution);
 
     /*
         Advancing the simulation
     */
 
-    void Advance(f32 sec, s32 nSteps = 1, nePerformanceReport *perfReport = nullptr);
+    void Advance(neReal sec, s32 nSteps = 1, nePerformanceReport *perfReport = nullptr);
 
-    void Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *perfReport = nullptr);
+    void Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *perfReport = nullptr);
 
     void ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback);
 
@@ -1075,12 +1075,12 @@ public:
 *
 ****************************************************************************/
 
-neV3 TOKAMAK_API neBoxInertiaTensor(f32 width, f32 height, f32 depth, f32 mass);
+neV3 TOKAMAK_API neBoxInertiaTensor(neReal width, neReal height, neReal depth, neReal mass);
 
-neV3 TOKAMAK_API neBoxInertiaTensor(const neV3 &boxSize, f32 mass);
+neV3 TOKAMAK_API neBoxInertiaTensor(const neV3 &boxSize, neReal mass);
 
-neV3 TOKAMAK_API neSphereInertiaTensor(f32 diameter, f32 mass);
+neV3 TOKAMAK_API neSphereInertiaTensor(neReal diameter, neReal mass);
 
-neV3 TOKAMAK_API neCylinderInertiaTensor(f32 diameter, f32 height, f32 mass);
+neV3 TOKAMAK_API neCylinderInertiaTensor(neReal diameter, neReal height, neReal mass);
 
 #endif//TOKAMAK_H

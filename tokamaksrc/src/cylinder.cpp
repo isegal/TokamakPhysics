@@ -111,7 +111,7 @@ void Cylinder2TerrainTest(neCollisionResult &result, TConvex &cylinderA, neT3 &t
 }
 
 bool CylinderTriTest_PlaneEnd(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, TriangleParam &tri) {
-    f32 dist = trans.pos.Dot(tri.normal) - tri.d;
+    neReal dist = trans.pos.Dot(tri.normal) - tri.d;
 
     neV3 dir;
 
@@ -130,7 +130,7 @@ bool CylinderTriTest_PlaneEnd(TConvex &cylinder, neT3 &trans, ConvexTestResult &
 
     neV3 l = trans.rot[1] * cylinder.CylinderHalfHeight();
 
-    f32 dot = l.Dot(dir);
+    neReal dot = l.Dot(dir);
 
     if (dot > 0.0f) {
         contactPoint += l;
@@ -182,12 +182,12 @@ bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &resu
     cr.edgeB[0] = point1;
     cr.edgeB[1] = point2;
 
-    f32 au, bu;
+    neReal au, bu;
 
     if (!cr.ComputerEdgeContactPoint2(au, bu))
         return true;
 
-    f32 depth = cylinder.CylinderRadius() - cr.depth;
+    neReal depth = cylinder.CylinderRadius() - cr.depth;
 
     if (depth <= 0.0f)
         return false;
@@ -226,7 +226,7 @@ bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &resu
             }
             neV3 project;
 
-            f32 depth = vert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
+            neReal depth = vert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
 
             depth = cylinder.CylinderRadius() - depth;
 
@@ -256,7 +256,7 @@ bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &resu
 
                 neV3 project;
 
-                f32 depth = cylinderVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
+                neReal depth = cylinderVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
 
                 depth = cylinder.CylinderRadius() - depth;
 
@@ -284,7 +284,7 @@ bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &resu
                 }
                 neV3 diff = cylinderVert - lineVert;
 
-                f32 depth = diff.Dot(diff);
+                neReal depth = diff.Dot(diff);
 
                 if (depth >= cylinder.CylinderRadiusSq())
                     return false;
@@ -332,9 +332,9 @@ void TestCylinderVertEdge(neCollisionResult &result, neV3 &edgeA1, neV3 &edgeA2,
                           TConvex &cA, TConvex &cB, neT3 &transA, neT3 &transB, bool flip) {
     neV3 project;
 
-    f32 dist = vertB.GetDistanceFromLine2(project, edgeA1, edgeA2);
+    neReal dist = vertB.GetDistanceFromLine2(project, edgeA1, edgeA2);
 
-    f32 depth = cA.CylinderRadius() + cB.CylinderRadius() - dist;
+    neReal depth = cA.CylinderRadius() + cB.CylinderRadius() - dist;
 
     if (depth <= 0.0f)
         return;
@@ -369,9 +369,9 @@ void TestCylinderVertVert(neCollisionResult &result, neV3 &vertA, neV3 &vertB,
                           TConvex &cA, TConvex &cB, neT3 &transA, neT3 &transB) {
     neV3 diff = vertA - vertB;
 
-    f32 dist = diff.Length();
+    neReal dist = diff.Length();
 
-    f32 depth = cA.CylinderRadius() + cB.CylinderRadius() - dist;
+    neReal depth = cA.CylinderRadius() + cB.CylinderRadius() - dist;
 
     if (depth <= 0.0f)
         return;
@@ -395,7 +395,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
 
     neV3 dir = transA.rot[1].Cross(transB.rot[1]);
 
-    f32 len = dir.Length();
+    neReal len = dir.Length();
 
     bool isParallel = neIsConsiderZero(len);
 
@@ -408,15 +408,15 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
     cr.edgeB[0] = transB.pos + transB.rot[1] * cB.CylinderHalfHeight();
     cr.edgeB[1] = transB.pos - transB.rot[1] * cB.CylinderHalfHeight();
 
-    f32 dot = transA.rot[1].Dot(transB.rot[1]);
+    neReal dot = transA.rot[1].Dot(transB.rot[1]);
 
     if (!neIsConsiderZero(len)) {
-        f32 au, bu;
+        neReal au, bu;
 
         cr.ComputerEdgeContactPoint2(au, bu);
 
         if (cr.valid) {
-            f32 depth = cA.CylinderRadius() + cB.CylinderRadius() - cr.depth;
+            neReal depth = cA.CylinderRadius() + cB.CylinderRadius() - cr.depth;
 
             if (depth <= 0.0f)
                 return;
@@ -445,7 +445,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
 
         neV3 diff = cr.edgeA[i] - cr.edgeB[1];
 
-        f32 dot = diff.Dot(transB.rot[1]);
+        neReal dot = diff.Dot(transB.rot[1]);
 
         if (dot < 0.0f) {
             TestCylinderVertVert(result, cr.edgeA[i], cr.edgeB[1], cA, cB, transA, transB);
@@ -460,7 +460,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
 
         neV3 diff = cr.edgeB[i] - cr.edgeA[1];
 
-        f32 dot = diff.Dot(transA.rot[1]);
+        neReal dot = diff.Dot(transA.rot[1]);
 
         if (dot < 0.0f) {
             TestCylinderVertVert(result, cr.edgeB[i], cr.edgeA[1], cA, cB, transA, transB);
@@ -481,7 +481,7 @@ void Cylinder2SphereTest(neCollisionResult &result, TConvex &cylinderA, neT3 &tr
 
     neV3 diff0 = transB.pos - cylinderBottom;
 
-    f32 k = diff0.Dot(transA.rot[1]);
+    neReal k = diff0.Dot(transA.rot[1]);
 
     if (k >= (2.0f * cylinderA.CylinderHalfHeight() + cylinderA.CylinderRadius() + sphereB.Radius()))
         return;
@@ -502,14 +502,14 @@ void Cylinder2SphereTest(neCollisionResult &result, TConvex &cylinderA, neT3 &tr
 
     neV3 diff1 = project - transB.pos;
 
-    f32 dist = diff1.Dot(diff1);
+    neReal dist = diff1.Dot(diff1);
 
     dist = sqrtf(dist);
 
     if (dist >= (cylinderA.CylinderRadius() + sphereB.Radius()))
         return;
 
-    f32 depth = cylinderA.CylinderRadius() + sphereB.Radius() - dist;
+    neReal depth = cylinderA.CylinderRadius() + sphereB.Radius() - dist;
 
     ASSERT(depth > 0.0f);
 
@@ -615,8 +615,8 @@ void ClosestLine2Box(const neV3 &p1, const neV3 &p2, const neV3 &boxSize, neV3 &
         }
     }
 
-    f32 t = 0;
-    f32 dd2dt = 0;
+    neReal t = 0;
+    neReal dd2dt = 0;
 
     for (i = 0; i < 3; i++) {
         dd2dt -= (region[i] ? v2[i] : 0) * tanchor[i];
@@ -625,19 +625,19 @@ void ClosestLine2Box(const neV3 &p1, const neV3 &p2, const neV3 &boxSize, neV3 &
         goto got_answer;
 
     do {
-        f32 next_t = 1;
+        neReal next_t = 1;
 
         for (i = 0; i < 3; i++) {
             if (tanchor[i] > t && tanchor[i] < 1 && tanchor[i] < next_t)
                 next_t = tanchor[i];
         }
-        f32 next_dd2dt = 0;
+        neReal next_dd2dt = 0;
 
         for (i = 0; i < 3; i++) {
             next_dd2dt += (region[i] ? v2[i] : 0) * (next_t - tanchor[i]);
         }
         if (next_dd2dt >= 0) {
-            f32 m = (next_dd2dt - dd2dt) / (next_t - t);
+            neReal m = (next_dd2dt - dd2dt) / (next_t - t);
             t -= dd2dt / m;
             goto got_answer;
         }
@@ -701,7 +701,7 @@ void Box2CylinderTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TC
 
     diff = bret - lret;
 
-    f32 dist = diff.Length();
+    neReal dist = diff.Length();
 
     if (dist > cylinderB.as.cylinder.radius) {
         return;
@@ -710,7 +710,7 @@ void Box2CylinderTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TC
 
     result.penetrate = true;
 
-    f32 d1 = 1.0f / dist;
+    neReal d1 = 1.0f / dist;
 
     result.contactA = bret;
 

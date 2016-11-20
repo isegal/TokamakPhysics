@@ -227,7 +227,7 @@ void FindCenterOfMass(neTriangleTree *tree, neSimpleArray<s32> &triIndex, neV3 *
         }
     }
 
-    f32 div = (f32) triIndex.GetUsedCount() * 3;
+    neReal div = (neReal) triIndex.GetUsedCount() * 3;
 
     ret /= div;
 
@@ -281,9 +281,9 @@ IntersectAABBTriangle(neTriangleTree *tree, const neV3 &minBound, const neV3 &ma
 
     normal.Normalize();
 
-    f32 xfactor = 0.0f;
-    f32 yfactor = 0.0f;
-    f32 zfactor = 0.0f;
+    neReal xfactor = 0.0f;
+    neReal yfactor = 0.0f;
+    neReal zfactor = 0.0f;
 
     if (neIsConsiderZero(neAbs(normal[0]) - 1.0f)) {
         xfactor = 0.01f;
@@ -490,9 +490,9 @@ void neTreeNode::Build(neSimpleArray<s32> &triIndex, s32 level) {
             } else {
                 FindMinMaxBound(tree, sectorTris, minBound, maxBound);
 
-                f32 yMin = minBound[1];
+                neReal yMin = minBound[1];
 
-                f32 yMax = maxBound[1];
+                neReal yMax = maxBound[1];
 
                 neTreeNode *node = tree->nodes.Alloc();
 
@@ -718,9 +718,9 @@ void TreeBuild(neTriangleTree *tree, s32 nodeIndex, neSimpleArray<s32> &triIndex
             } else {
                 FindMinMaxBound(tree, sectorTris, minBound, maxBound);
 
-                f32 yMin = minBound[1];
+                neReal yMin = minBound[1];
 
-                f32 yMax = maxBound[1];
+                neReal yMax = maxBound[1];
 
                 neTreeNode *node = tree->nodes.Alloc();
 

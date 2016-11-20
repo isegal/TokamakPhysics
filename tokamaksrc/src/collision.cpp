@@ -42,17 +42,17 @@
 
 s32 currentMicroStep = 0;
 
-extern f32 CONSTRAINT_THESHOLD_JOINT;
+extern neReal CONSTRAINT_THESHOLD_JOINT;
 
-extern f32 CONSTRAINT_THESHOLD_CONTACT;
+extern neReal CONSTRAINT_THESHOLD_CONTACT;
 
-extern f32 CONSTRAINT_THESHOLD_LIMIT;
+extern neReal CONSTRAINT_THESHOLD_LIMIT;
 
-extern f32 CONSTRAINT_CONVERGE_FACTOR_JOINT;
+extern neReal CONSTRAINT_CONVERGE_FACTOR_JOINT;
 
-extern f32 CONSTRAINT_CONVERGE_FACTOR_CONTACT;
+extern neReal CONSTRAINT_CONVERGE_FACTOR_CONTACT;
 
-extern f32 CONSTRAINT_CONVERGE_FACTOR_LIMIT;
+extern neReal CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
 s32 magicN;
 
@@ -62,7 +62,7 @@ s32 magicN;
 //#pragma inline_depth( 50 )
 
 bool neCollisionResult::CheckIdle() {
-    f32 theshold = 1.0f;
+    neReal theshold = 1.0f;
 
     if (relativeSpeed > theshold)
         return false;
@@ -101,7 +101,7 @@ void neCollisionResult::StartStage2() {
     if (impulseType != IMPULSE_CONTACT)
         return;
 
-    //f32 timeStep;
+    //neReal timeStep;
 
     neV3 relVel;
 
@@ -170,7 +170,7 @@ void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, 
 
     neM3 *IinvAW;
 
-    f32 oneOnMassA;
+    neReal oneOnMassA;
 
     if (!ba) {
         oneOnMassA = 0.0f;
@@ -183,7 +183,7 @@ void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, 
     }
     neM3 *IinvBW;
 
-    f32 oneOnMassB;
+    neReal oneOnMassB;
 
     if (!bb) {
         oneOnMassB = 0.0f;
@@ -198,7 +198,7 @@ void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, 
     k.SetIdentity();
 
     //k *= (oneOnMassA + oneOnMassB);
-    f32 oom = oneOnMassA + oneOnMassB;
+    neReal oom = oneOnMassA + oneOnMassB;
 
     k[0][0] = oom;
     k[1][1] = oom;
@@ -319,7 +319,7 @@ void neCollisionResult::PrepareForSolver(bool aIdle, bool bIdle) {
             break;
 
         case IMPULSE_RELATIVE_LINEAR_VELOCITY: {
-            f32 oneOnMassA, oneOnMassB;
+            neReal oneOnMassA, oneOnMassB;
 
             if (!ba) {
                 oneOnMassA = 0.0f;
@@ -360,7 +360,7 @@ void neCollision::CalcBB() {
 
         gi = gi->next;
 
-        f32 r = g->GetBoundRadius();
+        neReal r = g->GetBoundRadius();
 
         if (r > boundingRadius)
             boundingRadius = r;
@@ -507,8 +507,8 @@ void TConvex::GetExtend(neV3 &minExt, neV3 &maxExt) {
     }
 }
 
-f32 TConvex::GetBoundRadius() {
-    f32 extend = 0.0f;
+neReal TConvex::GetBoundRadius() {
+    neReal extend = 0.0f;
 
     switch (GetType()) {
         case TConvex::BOX: {
@@ -528,7 +528,7 @@ f32 TConvex::GetBoundRadius() {
         case TConvex::CYLINDER:
             //extend = c2p.pos.Length() + sqrtf(CylinderRadiusSq() + CylinderHalfHeight() * CylinderHalfHeight());
         {
-            f32 r = CylinderRadiusSq() + CylinderHalfHeight();
+            neReal r = CylinderRadiusSq() + CylinderHalfHeight();
 
             extend = c2p.pos.Length() + r;
         }
@@ -536,7 +536,7 @@ f32 TConvex::GetBoundRadius() {
 
         case TConvex::CONVEXITY: {
             for (s32 i = 0; i < as.convexMesh.vertexCount; i++) {
-                f32 l = as.convexMesh.vertices[i].Length();
+                neReal l = as.convexMesh.vertices[i].Length();
 
                 if (l > extend) {
                     extend = l;
@@ -548,7 +548,7 @@ f32 TConvex::GetBoundRadius() {
 
         case TConvex::CONVEXDCD: {
             for (s32 i = 0; i < as.convexMesh.vertexCount; i++) {
-                f32 l = as.convexMesh.vertices[i].Length();
+                neReal l = as.convexMesh.vertices[i].Length();
 
                 if (l > extend) {
                     extend = l;
@@ -563,7 +563,7 @@ f32 TConvex::GetBoundRadius() {
         {
             for (u32 kk = 0; kk < as.opcodeMesh.vertCount; kk++)
             {
-                f32 tmp = as.opcodeMesh.vertices[kk].Magnitude();
+                neReal tmp = as.opcodeMesh.vertices[kk].Magnitude();
 
                 if (tmp > extend)
                     extend = tmp;
@@ -581,7 +581,7 @@ f32 TConvex::GetBoundRadius() {
     return extend;
 }
 
-void TConvex::SetBoxSize(f32 width, f32 height, f32 depth) {
+void TConvex::SetBoxSize(neReal width, neReal height, neReal depth) {
     type = TConvex::BOX;
     as.box.boxSize[0] = width / 2.0f;
     as.box.boxSize[1] = height / 2.0f;
@@ -592,7 +592,7 @@ void TConvex::SetBoxSize(f32 width, f32 height, f32 depth) {
     envelope = 0.0f;
 }
 
-void TConvex::SetSphere(f32 radius) {
+void TConvex::SetSphere(neReal radius) {
     type = TConvex::SPHERE;
 
     as.sphere.radius = radius;
@@ -613,7 +613,7 @@ void TConvex::SetConvexMesh(neByte *convexData) {
 
     as.convexDCD.numVerts = *((s32 *) convexData + 1);
 
-    as.convexDCD.vertices = (neV3 *) (convexData + numFace * sizeof(f32) * 4);
+    as.convexDCD.vertices = (neV3 *) (convexData + numFace * sizeof(neReal) * 4);
 }
 
 void TConvex::SetTriangle(s32 a, s32 b, s32 c, neV3 *_vertices) {
@@ -723,9 +723,9 @@ void TConvex::Initialise() {
 *	TConvex::CalcInertiaTensor
 *
 ****************************************************************************/
-void TranslateCOM(neM3 &I, neV3 &translate, f32 mass, f32 factor) {
+void TranslateCOM(neM3 &I, neV3 &translate, neReal mass, neReal factor) {
     s32 i, j, k;
-    f32 change;
+    neReal change;
 
     for (i = 0; i < 3; i++) {
         for (j = i; j < 3; j++) {
@@ -752,16 +752,16 @@ void TranslateCOM(neM3 &I, neV3 &translate, f32 mass, f32 factor) {
     return;
 }
 
-neM3 TConvex::CalcInertiaTensor(f32 density, f32 &mass) {
+neM3 TConvex::CalcInertiaTensor(neReal density, neReal &mass) {
     neM3 ret;
 
     ret.SetZero();
 
     switch (GetType()) {
         case TConvex::BOX: {
-            f32 xsq = as.box.boxSize[0];
-            f32 ysq = as.box.boxSize[1];
-            f32 zsq = as.box.boxSize[2];
+            neReal xsq = as.box.boxSize[0];
+            neReal ysq = as.box.boxSize[1];
+            neReal zsq = as.box.boxSize[2];
 
             xsq *= xsq;
             ysq *= ysq;
@@ -1302,13 +1302,13 @@ void Box2BoxTest(neCollisionResult & result, TConvex & convexA, neT3 & transA, T
 
     gjkObjB.lwrot = &transB.rot;
 
-    f32 envelopeA = convexA.envelope = 0.1f;
+    neReal envelopeA = convexA.envelope = 0.1f;
 
-    f32 envelopeB = convexB.envelope = 0.1f;
+    neReal envelopeB = convexB.envelope = 0.1f;
 
-    f32 envelope = envelopeA + envelopeB;
+    neReal envelope = envelopeA + envelopeB;
 
-    f32 dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
+    neReal dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
 
     if (dist > 0)
     {
@@ -1349,7 +1349,7 @@ void Box2BoxTest(neCollisionResult & result, TConvex & convexA, neT3 & transA, T
 
         posB = transB.pos;
 
-        f32 dist = 0.0f;
+        neReal dist = 0.0f;
 
         //simplex.cache_valid = false;
 
@@ -1369,7 +1369,7 @@ void Box2BoxTest(neCollisionResult & result, TConvex & convexA, neT3 & transA, T
 
             neV3 diff = pa - pb;
 
-            f32 d = diff.Length();
+            neReal d = diff.Length();
 
             result.collisionFrame[2] = diff * (1.0f / d);
 
@@ -1395,7 +1395,7 @@ void Box2BoxTest(neCollisionResult & result, TConvex & convexA, neT3 & transA, T
 
             //return;
 
-            f32 shrink = 0.8f;
+            neReal shrink = 0.8f;
 
             transA.pos = posA;
 
@@ -1439,7 +1439,7 @@ void Box2BoxTest(neCollisionResult & result, TConvex & convexA, neT3 & transA, T
 
             diff.Normalize();
 
-            f32 factor;
+            neReal factor;
 
             if (convexA.boundingRadius > convexB.boundingRadius)
                 factor = convexA.boundingRadius;
@@ -1524,13 +1524,13 @@ void Convex2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & tra
 
 	gjkObjB.lwrot = &transB.rot;
 
-	f32 envelopeA = convexA.envelope;
+	neReal envelopeA = convexA.envelope;
 
-	f32 envelopeB = convexB.envelope;
+	neReal envelopeB = convexB.envelope;
 
-	f32 envelope = envelopeA + envelopeB;
+	neReal envelope = envelopeA + envelopeB;
 
-	f32 dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
+	neReal dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
 
 	if (dist > 0)
 	{
@@ -1571,7 +1571,7 @@ void Convex2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & tra
 
 		posB = transB.pos;
 
-		f32 dist = 0.0f;
+		neReal dist = 0.0f;
 
 		simplex.cache_valid = false;
 
@@ -1597,7 +1597,7 @@ void Convex2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & tra
 
 			neV3 diff = pa - pb;
 
-			f32 d = diff.Length();
+			neReal d = diff.Length();
 
 			result.collisionFrame[2] = diff * (1.0f / d);
 
@@ -1623,7 +1623,7 @@ void Convex2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & tra
 
 			//return;
 			
-			f32 shrink = 0.8f;
+			neReal shrink = 0.8f;
 
 			transA.pos = posA;
 
@@ -1667,7 +1667,7 @@ void Convex2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & tra
 
 			diff.Normalize();
 
-			f32 factor;
+			neReal factor;
 
 			if (convexA.boundingRadius > convexB.boundingRadius)
 				factor = convexA.boundingRadius;
@@ -1802,13 +1802,13 @@ void Box2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & transA
 
 	gjkObjB.lwrot = &transB.rot;
 
-	f32 envelopeA = 0.0f;//convexA.envelope = 0.05f;
+	neReal envelopeA = 0.0f;//convexA.envelope = 0.05f;
 
-	f32 envelopeB = convexB.envelope;
+	neReal envelopeB = convexB.envelope;
 
-	f32 envelope = envelopeA + envelopeB;
+	neReal envelope = envelopeA + envelopeB;
 
-	f32 dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
+	neReal dist = calc_dist(&simplex, &gjkObjA, &gjkObjB, 1);
 
 	if (dist > 0)
 	{
@@ -1849,7 +1849,7 @@ void Box2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & transA
 
 		posB = transB.pos;
 
-		f32 dist = 0.0f;
+		neReal dist = 0.0f;
 
 		//simplex.cache_valid = false;
 
@@ -1869,7 +1869,7 @@ void Box2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & transA
 
 			neV3 diff = pa - pb;
 
-			f32 d = diff.Length();
+			neReal d = diff.Length();
 
 			result.collisionFrame[2] = diff * (1.0f / d);
 
@@ -1895,7 +1895,7 @@ void Box2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & transA
 
 			//return;
 			
-			f32 shrink = 0.8f;
+			neReal shrink = 0.8f;
 
 			//transA.pos = posA;
 
@@ -1939,7 +1939,7 @@ void Box2ConvexTest(neCollisionResult & result, TConvex & convexA, neT3 & transA
 
 			diff.Normalize();
 
-			f32 factor;
+			neReal factor;
 
 			if (convexA.boundingRadius > convexB.boundingRadius)
 				factor = convexA.boundingRadius;
@@ -2062,7 +2062,7 @@ bool BoxTestParam::MeasureVertexFacePeneration(ConvexTestResult &result, BoxTest
 
     contactPoint = otherBox.trans->pos;
 
-    f32 penetrated;
+    neReal penetrated;
 
     bool reverse = false;
 
@@ -2111,7 +2111,7 @@ bool BoxTestParam::MeasureVertexFacePeneration(ConvexTestResult &result, BoxTest
         //check to see if this one fall into the faces
         neV3 sub = contactPoint - trans->pos;
 
-        f32 dot = neAbs(sub.Dot(trans->rot[otherAxis1]));
+        neReal dot = neAbs(sub.Dot(trans->rot[otherAxis1]));
 
         if (dot > (convex->as.box.boxSize[otherAxis1] * 1.001f))
             return true;// not false ???? no it is true!!!
@@ -2137,7 +2137,7 @@ bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam 
 
     neV3 contactNormal = trans->rot[dim1].Cross(otherBox.trans->rot[dim2]);
 
-    f32 len = contactNormal.Length();
+    neReal len = contactNormal.Length();
 
     if (neIsConsiderZero(len))
         return true;
@@ -2146,7 +2146,7 @@ bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam 
 
     neV3 me2OtherBox = otherBox.trans->pos - trans->pos;
 
-    f32 penetrated = me2OtherBox.Dot(contactNormal);
+    neReal penetrated = me2OtherBox.Dot(contactNormal);
 
     bool reverse = false;
 
@@ -2157,7 +2157,7 @@ bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam 
     } else
         penetrated = penetrated * -1.0f;
 
-    f32 progression[4];
+    neReal progression[4];
 
     s32 otherAxisA1 = (dim1 + 1) % 3;
     s32 otherAxisA2 = (dim1 + 2) % 3;
@@ -2169,7 +2169,7 @@ bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam 
     progression[2] = otherBox.radii[otherAxisB1].Dot(contactNormal);
     progression[3] = otherBox.radii[otherAxisB2].Dot(contactNormal);
 
-    f32 sign[4];
+    neReal sign[4];
 
     sign[0] = progression[0] > 0.0f ? 1.0f : -1.0f;
     sign[1] = progression[1] > 0.0f ? 1.0f : -1.0f;
@@ -2215,8 +2215,8 @@ bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam 
 }
 
 bool ConvexTestResult::ComputerEdgeContactPoint(ConvexTestResult &res) {
-    f32 d1343, d4321, d1321, d4343, d2121;
-    f32 numer, denom, au, bu;
+    neReal d1343, d4321, d1321, d4343, d2121;
+    neReal numer, denom, au, bu;
 
     neV3 p13;
     neV3 p43;
@@ -2280,9 +2280,9 @@ bool ConvexTestResult::ComputerEdgeContactPoint(ConvexTestResult &res) {
     return false;
 }
 
-bool ConvexTestResult::ComputerEdgeContactPoint2(f32 &au, f32 &bu) {
-    f32 d1343, d4321, d1321, d4343, d2121;
-    f32 numer, denom;
+bool ConvexTestResult::ComputerEdgeContactPoint2(neReal &au, neReal &bu) {
+    neReal d1343, d4321, d1321, d4343, d2121;
+    neReal numer, denom;
 
     neV3 p13;
     neV3 p43;

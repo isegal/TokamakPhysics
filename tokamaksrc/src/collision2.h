@@ -16,7 +16,7 @@ public:
     neV3 vert[3];
     neV3 edges[3];
     neV3 normal;
-    f32 d;
+    neReal d;
 
     //extra info for cylinder
 
@@ -42,14 +42,14 @@ struct ConvexTestResult {
     neV3 contactY;
     neV3 edgeA[2];
     neV3 edgeB[2];
-    f32 depth;
+    neReal depth;
     bool valid;
     bool isEdgeEdge;
     bool needTransform;
 
     bool ComputerEdgeContactPoint(ConvexTestResult &res);
 
-    bool ComputerEdgeContactPoint2(f32 &au, f32 &bu);
+    bool ComputerEdgeContactPoint2(neReal &au, neReal &bu);
 
     void Reverse() {
         neSwap(contactA, contactB);
@@ -82,7 +82,7 @@ public:
 
     bool TriHeightTest(ConvexTestResult &result, TriangleParam &tri);
 
-    NEINLINE bool MeasurePlanePenetration(ConvexTestResult &result, const neV3 &normal, f32 d);
+    NEINLINE bool MeasurePlanePenetration(ConvexTestResult &result, const neV3 &normal, neReal d);
 
     bool MeasureBoxFaceTrianglePenetration(ConvexTestResult &result, TriangleParam &tri, s32 whichFace);
 
@@ -105,7 +105,7 @@ public:
 
 void ChooseAxis(neV3 &x, neV3 &y, const neV3 &normal);
 
-bool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri);
+bool SphereTriTest(const neV3 &center, neReal radius, ConvexTestResult &result, TriangleParam &tri);
 
 bool CylinderTriTest(TConvex &sphere, neT3 &trans, ConvexTestResult &result, TriangleParam &tri);
 

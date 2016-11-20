@@ -361,7 +361,7 @@ void neRigidBody_::DrawCPointLine() {
 
             points[0] = *pointArray[i].GetPtResult(this);
             points[1] = *pointArray[j].GetPtResult(this);
-            f32 test = (points[0] - points[1]).Length();
+            neReal test = (points[0] - points[1]).Length();
             DrawLine(color, points, 2);
         }
     }
@@ -377,7 +377,7 @@ void neRigidBody_::DrawCPointLine() {
             points[0] = *pointArray[i].GetPtResult(this);
             points[1] = auxCPoints[1];
 
-            f32 test = (points[0] - points[1]).Length();
+            neReal test = (points[0] - points[1]).Length();
             DrawLine(color, points, 2);
         }
 

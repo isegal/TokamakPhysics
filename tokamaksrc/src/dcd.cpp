@@ -176,7 +176,7 @@ void DCDMesh::SetConvex(const TConvex &convex, neV3 *vertArray) {
         numVerts = *((int *) convex.as.convexDCD.convexData + 1);
         //numEdges = *((int*)convex.as.convexDCD.convexData+2);
 
-        f32 *np = (f32 *) (convex.as.convexDCD.convexData + 4 * sizeof(int));
+        neReal *np = (neReal *) (convex.as.convexDCD.convexData + 4 * sizeof(int));
         normals = (neV3 *) np;
 
         vertices = (neV3 *) (np + 4 * numFaces);
@@ -290,13 +290,13 @@ EdgeStack gEdgeStack;
 
 neV3 BigC;
 
-f32 BigCLength;
+neReal BigCLength;
 
 class Face {
 public:
     // face is defined as normal.Dot(p) = k
     neV3 normal;
-    f32 k;
+    neReal k;
 };
 
 class DCDObj {
@@ -417,7 +417,7 @@ private:
 
         s32 ret = 0;
 
-        f32 maxd = -1.0e6f;
+        neReal maxd = -1.0e6f;
 
         neByte neighbourEdge;
 
@@ -445,7 +445,7 @@ private:
                 //if (currentVert > 10)
                 //	ASSERT(0);
 
-                f32 dot = mesh.vertices[currentVert].Dot(localNorm);
+                neReal dot = mesh.vertices[currentVert].Dot(localNorm);
 
                 if (dot > maxd) {
                     maxd = dot;
@@ -465,7 +465,7 @@ private:
 /*
 		for (s32 i = 0; i < mesh.numVerts; i++)
 		{
-			f32 dot = mesh.vertices[i].Dot(localNorm);
+			neReal dot = mesh.vertices[i].Dot(localNorm);
 
 			if (dot > maxd)
 			{
@@ -480,8 +480,8 @@ private:
 
 };
 
-f32 funcD(const Face &face) {
-    f32 k = face.k;
+neReal funcD(const Face &face) {
+    neReal k = face.k;
 
     neV3 N;
 
@@ -492,21 +492,21 @@ f32 funcD(const Face &face) {
         N *= -1.0f;
     }
 
-    f32 den = k - N.Dot(BigC);
+    neReal den = k - N.Dot(BigC);
 
     den = BigCLength * den;
 
     ASSERT(!neIsConsiderZero(den));
 
-    f32 ret = -k / den;
+    neReal ret = -k / den;
 
     return ret;
 }
 
-f32 SignedDistance(const Face &faceP, const neV3 &vertQ, Face &faceM) {
+neReal SignedDistance(const Face &faceP, const neV3 &vertQ, Face &faceM) {
     faceM = faceP;
 
-    f32 dot = faceP.normal.Dot(vertQ);
+    neReal dot = faceP.normal.Dot(vertQ);
 
     faceM.k += (dot);
 
@@ -553,7 +553,7 @@ public:
 
         Face newFace;
 
-        f32 d = SignedDistance(face0, vertB, newFace);
+        neReal d = SignedDistance(face0, vertB, newFace);
 
         if (d >= 0.0f)
             return false;
@@ -600,7 +600,7 @@ public:
 
     Face face;
 
-    f32 dMax;
+    neReal dMax;
 };
 
 bool SearchResult::SearchFV(s32 initialFace, bool &assigned) {
@@ -646,20 +646,20 @@ bool SearchResult::SearchFV(s32 initialFace, bool &assigned) {
     return true;
 }
 
-f32 Determinant(const neV3 &a, const neV3 &b, const neV3 &c) {
-    f32 t1 = a[0] * b[1] * c[2];
+neReal Determinant(const neV3 &a, const neV3 &b, const neV3 &c) {
+    neReal t1 = a[0] * b[1] * c[2];
 
-    f32 t2 = a[1] * b[0] * c[2];
+    neReal t2 = a[1] * b[0] * c[2];
 
-    f32 t3 = a[0] * b[2] * c[1];
+    neReal t3 = a[0] * b[2] * c[1];
 
-    f32 t4 = a[2] * b[1] * c[0];
+    neReal t4 = a[2] * b[1] * c[0];
 
-    f32 t5 = a[1] * b[2] * c[0];
+    neReal t5 = a[1] * b[2] * c[0];
 
-    f32 t6 = a[2] * b[0] * c[1];
+    neReal t6 = a[2] * b[0] * c[1];
 
-    f32 ret = t1 - t2 - t3 - t4 + t5 + t6;
+    neReal ret = t1 - t2 - t3 - t4 + t5 + t6;
 
     return ret;
 }
@@ -711,26 +711,26 @@ bool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, bool &assigned) {
 
         neV3 d = objB.GetWorldNormalByEdge2(edgeQ) * -1.0f;
 
-        f32 cba = Determinant(c, b, a);
+        neReal cba = Determinant(c, b, a);
 
-        f32 dba = Determinant(d, b, a);
+        neReal dba = Determinant(d, b, a);
 
-        f32 prod0 = cba * dba;
+        neReal prod0 = cba * dba;
 
         if (prod0 >= 0.0f/*-1.0e-6f*/) {
             continue;
         }
 
-        f32 adc = Determinant(a, d, c);
+        neReal adc = Determinant(a, d, c);
 
-        f32 bdc = Determinant(b, d, c);
+        neReal bdc = Determinant(b, d, c);
 
-        f32 prod1 = adc * bdc;
+        neReal prod1 = adc * bdc;
 
         if (prod1 >= 0.0f/*-1.0e-6f*/) {
             continue;
         }
-        f32 prod2 = cba * bdc;
+        neReal prod2 = cba * bdc;
 
         if (prod2 <= 0.0f/*1.0e-6f*/) {
             continue;
@@ -757,7 +757,7 @@ bool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, bool &assigned) {
 
         testFace.normal = diff1.Cross(diff2);
 
-        f32 len = testFace.normal.Length();
+        neReal len = testFace.normal.Length();
 
         if (neIsConsiderZero(len)) {
             continue;
@@ -766,7 +766,7 @@ bool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, bool &assigned) {
 
         testFace.k = testFace.normal.Dot(ainaj);
 
-        f32 testD = funcD(testFace);
+        neReal testD = funcD(testFace);
 
         if (testD >= 0)
             return false;
@@ -909,26 +909,26 @@ bool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, bool &assigned)
 
         d.Normalize();
 
-        f32 cba = Determinant(c, b, a);
+        neReal cba = Determinant(c, b, a);
 
-        f32 dba = Determinant(d, b, a);
+        neReal dba = Determinant(d, b, a);
 
-        f32 prod0 = cba * dba;
+        neReal prod0 = cba * dba;
 
         if (prod0 >= -1.0e-6f) {
             continue;
         }
 
-        f32 adc = Determinant(a, d, c);
+        neReal adc = Determinant(a, d, c);
 
-        f32 bdc = Determinant(b, d, c);
+        neReal bdc = Determinant(b, d, c);
 
-        f32 prod1 = adc * bdc;
+        neReal prod1 = adc * bdc;
 
         if (prod1 >= -1.0e-6f) {
             continue;
         }
-        f32 prod2 = cba * bdc;
+        neReal prod2 = cba * bdc;
 
         if (prod2 <= 1.0e-6f) {
             continue;
@@ -957,7 +957,7 @@ bool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, bool &assigned)
 
         testFace.normal = diff1.Cross(diff2);
 
-        f32 len = testFace.normal.Length();
+        neReal len = testFace.normal.Length();
 
         if (neIsConsiderZero(len)) {
             continue;
@@ -966,7 +966,7 @@ bool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, bool &assigned)
 
         testFace.k = testFace.normal.Dot(ainaj);
 
-        f32 testD = funcD(testFace);
+        neReal testD = funcD(testFace);
 
         if (testD >= 0)
             return false;
@@ -1469,8 +1469,8 @@ bool CalcContactEE(const neV3 &edgeA0,
                    const neV3 &edgeA1,
                    const neV3 &edgeB0,
                    const neV3 &edgeB1, neV3 &contactA, neV3 &contactB) {
-    f32 d1343, d4321, d1321, d4343, d2121;
-    f32 numer, denom, au, bu;
+    neReal d1343, d4321, d1321, d4343, d2121;
+    neReal numer, denom, au, bu;
 
     neV3 p13;
     neV3 p43;

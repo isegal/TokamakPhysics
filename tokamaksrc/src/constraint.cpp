@@ -29,7 +29,7 @@
 #pragma inline_recursion( on )
 #pragma inline_depth( 50 )
 
-f32 AngleBetweenVector(const neV3 &va, const neV3 &vb, const neV3 &normal) {
+neReal AngleBetweenVector(const neV3 &va, const neV3 &vb, const neV3 &normal) {
     // rotation from va to vb
 
     neV3 ra = va;
@@ -44,7 +44,7 @@ f32 AngleBetweenVector(const neV3 &va, const neV3 &vb, const neV3 &normal) {
 
     rb.Normalize();
 
-    f32 dot = ra.Dot(rb);
+    neReal dot = ra.Dot(rb);
 
     if (neIsConsiderZero(dot - 1.0f)) {
         return 0.0f;
@@ -54,7 +54,7 @@ f32 AngleBetweenVector(const neV3 &va, const neV3 &vb, const neV3 &normal) {
     }
     neV3 cross = ra.Cross(rb);
 
-    f32 dot2 = cross.Dot(normal);
+    neReal dot2 = cross.Dot(normal);
 
     if (dot2 > 0.0f) {
         return acosf(dot);
@@ -66,7 +66,7 @@ f32 AngleBetweenVector(const neV3 &va, const neV3 &vb, const neV3 &normal) {
 neQ GetQuatRotateTo(const neV3 &fromV, const neV3 &toV, const neV3 &axis) {
     neQ ret;
 
-    f32 dot = fromV.Dot(toV);
+    neReal dot = fromV.Dot(toV);
 
     if (neIsConsiderZero(dot - 1.0f)) {
         ret.Identity();
@@ -77,7 +77,7 @@ neQ GetQuatRotateTo(const neV3 &fromV, const neV3 &toV, const neV3 &axis) {
 
         cross.Normalize();
 
-        f32 angle;
+        neReal angle;
 
         angle = acosf(dot);
 
@@ -87,10 +87,10 @@ neQ GetQuatRotateTo(const neV3 &fromV, const neV3 &toV, const neV3 &axis) {
     return ret;
 }
 
-f32 DistanceFromPlane(const neV3 &point, const neV3 &normal, const neV3 &pointOnPlane, neV3 &projected) {
+neReal DistanceFromPlane(const neV3 &point, const neV3 &normal, const neV3 &pointOnPlane, neV3 &projected) {
     neV3 diff = point - pointOnPlane;
 
-    f32 dot = diff.Dot(normal);
+    neReal dot = diff.Dot(normal);
 
     projected = point - normal * dot;
 
@@ -98,7 +98,7 @@ f32 DistanceFromPlane(const neV3 &point, const neV3 &normal, const neV3 &pointOn
 }
 
 void _neConstraint::GeneratePointsFromFrame() {
-    f32 hingeHalfLength = jointLength * 0.5f;
+    neReal hingeHalfLength = jointLength * 0.5f;
 
     switch (type) {
         case neJoint::NE_JOINT_BALLSOCKET:
@@ -543,7 +543,7 @@ void _neConstraint::FindGreatest() {
 
                 neV3 diff = cpointsA[i].PtWorld() - frameBWorld.pos;
 
-                f32 dot = diff.Dot(frameBWorld.rot[1]);
+                neReal dot = diff.Dot(frameBWorld.rot[1]);
 
                 cpointsB[i].PtWorld() = dot * frameBWorld.rot[1] + frameBWorld.pos;
 
@@ -710,14 +710,14 @@ void _neConstraint::UpdateCurrentPosition() {
 
     frameBWorld = GetFrameBWorld();
 
-    f32 dot;
+    neReal dot;
 
     if (type == neJoint::NE_JOINT_HINGE) {
         limitStates[0].limitAxis = frameAWorld.rot[1] + frameBWorld.rot[1];
 
         limitStates[0].limitAxis.Normalize();
 
-        f32 dot = frameAWorld.rot[0].Dot(frameBWorld.rot[0]);
+        neReal dot = frameAWorld.rot[0].Dot(frameBWorld.rot[0]);
 
         if (neIsConsiderZero(dot - 1.0f)) // dot = 1
         {
@@ -732,18 +732,18 @@ void _neConstraint::UpdateCurrentPosition() {
         } else {
             neV3 cross = frameBWorld.rot[0].Cross(frameAWorld.rot[0]);
 
-            f32 len = cross.Length();
+            neReal len = cross.Length();
 
             cross *= (1.0f / len);
 
-            f32 dot2 = limitStates[0].limitAxis.Dot(cross);
+            neReal dot2 = limitStates[0].limitAxis.Dot(cross);
 
             if (dot2 > 0.0f) {
                 pos = acosf(dot);
 
                 pos2 = pos;
             } else {
-                f32 t = acosf(dot);
+                neReal t = acosf(dot);
 
                 pos = 2.0f * NE_PI - t;
 
@@ -766,7 +766,7 @@ void _neConstraint::UpdateCurrentPosition() {
         } else {
             limitStates[0].limitAxis = frameBWorld.rot[0].Cross(frameAWorld.rot[0]);
 
-            f32 len = limitStates[0].limitAxis.Length();
+            neReal len = limitStates[0].limitAxis.Length();
 
             ASSERT(!neIsConsiderZero(len));
 
@@ -794,9 +794,9 @@ void neLimitState::CheckLimitSecondary() {
 
     applyLimitImpulse = false;
 
-    f32 dot;
+    neReal dot;
 
-    f32 ang = -constr->pos;
+    neReal ang = -constr->pos;
 
     neQ quat;
 
@@ -806,7 +806,7 @@ void neLimitState::CheckLimitSecondary() {
 
     zaAdjust = quat * constr->frameAWorld.rot[2];
 
-    f32 angle;
+    neReal angle;
 
     dot = constr->frameBWorld.rot[2].Dot(zaAdjust);
 
@@ -818,16 +818,16 @@ void neLimitState::CheckLimitSecondary() {
     } else {
         neV3 cross = constr->frameBWorld.rot[2].Cross(zaAdjust);
 
-        f32 len = cross.Length();
+        neReal len = cross.Length();
 
         cross *= (1.0f / len);
 
-        f32 dot2 = constr->frameBWorld.rot[0].Dot(cross);
+        neReal dot2 = constr->frameBWorld.rot[0].Dot(cross);
 
         if (dot2 >= 0.0f) {
             angle = acosf(dot);
         } else {
-            f32 t = acosf(dot);
+            neReal t = acosf(dot);
 
             angle = -t;
         }
@@ -879,11 +879,11 @@ void neLimitState::CheckLimitSecondary()
 
     applyLimitImpulse = false;
 
-    f32 dot = constr->frameAWorld.rot[1].Dot(constr->frameBWorld.rot[1]);
+    neReal dot = constr->frameAWorld.rot[1].Dot(constr->frameBWorld.rot[1]);
 
     neV3 target;
 
-    f32 ang;
+    neReal ang;
 
     if (dot >= 0.0f)
     {
@@ -906,7 +906,7 @@ void neLimitState::CheckLimitSecondary()
 
     zaAdjust = quat * constr->frameAWorld.rot[2];
 
-    f32 angle;
+    neReal angle;
 
     dot = constr->frameBWorld.rot[2].Dot(zaAdjust);
 
@@ -922,11 +922,11 @@ void neLimitState::CheckLimitSecondary()
     {
         neV3 cross = constr->frameBWorld.rot[2].Cross(zaAdjust);
 
-        f32 len = cross.Length();
+        neReal len = cross.Length();
 
         cross *= (1.0f / len);
 
-        f32 dot2 = constr->frameAWorld.rot[0].Dot(cross);
+        neReal dot2 = constr->frameAWorld.rot[0].Dot(cross);
 
         if (dot2 >= 0.0f)
         {
@@ -934,7 +934,7 @@ void neLimitState::CheckLimitSecondary()
         }
         else
         {
-            f32 t = acosf(dot);
+            neReal t = acosf(dot);
 
             angle = - t;
         }
@@ -994,7 +994,7 @@ void neLimitState::CheckLimitPrimary() {
 
     ASSERT(neIsFinite(constr->pos2));
 
-    f32 rotation;
+    neReal rotation;
 
     if (lowerLimit > 0.0f || constr->type == neJoint::NE_JOINT_BALLSOCKET) {
         //if (upperLimit >= 0.0f) //upperlimit must also be positive
@@ -1062,9 +1062,9 @@ void neLimitState::CheckLimitPrimary() {
 void neLimitState::CheckLimitPrimarySlider() {
     neV3 diff = constr->frameAWorld.pos - constr->frameBWorld.pos;
 
-    f32 dot = diff.Dot(constr->frameBWorld.rot[1]);
+    neReal dot = diff.Dot(constr->frameBWorld.rot[1]);
 
-    f32 depth, sign;
+    neReal depth, sign;
 
     if (dot > upperLimit) {
         depth = dot - upperLimit;
@@ -1117,7 +1117,7 @@ void neLimitState::CheckLimitPrimarySlider() {
     cresult->PrepareForSolver();
 }
 
-void neConstraintHeader::AddToSolver(f32 &epsilon, s32 &iteration) {
+void neConstraintHeader::AddToSolver(neReal &epsilon, s32 &iteration) {
     _neConstraint *constraint = head;
 
     s32 i = 0;

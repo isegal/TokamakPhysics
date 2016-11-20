@@ -117,7 +117,7 @@ NEINLINE neV3 operator*(const neM3 &m1, const neV3 &v) {
     return tmp;
 }
 
-NEINLINE neM3 &operator*=(neM3 &M1, const f32 f) {
+NEINLINE neM3 &operator*=(neM3 &M1, const neReal f) {
     M1.M[0].v[0] *= f;
     M1.M[0].v[1] *= f;
     M1.M[0].v[2] *= f;
@@ -131,7 +131,7 @@ NEINLINE neM3 &operator*=(neM3 &M1, const f32 f) {
     return M1;
 }
 
-NEINLINE neM3 &operator/=(neM3 &M1, const f32 f) {
+NEINLINE neM3 &operator/=(neM3 &M1, const neReal f) {
     M1.M[0].v[0] /= f;
     M1.M[0].v[1] /= f;
     M1.M[0].v[2] /= f;
@@ -192,7 +192,7 @@ NEINLINE bool neM3::IsIdentity() const {
 }
 
 NEINLINE bool neM3::SetInvert(const neM3 &rhs) {
-    f32 det, invDet;
+    neReal det, invDet;
 
     M[2] = rhs.M[0].Cross(rhs.M[1]);
 
@@ -298,7 +298,7 @@ NEINLINE bool neM3::IsOrthogonalNormal() const {
 
     const neM3 &me = (*this);
 
-    f32 m = me[0].Length();
+    neReal m = me[0].Length();
 
     if (!neIsConsiderZero(m - 1.0f))
         return false;
@@ -315,7 +315,7 @@ NEINLINE bool neM3::IsOrthogonalNormal() const {
 
     cross = me[0].Cross(me[1]);
 
-    f32 dot = cross.Dot(me[2]);
+    neReal dot = cross.Dot(me[2]);
 
     if (!neIsConsiderZero(dot - 1.0f))
         return false;
@@ -326,7 +326,7 @@ NEINLINE bool neM3::IsOrthogonalNormal() const {
 NEINLINE void neM3::RotateXYZ(const neV3 &rotate) {
     neM3 rx, ry, rz;
 
-    f32 sintheta, costheta;
+    neReal sintheta, costheta;
 
     sintheta = sinf(rotate[0]);
     costheta = cosf(rotate[0]);
@@ -352,7 +352,7 @@ NEINLINE void neM3::RotateXYZ(const neV3 &rotate) {
     (*this) = rz * ry * rx;
 }
 
-NEINLINE neM3 neM3::operator*(f32 scalar) const {
+NEINLINE neM3 neM3::operator*(neReal scalar) const {
     neM3 ret;
 
     ret[0] = (*this)[0] * scalar;
@@ -361,7 +361,7 @@ NEINLINE neM3 neM3::operator*(f32 scalar) const {
     return ret;
 }
 
-NEINLINE neM3 operator*(f32 scalar, const neM3 &M) {
+NEINLINE neM3 operator*(neReal scalar, const neM3 &M) {
     neM3 ret;
 
     ret[0] = M[0] * scalar;

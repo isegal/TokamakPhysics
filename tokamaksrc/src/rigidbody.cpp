@@ -206,11 +206,11 @@ void neRigidBody_::RecalcInertiaTensor() {
 
     neM3 tensor;
     neV3 cogShift;
-    f32 _mass = 0.0f;
+    neReal _mass = 0.0f;
 
-    f32 density = 0.0f;
-    f32 friction = 0.0f;
-    f32 restitution = 0.0f;
+    neReal density = 0.0f;
+    neReal friction = 0.0f;
+    neReal restitution = 0.0f;
 
     cogShift.SetZero();
 
@@ -228,7 +228,7 @@ void neRigidBody_::RecalcInertiaTensor() {
         cogShift = col.obb.c2p.pos * _mass;
     } else {
         s32 i;
-        f32 m;
+        neReal m;
         neM3 _tensor;
 
         for (i = 0; i < col.convexCount; i++) {
@@ -398,7 +398,7 @@ void neRigidBody_::UpdateDerive() {
 *
 ****************************************************************************/
 
-void neRigidBody_::AdvanceDynamic(f32 tStep) {
+void neRigidBody_::AdvanceDynamic(neReal tStep) {
     oldCounter++;
 
     totalDV.SetZero();
@@ -455,7 +455,7 @@ void neRigidBody_::AdvanceDynamic(f32 tStep) {
     MidPointIntegration(totalTorque, tStep);
 }
 
-void neRigidBody_::MidPointIntegration(const neV3 &totalTorque, f32 tStep) {
+void neRigidBody_::MidPointIntegration(const neV3 &totalTorque, neReal tStep) {
     State().angularMom *= (1.0f - angularDamp);
 
     neV3 newAngularMom = State().angularMom + totalTorque * tStep;
@@ -464,7 +464,7 @@ void neRigidBody_::MidPointIntegration(const neV3 &totalTorque, f32 tStep) {
 
     tmpQ = State().q;
 
-    f32 midStep = tStep * 0.5f;
+    neReal midStep = tStep * 0.5f;
 
     tmpQ = State().q + Derive().qDot * midStep;
 
@@ -493,7 +493,7 @@ void neRigidBody_::MidPointIntegration(const neV3 &totalTorque, f32 tStep) {
     //SetAngMom(am);
 }
 
-void neRigidBody_::ImprovedEulerIntegration(const neV3 &totalTorque, f32 tStep) {
+void neRigidBody_::ImprovedEulerIntegration(const neV3 &totalTorque, neReal tStep) {
 /*	neV3 newAngularMom = State().angularMom + totalTorque * tStep;
 
 	neQ tmpQ = State().q + Derive().qDot * tStep;
@@ -514,14 +514,14 @@ void neRigidBody_::ImprovedEulerIntegration(const neV3 &totalTorque, f32 tStep) 
 */
 }
 
-void neRigidBody_::RungeKutta4Integration(const neV3 &totalTorque, f32 tStep) {
+void neRigidBody_::RungeKutta4Integration(const neV3 &totalTorque, neReal tStep) {
 /*	neV3 newAngularMom = State().angularMom + totalTorque * tStep;
 
 	neQ q1, q2, q3, q4;
 
 	neV3 L1, L2, L3, L4;
 
-	f32 midStep = tStep * 0.5f;
+	neReal midStep = tStep * 0.5f;
 
 	q1 = State().q + Derive().qDot * tStep;
 
@@ -533,7 +533,7 @@ void neRigidBody_::RungeKutta4Integration(const neV3 &totalTorque, f32 tStep) {
 */
 }
 
-void neRigidBody_::AdvancePosition(f32 tStep) {
+void neRigidBody_::AdvancePosition(neReal tStep) {
 //	needSolveContactDynamic = true;
 
 //	totalForce.SetZero();
@@ -561,7 +561,7 @@ void neRigidBody_::AdvancePosition(f32 tStep) {
 
 	tmpQ = State().q;
 
-	f32 midStep = tStep * 0.5f;
+	neReal midStep = tStep * 0.5f;
 
 	tmpQ = State().q + derive.qDot * midStep;
 
@@ -678,7 +678,7 @@ void neRigidBody_::UpdateAABB() {
 
 		for (s32 i = 0; i < 3; i++)
 		{
-			f32 a = neAbs(c2w2[0][i]) + neAbs(c2w2[1][i]) + neAbs(c2w2[2][i]);
+			neReal a = neAbs(c2w2[0][i]) + neAbs(c2w2[1][i]) + neAbs(c2w2[2][i]);
 
 			debugMinBound[i] = p[i] - a;
 		}
@@ -697,7 +697,7 @@ void neRigidBody_::UpdateAABB() {
 
         neV3 & p = c2w.pos;
 
-        f32 a = neAbs(c2w.rot[0][0]) + neAbs(c2w.rot[1][0]) + neAbs(c2w.rot[2][0]);
+        neReal a = neAbs(c2w.rot[0][0]) + neAbs(c2w.rot[1][0]) + neAbs(c2w.rot[2][0]);
 
         minBound[0] = p[0] - a;
         maxBound[0] = p[0] + a;
@@ -813,7 +813,7 @@ bool neRigidBody_::ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contac
 
         SetAngMom(newAM);
 
-        f32 l = dv.Length();
+        neReal l = dv.Length();
 /*
 		if (id == 1 && l > sim->magicNumber)
 		{
@@ -837,7 +837,7 @@ void neRigidBody_::AddRestContact(neRestRecord & rc) {
 
     s32 freeOne = -1;
 
-    f32 shallowest = 0.0f;
+    neReal shallowest = 0.0f;
 
     s32 i;
 
@@ -856,7 +856,7 @@ void neRigidBody_::AddRestContact(neRestRecord & rc) {
         }
         neV3 diff = rc.bodyPoint - GetRestRecord(i).bodyPoint;
 
-        f32 dot = diff.Dot(diff);
+        neReal dot = diff.Dot(diff);
 
         if (dot < 0.0025f) //difference of 0.05 meters, or 5 cm
         {
@@ -960,7 +960,7 @@ void neRigidBody_::WakeUpAllJoint() {
 }
 
 void neRigidBody_::ApplyLinearConstraint() {
-    neV3 dv = totalDV / (f32) impulseCount;
+    neV3 dv = totalDV / (neReal) impulseCount;
 
 //	cacheImpulse = totalDV;
 
@@ -974,7 +974,7 @@ void neRigidBody_::ApplyLinearConstraint() {
 }
 
 void neRigidBody_::ApplyAngularConstraint() {
-    neV3 da = totalDA / (f32) twistCount;
+    neV3 da = totalDA / (neReal) twistCount;
 
 //	cacheTwist += da;
 
@@ -990,7 +990,7 @@ void neRigidBody_::ApplyAngularConstraint() {
 /*
 void neRigidBody_::ConstraintDoSleepCheck()
 {
-	f32 len = dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].Length();
+	neReal len = dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS].Length();
 
 
 	if (len > 0.3f)

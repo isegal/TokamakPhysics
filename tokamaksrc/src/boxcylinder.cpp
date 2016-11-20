@@ -27,7 +27,7 @@ bool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, n
 
     neV3 dir = trans->rot[whichFace];
 
-    f32 dot = dir.Dot(diff);
+    neReal dot = dir.Dot(diff);
 
     if (dot > 0.0f) {
         dot *= -1.0f;
@@ -35,7 +35,7 @@ bool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, n
         dir *= -1.0f;
     }
 
-    f32 depth = dot + convex->BoxSize(whichFace);
+    neReal depth = dot + convex->BoxSize(whichFace);
 
     neV3 contactPoint = transB.pos;
 
@@ -98,14 +98,14 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
 
     neV3 dir = trans->rot[whichEdge].Cross(transB.rot[1]);
 
-    f32 len = dir.Length();
+    neReal len = dir.Length();
 
     if (neIsConsiderZero(len))
         return true;
 
     dir *= (1.0f / len);
 
-    f32 dot = dir.Dot(diff);
+    neReal dot = dir.Dot(diff);
 
     if (dot > 0.0f) {
         dot *= -1.0f;
@@ -113,7 +113,7 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
         dir *= -1.0f;
     }
 
-    f32 depth = dot + cylinderB.CylinderRadius();
+    neReal depth = dot + cylinderB.CylinderRadius();
 
     neV3 contactPoint = trans->pos;
 
@@ -145,7 +145,7 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
     cr.edgeB[0] = transB.pos + transB.rot[1] * cylinderB.CylinderHalfHeight();
     cr.edgeB[1] = transB.pos - transB.rot[1] * cylinderB.CylinderHalfHeight();
 
-    f32 au, bu;
+    neReal au, bu;
 
     // A is the box, B is the cylinder
 
@@ -187,9 +187,9 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
             }
             neV3 project;
 
-            f32 dist = cylinderVert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
+            neReal dist = cylinderVert.GetDistanceFromLine2(project, cr.edgeA[0], cr.edgeA[1]);
 
-            f32 depth = cylinderB.CylinderRadius() - dist;
+            neReal depth = cylinderB.CylinderRadius() - dist;
 
             if (depth <= 0.0f)
                 return true;
@@ -217,7 +217,7 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
 
                 neV3 project;
 
-                f32 depth = boxVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
+                neReal depth = boxVert.GetDistanceFromLine2(project, cr.edgeB[0], cr.edgeB[1]);
 
                 depth = cylinderB.CylinderRadius() - depth;
 
@@ -245,7 +245,7 @@ bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, n
                 }
                 neV3 diff = boxVert - cylinderVert;
 
-                f32 depth = diff.Dot(diff);
+                neReal depth = diff.Dot(diff);
 
                 if (depth >= cylinderB.CylinderRadiusSq())
                     return true;

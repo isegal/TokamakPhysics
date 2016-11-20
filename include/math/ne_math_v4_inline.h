@@ -21,7 +21,7 @@ NEINLINE neV4::neV4(void) {}
 
 //=========================================================================
 
-NEINLINE neV4::neV4(f32 x, f32 y, f32 z, f32 w) {
+NEINLINE neV4::neV4(neReal x, neReal y, neReal z, neReal w) {
     X = x;
     Y = y;
     Z = z;
@@ -36,7 +36,7 @@ NEINLINE neV4::neV4(const neV4 &V) {
 
 //=========================================================================
 
-NEINLINE neV4::neV4(const neV3 &V, f32 w) {
+NEINLINE neV4::neV4(const neV3 &V, neReal w) {
     X = V.X();
     Y = V.Y();
     Z = V.Z();
@@ -45,8 +45,8 @@ NEINLINE neV4::neV4(const neV3 &V, f32 w) {
 
 //=========================================================================
 
-NEINLINE f32 neV4::Length(void) const {
-    return (f32) sqrt(this->Dot(*this));
+NEINLINE neReal neV4::Length(void) const {
+    return (neReal) sqrt(this->Dot(*this));
 }
 
 //=========================================================================
@@ -64,7 +64,7 @@ NEINLINE void neV4::SetZero(void) {
 
 //=========================================================================
 
-NEINLINE void neV4::Set(f32 x, f32 y, f32 z, f32 w) {
+NEINLINE void neV4::Set(neReal x, neReal y, neReal z, neReal w) {
     X = x;
     Y = y;
     Z = z;
@@ -73,16 +73,16 @@ NEINLINE void neV4::Set(f32 x, f32 y, f32 z, f32 w) {
 
 //=========================================================================
 
-NEINLINE f32 neV4::Dot(const neV4 &V) const {
+NEINLINE neReal neV4::Dot(const neV4 &V) const {
     return X * V.X + Y * V.Y + Z * V.Z + W * V.W;
 }
 
 //=========================================================================
 
-NEINLINE f32 &neV4::operator[](s32 I) {
+NEINLINE neReal &neV4::operator[](s32 I) {
     ASSERT(I >= 0);
     ASSERT(I <= 3);
-    return ((f32 *) this)[I];
+    return ((neReal *) this)[I];
 }
 
 //=========================================================================
@@ -107,14 +107,14 @@ NEINLINE neV4 &neV4::operator-=(const neV4 &V) {
 
 //=========================================================================
 
-NEINLINE neV4 &neV4::operator/=(f32 S) {
+NEINLINE neV4 &neV4::operator/=(neReal S) {
     *this = *this / S;
     return *this;
 }
 
 //=========================================================================
 
-NEINLINE neV4 &neV4::operator*=(f32 S) {
+NEINLINE neV4 &neV4::operator*=(neReal S) {
     *this = *this * S;
     return *this;
 }
@@ -144,19 +144,19 @@ NEINLINE neV4 operator-(const neV4 &V1, const neV4 &V2) {
 
 //=========================================================================
 
-NEINLINE neV4 operator/(const neV4 &V, f32 S) {
+NEINLINE neV4 operator/(const neV4 &V, neReal S) {
     return V * (1 / S);
 }
 
 //=========================================================================
 
-NEINLINE neV4 operator*(const neV4 &V, const f32 S) {
+NEINLINE neV4 operator*(const neV4 &V, const neReal S) {
     return neV4(V.X * S, V.Y * S, V.Z * S, V.W * S);
 }
 
 //=========================================================================
 
-NEINLINE neV4 operator*(f32 S, const neV4 &V) {
+NEINLINE neV4 operator*(neReal S, const neV4 &V) {
     return V * S;
 }
 

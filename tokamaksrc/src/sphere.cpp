@@ -27,7 +27,7 @@
 #define BOX_SPHERE_DO_TEST(whichCase, _dir) {configuration = whichCase; dir = _dir;}
 
 void Box2SphereTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TConvex &sphereB, neT3 &transB) {
-    f32 penetration;
+    neReal penetration;
 
     result.penetrate = false;
 
@@ -123,13 +123,13 @@ void Box2SphereTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TCon
 
         neV3 sub = contactA - sphereCenter;
 
-        f32 lenSq = sub[dir1] * sub[dir1] +
+        neReal lenSq = sub[dir1] * sub[dir1] +
                     sub[dir2] * sub[dir2];
 
         if (lenSq > sphereB.RadiusSq())
             return;
 
-        f32 len = sqrtf(lenSq);
+        neReal len = sqrtf(lenSq);
 
         sub *= 1.0f / len;
 
@@ -154,12 +154,12 @@ void Box2SphereTest(neCollisionResult &result, TConvex &boxA, neT3 &transA, TCon
 
         neV3 sub = contactA - sphereCenter;
 
-        f32 lenSq = sub.Dot(sub);
+        neReal lenSq = sub.Dot(sub);
 
         if (lenSq > sphereB.RadiusSq())
             return;
 
-        f32 len = sqrtf(lenSq);
+        neReal len = sqrtf(lenSq);
 
         penetration = sphereB.Radius() - len;
 
@@ -254,18 +254,18 @@ void Sphere2TerrainTest(neCollisionResult &result, TConvex &sphereA, neT3 &trans
 }
 
 void
-MeasureSphereAndTriEdge(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri, s32 whichEdge) {
+MeasureSphereAndTriEdge(const neV3 &center, neReal radius, ConvexTestResult &result, TriangleParam &tri, s32 whichEdge) {
     s32 whichVert0, whichVert1;
 
     whichVert0 = whichEdge;
 
     whichVert1 = neNextDim1[whichEdge];
 
-    f32 penetrate;
+    neReal penetrate;
 
     neV3 dir = tri.edges[whichEdge];
 
-    f32 edgeLen = dir.Length();
+    neReal edgeLen = dir.Length();
 
     if (neIsConsiderZero(edgeLen)) {
         dir.SetZero();
@@ -274,14 +274,14 @@ MeasureSphereAndTriEdge(const neV3 &center, f32 radius, ConvexTestResult &result
     }
     neV3 vert2Point = center - tri.vert[whichVert0];
 
-    f32 dot = dir.Dot(vert2Point);
+    neReal dot = dir.Dot(vert2Point);
 
     neV3 project = tri.vert[whichVert0] + dot * dir;
 
     if (dot > 0.0f && dot < edgeLen) {
         neV3 diff = center - project;
 
-        f32 len = diff.Length();
+        neReal len = diff.Length();
 
         penetrate = radius - len;
 
@@ -300,12 +300,12 @@ MeasureSphereAndTriEdge(const neV3 &center, f32 radius, ConvexTestResult &result
 }
 
 void
-MeasureSphereAndTriVert(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri, s32 whichVert) {
+MeasureSphereAndTriVert(const neV3 &center, neReal radius, ConvexTestResult &result, TriangleParam &tri, s32 whichVert) {
     neV3 diff = center - tri.vert[whichVert];
 
-    f32 len = diff.Length();
+    neReal len = diff.Length();
 
-    f32 penetrate = radius - len;
+    neReal penetrate = radius - len;
 
     if (penetrate > 0.0f) {
         result.valid = true;
@@ -320,19 +320,19 @@ MeasureSphereAndTriVert(const neV3 &center, f32 radius, ConvexTestResult &result
     }
 }
 
-bool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri) {
+bool SphereTriTest(const neV3 &center, neReal radius, ConvexTestResult &result, TriangleParam &tri) {
     //check sphere and triangle plane
     result.depth = 1.e5f;
     result.valid = false;
 
-    f32 distFromPlane = tri.normal.Dot(center) - tri.d;
+    neReal distFromPlane = tri.normal.Dot(center) - tri.d;
 
-    f32 factor = 1.0f;
+    neReal factor = 1.0f;
 
     if (distFromPlane < 0.0f)
         factor = -1.0f;
 
-    f32 penetrated = radius - distFromPlane * factor;
+    neReal penetrated = radius - distFromPlane * factor;
 
     if (penetrated <= 0.0f)
         return false;
@@ -388,9 +388,9 @@ bool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, Tri
 void Sphere2SphereTest(neCollisionResult &result, TConvex &sphereA, neT3 &transA, TConvex &sphereB, neT3 &transB) {
     neV3 sub = transA.pos - transB.pos;
 
-    f32 dot = sub.Dot(sub);
+    neReal dot = sub.Dot(sub);
 
-    f32 totalLen = sphereA.Radius() + sphereB.Radius();
+    neReal totalLen = sphereA.Radius() + sphereB.Radius();
 
     totalLen *= totalLen;
 
@@ -405,7 +405,7 @@ void Sphere2SphereTest(neCollisionResult &result, TConvex &sphereA, neT3 &transA
 
         return;
     }
-    f32 len = sub.Length();
+    neReal len = sub.Length();
 
     sub *= 1.0f / len;
 

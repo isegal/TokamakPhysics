@@ -56,21 +56,21 @@ public:
     neV3 initRelVel;
     neM3 collisionFrame;
     neM3 w2c;
-    f32 relativeSpeedSq;
+    neReal relativeSpeedSq;
 
 public:
     void Init();
 
     void Update();
 
-    void Apply(f32 scale);
+    void Apply(neReal scale);
 };
 
 
 struct nePhysicsMaterial {
-    f32 friction;
-    f32 resititution;
-    f32 density;
+    neReal friction;
+    neReal resititution;
+    neReal density;
 };
 
 
@@ -262,9 +262,9 @@ public:
 
     void Init();
 
-    f32 GetCount();
+    neReal GetCount();
 
-    f32 GetTotalTime() {
+    neReal GetTotalTime() {
         return dynamic +
                position +
                constrain_1 +
@@ -294,23 +294,23 @@ public:
 
     void UpdateControllerCallback();
 
-    f32 dynamic;
+    neReal dynamic;
 
-    f32 position;
+    neReal position;
 
-    f32 controllerCallback;
+    neReal controllerCallback;
 
-    f32 constrain_1;
+    neReal constrain_1;
 
-    f32 constrain_2;
+    neReal constrain_2;
 
-    f32 cdCulling;
+    neReal cdCulling;
 
-    f32 cd;
+    neReal cd;
 
-    f32 terrain;
+    neReal terrain;
 
-    f32 terrainCulling;
+    neReal terrainCulling;
 
     s32 perfFreqAdjust; // in case Freq is too big
 
@@ -340,20 +340,20 @@ public:
 
     void Free(neRigidBodyBase *bb);
 
-    void Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport = nullptr);
+    void Advance(neReal time, size_t nStep, nePerformanceReport *_perfReport = nullptr);
 
-    void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = nullptr);
+    void Advance(neReal time, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *_perfReport = nullptr);
 
     void Advance(nePerformanceReport *_perfReport = nullptr);
 
     void ForeachActiveRB(const std::function<bool(neRigidBody&)>& rbCallback);
 
-    bool SetMaterial(s32 index, f32 friction, f32 restitution, f32 density);
+    bool SetMaterial(s32 index, neReal friction, neReal restitution, neReal density);
 
-    bool GetMaterial(s32 index, f32 &friction, f32 &restitution, f32 &density);
+    bool GetMaterial(s32 index, neReal &friction, neReal &restitution, neReal &density);
 
-    f32 HandleCollision(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB, neCollisionResult &cresult,
-                        neImpulseType impulseType, f32 scale = 0.0f);
+    neReal HandleCollision(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB, neCollisionResult &cresult,
+                        neImpulseType impulseType, neReal scale = 0.0f);
 
     void CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult);
 
@@ -406,11 +406,11 @@ public:
 
     void UpdateAABB();
 
-    //f32 SolveDynamicLocal(neCollisionResult * cr);
+    //neReal SolveDynamicLocal(neCollisionResult * cr);
 
-    f32 SolveLocal(neCollisionResult *cr);
+    neReal SolveLocal(neCollisionResult *cr);
 
-    void AddContactConstraint(f32 &epsilon, s32 &iteration);
+    void AddContactConstraint(neReal &epsilon, s32 &iteration);
 
     void SetGravity(const neV3 &g);
 
@@ -435,17 +435,17 @@ public:
 
     neV3 gravityVector;
 
-    f32 gravityMag;
+    neReal gravityMag;
 
-    f32 restingSpeed;
+    neReal restingSpeed;
 
     s32 stepSoFar;
 
-    f32 _currentTimeStep;
+    neReal _currentTimeStep;
 
-    f32 oneOnCurrentTimeStep;
+    neReal oneOnCurrentTimeStep;
 
-    f32 highEnergy;
+    neReal highEnergy;
 
 //	neConstraintSolver solver;
 
@@ -485,13 +485,13 @@ public:
 
     neConstraintHeader contactConstraintHeader;
 
-    f32 magicNumber;
+    neReal magicNumber;
 
     s32 currentRecord;
 
-    f32 timeFromLastFrame;
+    neReal timeFromLastFrame;
 
-    f32 lastTimeStep;
+    neReal lastTimeStep;
 
 protected:
     void CheckCollision();
@@ -500,7 +500,7 @@ protected:
 
     void SolveAllConstrain();
 
-    void SolveOneConstrainChain(f32 epsilon, s32 iteration);
+    void SolveOneConstrainChain(neReal epsilon, s32 iteration);
 
     void ResolvePenetration();
 

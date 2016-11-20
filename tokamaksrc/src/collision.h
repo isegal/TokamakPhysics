@@ -44,7 +44,7 @@ struct TCollisionResult {
     neV3 point[2];        // closest point in world space, but relative to object centre
     neV3 normal;            // toward feature on body A
 
-    f32 distance;
+    neReal distance;
     bool penetrated;
 
     int matIndex[2];
@@ -56,7 +56,7 @@ struct TCollisionResult {
 
 struct neBox {
     neV3 boxSize; //half of dimensions
-    //f32 boxSize[4];
+    //neReal boxSize[4];
 };
 
 struct neTri {
@@ -69,14 +69,14 @@ struct neTriangleTerrain {
 };
 
 struct neSphere {
-    f32 radius;
-    f32 radiusSq;
+    neReal radius;
+    neReal radiusSq;
 };
 
 struct neCylinder {
-    f32 radius;
-    f32 radiusSq;
-    f32 halfHeight;
+    neReal radius;
+    neReal radiusSq;
+    neReal halfHeight;
 };
 
 struct neConvexMesh {
@@ -108,10 +108,10 @@ struct neOPCMesh
 struct neBreakInfo {
     neV3 inertiaTensor;
     neV3 breakPlane;
-    f32 mass;
-    f32 breakMagnitude;
-    f32 breakAbsorb;
-    f32 neighbourRadius;
+    neReal mass;
+    neReal breakMagnitude;
+    neReal breakAbsorb;
+    neReal neighbourRadius;
     neGeometry::neBreakFlag flag; //break all,
 };
 
@@ -144,17 +144,17 @@ struct TConvex {
     } as;
 
     neT3 c2p;    // convex to physics object
-    f32 boundingRadius;
-    f32 envelope;
+    neReal boundingRadius;
+    neReal envelope;
     uint32_t type;
     s32 matIndex;
     void * userData;
     neBreakInfo breakInfo;
     neV3 *vertices;
 
-    void SetBoxSize(f32 width, f32 height, f32 depth);
+    void SetBoxSize(neReal width, neReal height, neReal depth);
 
-    void SetSphere(f32 radius);
+    void SetSphere(neReal radius);
 
     void SetTriangle(s32 a, s32 b, s32 c, neV3 *vertices);
 
@@ -184,48 +184,48 @@ struct TConvex {
 
     s32 GetMaterialId();
 
-    f32 GetBoundRadius();
+    neReal GetBoundRadius();
 
     uint32_t GetType();
 
     void Initialise();
 
-    neM3 CalcInertiaTensor(f32 density, f32 &mass);
+    neM3 CalcInertiaTensor(neReal density, neReal &mass);
 
     void GetExtend(neV3 &minExt, neV3 &maxEnt);
 
     //quick access functions
-    NEINLINE f32 BoxSize(s32 dir) {
+    NEINLINE neReal BoxSize(s32 dir) {
         ASSERT(type == BOX);
 
         return as.box.boxSize[dir];
     }
 
-    NEINLINE f32 Radius() {
+    NEINLINE neReal Radius() {
         ASSERT(type == SPHERE);
 
         return as.sphere.radius;
     }
 
-    NEINLINE f32 RadiusSq() {
+    NEINLINE neReal RadiusSq() {
         ASSERT(type == SPHERE);
 
         return as.sphere.radiusSq;
     }
 
-    NEINLINE f32 CylinderRadius() {
+    NEINLINE neReal CylinderRadius() {
         ASSERT(type == CYLINDER);
 
         return as.cylinder.radius;
     }
 
-    NEINLINE f32 CylinderRadiusSq() {
+    NEINLINE neReal CylinderRadiusSq() {
         ASSERT(type == CYLINDER);
 
         return as.cylinder.radiusSq;
     }
 
-    NEINLINE f32 CylinderHalfHeight() {
+    NEINLINE neReal CylinderHalfHeight() {
         ASSERT(type == CYLINDER);
 
         return as.cylinder.halfHeight;
@@ -240,7 +240,7 @@ public:
 
     neV3 dirNormal;
 
-    f32 length;
+    neReal length;
 
     void * cookies;
 
@@ -250,7 +250,7 @@ public:
 
     neV3 contactPoint;
 
-    f32 depth;
+    neReal depth;
 
     s32 materialID;
 
@@ -302,7 +302,7 @@ public:
     TConvex obb;
     TConvex *convex;
     s32 convexCount;
-    f32 boundingRadius;
+    neReal boundingRadius;
 };
 
 class neCollisionResult;
@@ -335,14 +335,14 @@ public:
 
     s32 materialIdA;
     s32 materialIdB;
-    f32 depth; //+ve
+    neReal depth; //+ve
     bool penetrate;
 
     neRigidBodyBase *bodyA;
     neRigidBodyBase *bodyB;
 
-    f32 relativeSpeed;
-    f32 finalRelativeSpeed;
+    neReal relativeSpeed;
+    neReal finalRelativeSpeed;
 
     TConvex *convexA;
     TConvex *convexB;
@@ -351,7 +351,7 @@ public:
 
     neM3 kInv;
 
-    f32 impulseScale;
+    neReal impulseScale;
 
     neImpulseType impulseType;
 
@@ -369,33 +369,33 @@ public:
 
     void CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb);
 
-    f32 SolveContact(neFixedTimeStepSimulator *sim);
+    neReal SolveContact(neFixedTimeStepSimulator *sim);
 
-    f32 SolveConstraint(neFixedTimeStepSimulator *sim);
+    neReal SolveConstraint(neFixedTimeStepSimulator *sim);
 
-    f32 SolveSlider(neFixedTimeStepSimulator *sim);
+    neReal SolveSlider(neFixedTimeStepSimulator *sim);
 
-    f32 SolveSliderLimit(neFixedTimeStepSimulator *sim);
+    neReal SolveSliderLimit(neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngularPrimary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularPrimary(neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngularSecondary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularSecondary(neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim);
 
-    f32 SolveRelativeLinear(neFixedTimeStepSimulator *sim);
+    neReal SolveRelativeLinear(neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngular(f32 depth, const neV3 &axis, f32 relAV, neFixedTimeStepSimulator *sim);
+    neReal SolveAngular(neReal depth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngular2(const neV3 &axisA, const neV3 &axisB, f32 relAV, f32 desireAV, f32 depth,
+    neReal SolveAngular2(const neV3 &axisA, const neV3 &axisB, neReal relAV, neReal desireAV, neReal depth,
                       neFixedTimeStepSimulator *sim);
 
-    f32 SolveAngular3(f32 depth, const neV3 &axis, f32 relAV, neFixedTimeStepSimulator *sim);
+    neReal SolveAngular3(neReal depth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim);
 
     void CalcError(neFixedTimeStepSimulator *sim);
 //	void AddToBodies();
 
-    f32 Value() {
+    neReal Value() {
         return relativeSpeed;
     };
 
@@ -446,7 +446,7 @@ void Box2ConvexTest(neCollisionResult &result, TConvex &convexA, neT3 &transA, T
 void Convex2ConvexTest(neCollisionResult &result, TConvex &convexA, neT3 &transA, TConvex &convexB, neT3 &transB,
                        const neV3 &backupVector);
 
-void TranslateCOM(neM3 &I, neV3 &translate, f32 mass, f32 factor);
+void TranslateCOM(neM3 &I, neV3 &translate, neReal mass, neReal factor);
 
 void DiagonalizeMassTensor(neM3 &I, neV3 &diagonal, neM3 &eigenVectors);
 

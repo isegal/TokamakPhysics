@@ -23,7 +23,7 @@ NEINLINE neQ::neQ(void) {
 
 //=========================================================================
 
-NEINLINE neQ::neQ(f32 x, f32 y, f32 z, f32 w) {
+NEINLINE neQ::neQ(neReal x, neReal y, neReal z, neReal w) {
     X = x;
     Y = y;
     Z = z;
@@ -62,18 +62,18 @@ NEINLINE neQ &neQ::Invert(void) {
 NEINLINE neM4 neQ::BuildMatrix(void) const {
     neM4 M;
 
-    const f32 tx = 2.0f * X;
-    const f32 ty = 2.0f * Y;
-    const f32 tz = 2.0f * Z;
-    const f32 twx = tx * W;
-    const f32 twy = ty * W;
-    const f32 twz = tz * W;
-    const f32 txx = tx * X;
-    const f32 txy = ty * X;
-    const f32 txz = tz * X;
-    const f32 tyy = ty * Y;
-    const f32 tyz = tz * Y;
-    const f32 tzz = tz * Z;
+    const neReal tx = 2.0f * X;
+    const neReal ty = 2.0f * Y;
+    const neReal tz = 2.0f * Z;
+    const neReal twx = tx * W;
+    const neReal twy = ty * W;
+    const neReal twz = tz * W;
+    const neReal txx = tx * X;
+    const neReal txy = ty * X;
+    const neReal txz = tz * X;
+    const neReal tyy = ty * Y;
+    const neReal tyz = tz * Y;
+    const neReal tzz = tz * Z;
 
     M.M[0][0] = 1.0f - (tyy + tzz);
     M.M[1][0] = txy - twz;
@@ -95,18 +95,18 @@ NEINLINE neM4 neQ::BuildMatrix(void) const {
 NEINLINE neM3 neQ::BuildMatrix3(void) const {
     neM3 M;
 
-    const f32 tx = 2.0f * X;
-    const f32 ty = 2.0f * Y;
-    const f32 tz = 2.0f * Z;
-    const f32 twx = tx * W;
-    const f32 twy = ty * W;
-    const f32 twz = tz * W;
-    const f32 txx = tx * X;
-    const f32 txy = ty * X;
-    const f32 txz = tz * X;
-    const f32 tyy = ty * Y;
-    const f32 tyz = tz * Y;
-    const f32 tzz = tz * Z;
+    const neReal tx = 2.0f * X;
+    const neReal ty = 2.0f * Y;
+    const neReal tz = 2.0f * Z;
+    const neReal twx = tx * W;
+    const neReal twy = ty * W;
+    const neReal twz = tz * W;
+    const neReal txx = tx * X;
+    const neReal txy = ty * X;
+    const neReal txz = tz * X;
+    const neReal tyy = ty * Y;
+    const neReal tyz = tz * Y;
+    const neReal tzz = tz * Z;
 
     M.M[0][0] = 1.0f - (tyy + tzz);
     M.M[1][0] = txy - twz;
@@ -127,10 +127,10 @@ NEINLINE void neQ::SetupFromMatrix(const neM4 &Matrix) {
     // squared magniudes of quaternion components
     // first compute squared magnitudes of quaternion components - at least one
     // will be greater than 0 since quaternion is unit magnitude
-    const f32 qs2 = 0.25f * (Matrix.M[0][0] + Matrix.M[1][1] + Matrix.M[2][2] + 1.0f);
-    const f32 qx2 = qs2 - 0.5f * (Matrix.M[1][1] + Matrix.M[2][2]);
-    const f32 qy2 = qs2 - 0.5f * (Matrix.M[2][2] + Matrix.M[0][0]);
-    const f32 qz2 = qs2 - 0.5f * (Matrix.M[0][0] + Matrix.M[1][1]);
+    const neReal qs2 = 0.25f * (Matrix.M[0][0] + Matrix.M[1][1] + Matrix.M[2][2] + 1.0f);
+    const neReal qx2 = qs2 - 0.5f * (Matrix.M[1][1] + Matrix.M[2][2]);
+    const neReal qy2 = qs2 - 0.5f * (Matrix.M[2][2] + Matrix.M[0][0]);
+    const neReal qz2 = qs2 - 0.5f * (Matrix.M[0][0] + Matrix.M[1][1]);
 
 
     // find maximum magnitude component
@@ -141,32 +141,32 @@ NEINLINE void neQ::SetupFromMatrix(const neM4 &Matrix) {
     // compute signed quaternion components using numerically stable method
     switch (i) {
         case 0: {
-            W = (f32) sqrt(qs2);
-            const f32 tmp = 0.25f / W;
+            W = (neReal) sqrt(qs2);
+            const neReal tmp = 0.25f / W;
             X = (Matrix.M[1][2] - Matrix.M[2][1]) * tmp;
             Y = (Matrix.M[2][0] - Matrix.M[0][2]) * tmp;
             Z = (Matrix.M[0][1] - Matrix.M[1][0]) * tmp;
             break;
         }
         case 1: {
-            X = (f32) sqrt(qx2);
-            const f32 tmp = 0.25f / X;
+            X = (neReal) sqrt(qx2);
+            const neReal tmp = 0.25f / X;
             W = (Matrix.M[1][2] - Matrix.M[2][1]) * tmp;
             Y = (Matrix.M[1][0] + Matrix.M[0][1]) * tmp;
             Z = (Matrix.M[2][0] + Matrix.M[0][2]) * tmp;
             break;
         }
         case 2: {
-            Y = (f32) sqrt(qy2);
-            const f32 tmp = 0.25f / Y;
+            Y = (neReal) sqrt(qy2);
+            const neReal tmp = 0.25f / Y;
             W = (Matrix.M[2][0] - Matrix.M[0][2]) * tmp;
             Z = (Matrix.M[2][1] + Matrix.M[1][2]) * tmp;
             X = (Matrix.M[0][1] + Matrix.M[1][0]) * tmp;
             break;
         }
         case 3: {
-            Z = (f32) sqrt(qz2);
-            const f32 tmp = 0.25f / Z;
+            Z = (neReal) sqrt(qz2);
+            const neReal tmp = 0.25f / Z;
             W = (Matrix.M[0][1] - Matrix.M[1][0]) * tmp;
             X = (Matrix.M[0][2] + Matrix.M[2][0]) * tmp;
             Y = (Matrix.M[1][2] + Matrix.M[2][1]) * tmp;
@@ -197,15 +197,15 @@ NEINLINE void neQ::SetupFromMatrix3(const neM3 &Matrix) {
 
 //=========================================================================
 
-NEINLINE f32 neQ::Dot(const neQ &Q) const {
+NEINLINE neReal neQ::Dot(const neQ &Q) const {
     return Q.X * X + Q.Y * Y + Q.Z * Z + Q.W * W;
 }
 
 //=========================================================================
 
 NEINLINE neQ &neQ::Normalize(void) {
-    f32 t;
-    f32 norm = Dot(*this);
+    neReal t;
+    neReal norm = Dot(*this);
 
 //	if (neRealsEqual(norm, 1.0f))
 //		return *this;
@@ -231,7 +231,7 @@ NEINLINE neQ &neQ::operator*=(const neQ &Q) {
 
 //=========================================================================
 
-NEINLINE neQ &neQ::operator*=(f32 S) {
+NEINLINE neQ &neQ::operator*=(neReal S) {
     *this = *this * S;
     return *this;
 }
@@ -259,7 +259,7 @@ NEINLINE neQ operator-(const neQ &Q) {
 //==========================================================================
 
 NEINLINE neQ operator*(const neQ &q1, const neQ &q2) {
-    f32 tmp_0,    //temporary variables
+    neReal tmp_0,    //temporary variables
             tmp_1,
             tmp_2,
             tmp_3,
@@ -296,7 +296,7 @@ NEINLINE neQ operator*(const neQ &q1, const neQ &q2) {
 //==========================================================================
 
 NEINLINE void neQ::GetAxisAngle(neV3 &Axis, neRadian &Angle) const {
-    f32 sum = X * X + Y * Y + Z * Z;
+    neReal sum = X * X + Y * Y + Z * Z;
 
     if (neIsConsiderZero(sum)) {
         Angle = 0.0f;
@@ -305,16 +305,16 @@ NEINLINE void neQ::GetAxisAngle(neV3 &Axis, neRadian &Angle) const {
 
         return;
     }
-    f32 OneOver = 1.0f / (f32) sqrtf(sum);
+    neReal OneOver = 1.0f / (neReal) sqrtf(sum);
 
     Axis.Set(OneOver * X, OneOver * Y, OneOver * Z);
 
-    f32 w = W;
+    neReal w = W;
 
     if (neIsConsiderZero(W - 1.0f)) {
         Angle = 0.0f;
     } else {
-        Angle = 2.0f * (f32) acosf(w);
+        Angle = 2.0f * (neReal) acosf(w);
     }
 }
 
@@ -331,13 +331,13 @@ NEINLINE neV3 operator*(const neQ &Q, const neV3 &V) {
 
 //==========================================================================
 
-NEINLINE neQ operator*(const neQ &Q, f32 S) {
+NEINLINE neQ operator*(const neQ &Q, neReal S) {
     return neQ(Q.X * S, Q.Y * S, Q.Z * S, Q.W * S);
 }
 
 //==========================================================================
 
-NEINLINE neQ operator*(f32 S, const neQ &Q) {
+NEINLINE neQ operator*(neReal S, const neQ &Q) {
     return Q * S;
 }
 
@@ -353,7 +353,7 @@ NEINLINE neQ operator-(const neQ &Qa, const neQ &Qb) {
     return neQ(Qa.X - Qb.X, Qa.Y - Qb.Y, Qa.Z - Qb.Z, Qa.W - Qb.W);
 }
 
-NEINLINE neQ &neQ::Set(f32 _X, f32 _Y, f32 _Z, f32 _W) {
+NEINLINE neQ &neQ::Set(neReal _X, neReal _Y, neReal _Z, neReal _W) {
     X = _X;
     Y = _Y;
     Z = _Z;
@@ -361,16 +361,16 @@ NEINLINE neQ &neQ::Set(f32 _X, f32 _Y, f32 _Z, f32 _W) {
     return (*this);
 }
 
-NEINLINE neQ &neQ::Set(const neV3 &V, f32 W) {
+NEINLINE neQ &neQ::Set(const neV3 &V, neReal W) {
     return Set(V[0], V[1], V[2], W);
 }
 
-NEINLINE neQ &neQ::Set(f32 angle, const neV3 &axis) {
-    f32 halfAngle = angle * 0.5f;
+NEINLINE neQ &neQ::Set(neReal angle, const neV3 &axis) {
+    neReal halfAngle = angle * 0.5f;
 
-    f32 sinHalfAngle = sinf(halfAngle);
+    neReal sinHalfAngle = sinf(halfAngle);
 
-    f32 cosHalfAngle = cosf(halfAngle);
+    neReal cosHalfAngle = cosf(halfAngle);
 
     neV3 tmp = axis * sinHalfAngle;
 

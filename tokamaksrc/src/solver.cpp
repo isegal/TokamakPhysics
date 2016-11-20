@@ -24,17 +24,17 @@
 #include "scenery.h"
 #include "message.h"
 
-f32 CONSTRAINT_THESHOLD_JOINT = 0.000f;
+neReal CONSTRAINT_THESHOLD_JOINT = 0.000f;
 
-f32 CONSTRAINT_THESHOLD_CONTACT = 0.001f;
+neReal CONSTRAINT_THESHOLD_CONTACT = 0.001f;
 
-f32 CONSTRAINT_THESHOLD_LIMIT = 0.001f;
+neReal CONSTRAINT_THESHOLD_LIMIT = 0.001f;
 
-f32 CONSTRAINT_CONVERGE_FACTOR_JOINT = .5f;
+neReal CONSTRAINT_CONVERGE_FACTOR_JOINT = .5f;
 
-f32 CONSTRAINT_CONVERGE_FACTOR_CONTACT = .5f;
+neReal CONSTRAINT_CONVERGE_FACTOR_CONTACT = .5f;
 
-f32 CONSTRAINT_CONVERGE_FACTOR_LIMIT = 0.5f;
+neReal CONSTRAINT_CONVERGE_FACTOR_LIMIT = 0.5f;
 
 NEINLINE void
 ApplyCollisionImpulseFast(neRigidBody_ *rb, const neV3 &impulse, const neV3 &contactPoint, s32 currentRecord,
@@ -80,10 +80,10 @@ void neFixedTimeStepSimulator::AddCollisionResult(neCollisionResult &cresult) {
     *newcr = cresult;
 }
 
-f32 neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
     neV3 impulse;
 
-    f32 ret = 0.0f;
+    neReal ret = 0.0f;
 
     neV3 pII;
 
@@ -96,7 +96,7 @@ f32 neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
 
         neV3 tmp = desireVel * CONSTRAINT_CONVERGE_FACTOR_JOINT;
 
-        f32 len = depth * CONSTRAINT_CONVERGE_FACTOR_JOINT;//tmp.Length();
+        neReal len = depth * CONSTRAINT_CONVERGE_FACTOR_JOINT;//tmp.Length();
 
         if (len > 0.05f) {
             tmp = desireVel * (0.05f / len);
@@ -124,7 +124,7 @@ f32 neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
     return ret;
 }
 
-f32 neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
     neV3 impulse;
 
     if (neIsConsiderZero(finalRelativeSpeed)) {
@@ -136,7 +136,7 @@ f32 neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
 
         neV3 tmp = desireVel * CONSTRAINT_CONVERGE_FACTOR_JOINT;
 
-        f32 len = finalRelativeSpeed * CONSTRAINT_CONVERGE_FACTOR_JOINT;//tmp.Length();
+        neReal len = finalRelativeSpeed * CONSTRAINT_CONVERGE_FACTOR_JOINT;//tmp.Length();
 
         if (len > 0.05f) {
             tmp = desireVel * (0.05f / len);
@@ -147,7 +147,7 @@ f32 neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
 
         impulse = kInv * deltaU * -1.0f;
 
-        f32 dot = impulse.Dot(contactBWorld);
+        neReal dot = impulse.Dot(contactBWorld);
 
         impulse = impulse - dot * contactBWorld;
     }
@@ -168,15 +168,15 @@ f32 neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveSliderLimit(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveSliderLimit(neFixedTimeStepSimulator *sim) {
     ASSERT(depth >= 0.0f);
 
     neV3 impulse;
 
-    f32 desireSpeed = depth * sim->oneOnCurrentTimeStep * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
+    neReal desireSpeed = depth * sim->oneOnCurrentTimeStep * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
     if (desireSpeed > finalRelativeSpeed) {
-        f32 dU = desireSpeed - finalRelativeSpeed * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
+        neReal dU = desireSpeed - finalRelativeSpeed * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
         neV3 deltaU;
         deltaU = contactBWorld * dU;
@@ -203,13 +203,13 @@ f32 neCollisionResult::SolveSliderLimit(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
     neV3 impulse1;
     impulse1.SetZero();
     neV3 impulse2;
     impulse2.SetZero();
 
-    f32 ret = 0.0f;
+    neReal ret = 0.0f;
 
     if (initRelVel[2] < 0.0f) {
         if (sim->solverStage == 0)
@@ -222,9 +222,9 @@ f32 neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
     if (depth > 0.05f)
         depth = 0.05f;
 
-    f32 adjustedDepth = depth - CONSTRAINT_THESHOLD_CONTACT * sim->gravityMag;
+    neReal adjustedDepth = depth - CONSTRAINT_THESHOLD_CONTACT * sim->gravityMag;
 
-    f32 desireNormalSpeed;
+    neReal desireNormalSpeed;
 
     if (depth <= 0.0f) // -ve mean not penetrating
     {
@@ -266,12 +266,12 @@ f32 neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
     return ret;
 }
 
-f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngular(neReal pdepth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim) {
     neV3 deltaL;
 
-    f32 threshold = 0.00f;
+    neReal threshold = 0.00f;
 
-    f32 angularDisplacementNeeded;
+    neReal angularDisplacementNeeded;
 
     if (pdepth > threshold) {
         angularDisplacementNeeded = (pdepth - threshold);
@@ -281,13 +281,13 @@ f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neF
         ASSERT(0);
         return 0;
     }
-    f32 deltaAng;
+    neReal deltaAng;
 
-    f32 scaledCorrection = angularDisplacementNeeded * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
+    neReal scaledCorrection = angularDisplacementNeeded * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
     bool applyImpulse = false;
 
-    f32 angularDisplacment;
+    neReal angularDisplacment;
 
     if (scaledCorrection > 0.0f) {
         if (relAV > 0.0f) {
@@ -305,7 +305,7 @@ f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neF
 
             angularDisplacment = relAV * sim->_currentTimeStep;
 
-            f32 d = angularDisplacementNeeded + angularDisplacment;
+            neReal d = angularDisplacementNeeded + angularDisplacment;
 
             if (d > 0.0f) {
                 deltaAng = -d * CONSTRAINT_CONVERGE_FACTOR_LIMIT * sim->oneOnCurrentTimeStep;
@@ -327,7 +327,7 @@ f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neF
             return 0.0f;
             angularDisplacment = relAV * sim->_currentTimeStep;
 
-            f32 d = angularDisplacementNeeded + angularDisplacment;
+            neReal d = angularDisplacementNeeded + angularDisplacment;
 
             if (d < 0.0f) {
                 deltaAng = -d * CONSTRAINT_CONVERGE_FACTOR_LIMIT * sim->oneOnCurrentTimeStep;
@@ -368,9 +368,9 @@ f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neF
     return 0;
 }
 
-f32 neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, f32 relAV, f32 desireAV, f32 maxTorque,
+neReal neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, neReal relAV, neReal desireAV, neReal maxTorque,
                                      neFixedTimeStepSimulator *sim) {
-    f32 deltaAng = desireAV - relAV;
+    neReal deltaAng = desireAV - relAV;
 
     //deltaAng *= 0.5f;
 
@@ -382,7 +382,7 @@ f32 neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, f32 r
 
     neV3 torque = deltaLA * sim->oneOnCurrentTimeStep;
 
-    f32 torqueMag = torque.Length();
+    neReal torqueMag = torque.Length();
 
     if (torqueMag > maxTorque && !neIsConsiderZero(neAbs(maxTorque))) {
         deltaLA = torque * (maxTorque * sim->_currentTimeStep / torqueMag);
@@ -422,12 +422,12 @@ f32 neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, f32 r
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim) {
     neV3 deltaL;
 
-    f32 threshold = 0.00f;
+    neReal threshold = 0.00f;
 
-    //f32 angularDisplacementNeeded = -pdepth;
+    //neReal angularDisplacementNeeded = -pdepth;
 /*	
 	if (pdepth > threshold)
 	{
@@ -442,9 +442,9 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
 		ASSERT(0);
 		return 0;
 	}
-*/    f32 deltaAng;
+*/    neReal deltaAng;
 
-    f32 scaledDepth = pdepth * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
+    neReal scaledDepth = pdepth * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
     if (scaledDepth > 0.1f)
         scaledDepth = 0.1f;
@@ -453,7 +453,7 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
 
     bool applyImpulse = false;
 
-//	f32 angularDisplacment;
+//	neReal angularDisplacment;
 
     if (scaledDepth > 0.0f) {
         if (relAV > 0.0f) {
@@ -472,7 +472,7 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
 
 			angularDisplacment = relAV * sim->_currentTimeStep;
 
-			f32 d = pdepth + angularDisplacment;
+			neReal d = pdepth + angularDisplacment;
 			
 			if (d > 0.0f)
 			{
@@ -495,7 +495,7 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
 
 /*			angularDisplacment = relAV * sim->_currentTimeStep;
 
-			f32 d = pdepth + angularDisplacment;
+			neReal d = pdepth + angularDisplacment;
 
 			if (d < 0.0f)
 			{
@@ -539,12 +539,12 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
     return 0;
 }
 
-f32 neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
 
-    f32 ava = 0.0f, avb = 0.0f;
+    neReal ava = 0.0f, avb = 0.0f;
 
     if (bodyA) {
         ba = bodyA->AsRigidBody();
@@ -560,12 +560,12 @@ f32 neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
 
-    f32 ava = 0.0f, avb = 0.0f;
+    neReal ava = 0.0f, avb = 0.0f;
 
     if (bodyA && (ba = bodyA->AsRigidBody())) {
         ava = ba->Derive().angularVel.Dot(contactABody);
@@ -576,7 +576,7 @@ f32 neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
     if (!ba && !bb)
         return 0.0f;
 
-    f32 relAV = ava - avb;
+    neReal relAV = ava - avb;
 
     SolveAngular3(depth, contactBBody, relAV, sim);
 /*
@@ -601,12 +601,12 @@ f32 neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
 
-    f32 ava = 0.0f, avb = 0.0f;
+    neReal ava = 0.0f, avb = 0.0f;
 
     if (bodyA && (ba = bodyA->AsRigidBody())) {
         ava = ba->Derive().angularVel.Dot(contactABody);
@@ -617,15 +617,15 @@ f32 neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim) {
     if (!ba && !bb)
         return 0.0f;
 
-    f32 relAV = ava - avb;
+    neReal relAV = ava - avb;
 
     SolveAngular2(contactABody, contactBBody, relAV, finalRelativeSpeed, depth, sim);
 
     return 0.0f;
 }
 
-f32 neCollisionResult::SolveRelativeLinear(neFixedTimeStepSimulator *sim) {
-    f32 velA = 0.0f, velB = 0.0f;
+neReal neCollisionResult::SolveRelativeLinear(neFixedTimeStepSimulator *sim) {
+    neReal velA = 0.0f, velB = 0.0f;
 
     neRigidBody_ *ba, *bb;
 
@@ -638,13 +638,13 @@ f32 neCollisionResult::SolveRelativeLinear(neFixedTimeStepSimulator *sim) {
     if (!ba && !bb)
         return 0.0f;
 
-    f32 speedRel = velA - velB;
+    neReal speedRel = velA - velB;
 
-    f32 impulseMag = kInv[0][0] * (finalRelativeSpeed - speedRel);
+    neReal impulseMag = kInv[0][0] * (finalRelativeSpeed - speedRel);
 
     neV3 impulse;
 
-    f32 mag = impulseMag;
+    neReal mag = impulseMag;
 
     if (mag > depth) {
         impulse = depth * sim->_currentTimeStep * contactABody;
@@ -793,8 +793,8 @@ void neFixedTimeStepSimulator::SolveContactConstrain() {
     cresultHeap2.Clear();
 }
 
-f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
-    f32 ret = 0.0f;
+neReal neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
+    neReal ret = 0.0f;
 
     neV3 velA;
 
@@ -860,7 +860,7 @@ f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
             break;
 
         case IMPULSE_ANGULAR_LIMIT_PRIMARY: {
-            f32 wA = 0.0f, wB = 0.0f;
+            neReal wA = 0.0f, wB = 0.0f;
 
             if (ba) {
                 wA = ba->Derive().angularVel.Dot(cr->contactBBody);
@@ -1162,11 +1162,11 @@ neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, boo
 
     neV3 pDiff = pII - pI;
 
-    f32 e = 0.0f;
-    f32 et = 1.0f;
-    f32 u = 0.0f;
+    neReal e = 0.0f;
+    neReal et = 1.0f;
+    neReal u = 0.0f;
 
-    f32 eA, uA, eB, uB, den;
+    neReal eA, uA, eB, uB, den;
 
     GetMaterial(cresult.materialIdA, uA, eA, den);
 
@@ -1198,14 +1198,14 @@ neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, boo
 
     candidate += (1.0f + et) * pDiff;
 
-    f32 t1 = candidate[0] * candidate[0] + candidate[1] * candidate[1];
+    neReal t1 = candidate[0] * candidate[0] + candidate[1] * candidate[1];
 
-    f32 t2 = u * candidate[2];
+    neReal t2 = u * candidate[2];
 
     t2 = t2 * t2;
 
     if (t1 > t2) {
-        f32 kap,
+        neReal kap,
                 temp;
 
         kap = u * (1.0f + e) * pI[2];
@@ -1235,10 +1235,10 @@ neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, boo
     return impulse;
 }
 
-f32 neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
+neReal neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
                                               neRigidBodyBase *bodyB,
                                               neCollisionResult &cresult, neImpulseType impulseType,
-                                              f32 scale) {
+                                              neReal scale) {
 //	ASSERT(impulseType == IMPULSE_NORMAL);
 
     neM3 w2c;
@@ -1282,15 +1282,15 @@ f32 neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
 
     cresult.initRelVel = w2c * relVel;
 
-    f32 initSpeed = cresult.relativeSpeed = cresult.initRelVel.Length();
+    neReal initSpeed = cresult.relativeSpeed = cresult.initRelVel.Length();
 
-    f32 theshold = -1.0f;
+    neReal theshold = -1.0f;
 
 //	neM3 k, kInv;
 
     neV3 impulse;
 
-    f32 ret = 0.0f;
+    neReal ret = 0.0f;
 
     switch (impulseType) {
         case IMPULSE_NORMAL: {
@@ -1463,7 +1463,7 @@ void neFixedTimeStepSimulator::SolveAllConstrain() {
 
         //lastrb->WakeUpAllJoint();
 
-        f32 epsilon = -1.0f;//DEFAULT_CONSTRAINT_EPSILON;
+        neReal epsilon = -1.0f;//DEFAULT_CONSTRAINT_EPSILON;
 
         s32 iteration = -1;
 
@@ -1478,7 +1478,7 @@ void neFixedTimeStepSimulator::SolveAllConstrain() {
     contactConstraintHeader.RemoveAll();
 }
 
-void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration) {
+void neFixedTimeStepSimulator::SolveOneConstrainChain(neReal epsilon, s32 iteration) {
     solverStage = 0;
 
     if (cresultHeap.GetUsedCount() == 0 && cresultHeap2.GetUsedCount() == 0) {
@@ -1528,7 +1528,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration
             if (pp == 1 && i == (it - 1)) {
                 solverLastIteration = true;
             }
-            f32 maxError = 0.0f;
+            neReal maxError = 0.0f;
 
             s32 nConstraint = 0;
 
@@ -1539,7 +1539,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration
             for (tt = 0; tt < cresultHeap.GetUsedCount(); tt++) {
                 neCollisionResult *cr = &cresultHeap[tt];
 
-                f32 err = 0.0f;
+                neReal err = 0.0f;
 
                 err = SolveLocal(cr);
 
@@ -1550,7 +1550,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration
             for (tt = cresultHeap2.GetUsedCount() - 1; tt >= 0; tt--) {
                 neCollisionResult *cr = &cresultHeap2[tt];
 
-                f32 err = 0.0f;
+                neReal err = 0.0f;
 
                 err = SolveLocal(cr);
 
@@ -1597,7 +1597,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration
     ASSERT(cresultHeap.GetUsedCount() == 0);
 }
 
-void neFixedTimeStepSimulator::AddContactConstraint(f32 &epsilon, s32 &iteration) {
+void neFixedTimeStepSimulator::AddContactConstraint(neReal &epsilon, s32 &iteration) {
     for (s32 i = 0; i < pointerBuffer2.GetUsedCount(); i++) {
         neStackHeader *sheader = (neStackHeader *) pointerBuffer2[i];
 

@@ -80,7 +80,7 @@ void Box2TriangleTest(neCollisionResult &result, TConvex &convexA, neT3 &transA,
 }
 
 NEINLINE bool TriangleParam::PointInYProjection(neV3 &point) {
-    f32 sign1, sign2;
+    neReal sign1, sign2;
 
     neV3 line1 = point - vert[0];
 
@@ -90,12 +90,12 @@ NEINLINE bool TriangleParam::PointInYProjection(neV3 &point) {
 
     sign2 = line2[2] * edges[1][0] - line2[0] * edges[1][2];
 
-    f32 mul = sign1 * sign2;
+    neReal mul = sign1 * sign2;
 
     if (mul < 0.0f)
         return false;
 
-    f32 sign3 = line1[2] * edges[0][0] - line1[0] * edges[0][2];
+    neReal sign3 = line1[2] * edges[0][0] - line1[0] * edges[0][2];
 
     mul = sign1 * sign3;
 
@@ -118,7 +118,7 @@ NEINLINE bool TriangleParam::PointInYProjection(neV3 &point) {
 s32 TriangleParam::IsPointInside(const neV3 &point) {
     //select coordinate
     s32 dim0, dim1, plane;
-    f32 clockness; // 1.0 counter clockwise, -1.0 clockwise
+    neReal clockness; // 1.0 counter clockwise, -1.0 clockwise
 
     if (neAbs(normal[1]) > neAbs(normal[2])) {
         if (neAbs(normal[1]) > neAbs(normal[0])) //use y plane
@@ -146,7 +146,7 @@ s32 TriangleParam::IsPointInside(const neV3 &point) {
 
     clockness = normal[plane] > 0.0f ? 1.0f : -1.0f;
 
-    f32 det0, det1, det2;
+    neReal det0, det1, det2;
 
 #define pointA (vert[0])
 #define pointB (vert[1])
@@ -252,7 +252,7 @@ bool BoxTestParam::TriHeightTest(ConvexTestResult &result, TriangleParam &tri) {
     if (!isVertCalc)
         CalcVertInWorld();
 
-    f32 deepest = 0.0f;
+    neReal deepest = 0.0f;
 
     bool found = false;
 
@@ -260,11 +260,11 @@ bool BoxTestParam::TriHeightTest(ConvexTestResult &result, TriangleParam &tri) {
         if (!tri.PointInYProjection(vert)) // vert in tri projection
             continue;
 
-        f32 height = tri.d - tri.normal[0] * vert[0] - tri.normal[2] * vert[2];
+        neReal height = tri.d - tri.normal[0] * vert[0] - tri.normal[2] * vert[2];
 
         height /= tri.normal[1];
 
-        f32 penetrate = height - vert[1];
+        neReal penetrate = height - vert[1];
 
         if (penetrate > deepest) {
             deepest = penetrate;
@@ -361,10 +361,10 @@ bool BoxTestParam::TriTest(ConvexTestResult &result, TriangleParam &tri) {
     return true;
 }
 
-NEINLINE bool BoxTestParam::MeasurePlanePenetration(ConvexTestResult &result, const neV3 &normal, f32 d) {
-    f32 dot = normal.Dot(trans->pos);
+NEINLINE bool BoxTestParam::MeasurePlanePenetration(ConvexTestResult &result, const neV3 &normal, neReal d) {
+    neReal dot = normal.Dot(trans->pos);
 
-    f32 penetrated = dot - d;
+    neReal penetrated = dot - d;
 
     neV3 contactPoint = trans->pos;
 
@@ -409,14 +409,14 @@ NEINLINE bool BoxTestParam::MeasurePlanePenetration(ConvexTestResult &result, co
 bool BoxTestParam::MeasureBoxFaceTrianglePenetration(ConvexTestResult &result, TriangleParam &tri, s32 whichFace) {
     neV3 contactNormal = trans->rot[whichFace];
 
-    f32 triMin;
-    f32 triMax;
+    neReal triMin;
+    neReal triMax;
     s32 minVert = 0;
     s32 maxVert = 0;
 
     triMin = triMax = contactNormal.Dot(tri.vert[0]);
 
-    f32 dot = contactNormal.Dot(tri.vert[1]);
+    neReal dot = contactNormal.Dot(tri.vert[1]);
 
     if (dot < triMin) {
         triMin = dot;
@@ -434,9 +434,9 @@ bool BoxTestParam::MeasureBoxFaceTrianglePenetration(ConvexTestResult &result, T
         triMax = dot;
         maxVert = 2;
     }
-    f32 p = trans->pos.Dot(contactNormal);
-    f32 boxMin = p - convex->as.box.boxSize[whichFace];
-    f32 boxMax = p + convex->as.box.boxSize[whichFace];
+    neReal p = trans->pos.Dot(contactNormal);
+    neReal boxMin = p - convex->as.box.boxSize[whichFace];
+    neReal boxMax = p + convex->as.box.boxSize[whichFace];
 
     if (triMin >= boxMax)
         return false;
@@ -444,10 +444,10 @@ bool BoxTestParam::MeasureBoxFaceTrianglePenetration(ConvexTestResult &result, T
     if (triMax <= boxMin)
         return false;
 
-    f32 d1 = boxMax - triMin;
-    f32 d2 = triMax - boxMin;
+    neReal d1 = boxMax - triMin;
+    neReal d2 = triMax - boxMin;
 
-    f32 penetrated;
+    neReal penetrated;
     neV3 contactPoint;
     bool reverse = false;
 
@@ -504,15 +504,15 @@ BoxTestParam::MeasureBoxEdgeTriangleEdgePenetration(ConvexTestResult &result, Tr
     s32 otherAxis1 = (dim1 + 1) % 3;
     s32 otherAxis2 = (dim1 + 2) % 3;
 
-    f32 p = contactNormal.Dot(contactPoint);
+    neReal p = contactNormal.Dot(contactPoint);
 
-    f32 dot1, dot2;
-    f32 sign1, sign2;
+    neReal dot1, dot2;
+    neReal sign1, sign2;
 
     dot1 = contactNormal.Dot(radii[otherAxis1]);
     dot2 = contactNormal.Dot(radii[otherAxis2]);
 
-    f32 boxMin, boxMax;
+    neReal boxMin, boxMax;
 
     sign1 = dot1 < 0.0f ? -1.0f : 1.0f;
     sign2 = dot2 < 0.0f ? -1.0f : 1.0f;
@@ -523,11 +523,11 @@ BoxTestParam::MeasureBoxEdgeTriangleEdgePenetration(ConvexTestResult &result, Tr
     boxMin = p - dot1 * sign1;
     boxMin -= dot2 * sign2;
 
-    f32 triMin;
-    f32 triMax;
+    neReal triMin;
+    neReal triMax;
 
-    f32 q = contactNormal.Dot(tri.vert[dim2]);
-    f32 r = contactNormal.Dot(tri.vert[(dim2 + 2) % 3]);
+    neReal q = contactNormal.Dot(tri.vert[dim2]);
+    neReal r = contactNormal.Dot(tri.vert[(dim2 + 2) % 3]);
 
     if (q < r) {
         triMin = q;
@@ -540,7 +540,7 @@ BoxTestParam::MeasureBoxEdgeTriangleEdgePenetration(ConvexTestResult &result, Tr
     if (triMin >= boxMax || triMax <= boxMin)
         return false;
 
-    f32 penetrated;
+    neReal penetrated;
 
     if (triMin == q) {
         contactNormal = contactNormal * -1.0f;

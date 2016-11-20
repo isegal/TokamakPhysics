@@ -19,12 +19,12 @@
 
 #define NE_PI    (3.141592653589793238462643f)
 
-#define NE_RAD_TO_DEG(A) ((f32)(((A) * (180.0f / NE_PI))))
-#define NE_DEG_TO_RAD(A) ((f32)(((A) * (NE_PI / 180.0f))))
+#define NE_RAD_TO_DEG(A) ((neReal)(((A) * (180.0f / NE_PI))))
+#define NE_DEG_TO_RAD(A) ((neReal)(((A) * (NE_PI / 180.0f))))
 #define NE_RI              NE_DEG_TO_RAD(1)
 #define NE_ZERO (1.0e-6f)
 
-using neRadian = f32;
+using neRadian = neReal;
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -32,32 +32,32 @@ using neRadian = f32;
 //
 ///////////////////////////////////////////////////////////////////////////
 
-f32 neFRand(f32 Min, f32 Max);
+neReal neFRand(neReal Min, neReal Max);
 
-f32 neSin(neRadian S);
+neReal neSin(neRadian S);
 
-neRadian neASin(f32 S);
+neRadian neASin(neReal S);
 
-f32 neCos(neRadian C);
+neReal neCos(neRadian C);
 
-neRadian neACos(f32 C);
+neRadian neACos(neReal C);
 
-f32 neTan(neRadian T);
+neReal neTan(neRadian T);
 
-neRadian neATan(f32 T);
+neRadian neATan(neReal T);
 
-neRadian neATan2(f32 y, f32 x);
+neRadian neATan2(neReal y, neReal x);
 
-bool neRealsEqual(f32 s1, f32 s2);
+bool neRealsEqual(neReal s1, neReal s2);
 
-bool neIsConsiderZero(f32 f);
+bool neIsConsiderZero(neReal f);
 
-bool neIsFinite(f32);
+bool neIsFinite(neReal);
 
 //template< class ta >                     NEINLINE ta      neAbs     ( const ta&  A )                               { return ( A < 0 ) ? -A : A;   }
 
-NEINLINE f32 neAbs(f32 f) {
-    return (f32) fabs(f);
+NEINLINE neReal neAbs(neReal f) {
+    return (neReal) fabs(f);
 }
 
 template<class ta, class tb, class tc>
@@ -85,14 +85,14 @@ NEINLINE ta neMin(const ta &A, const ta &B) { return (A < B) ? A : B; }
 template<class ta>
 NEINLINE ta neMax(const ta &A, const ta &B) { return (A > B) ? A : B; }
 
-NEINLINE f32 neMin(const s32 &A, const f32 &B) { return (A < B) ? A : B; }
+NEINLINE neReal neMin(const s32 &A, const neReal &B) { return (A < B) ? A : B; }
 
-NEINLINE f32 neMax(const s32 &A, const f32 &B) { return (A > B) ? A : B; }
+NEINLINE neReal neMax(const s32 &A, const neReal &B) { return (A > B) ? A : B; }
 
-NEINLINE f32 neMin(const f32 &A, const s32 &B) { return (A < B) ? A : B; }
+NEINLINE neReal neMin(const neReal &A, const s32 &B) { return (A < B) ? A : B; }
 
-NEINLINE f32 neMax(const f32 &A, const s32 &B) { return (A > B) ? A : B; }
+NEINLINE neReal neMax(const neReal &A, const s32 &B) { return (A > B) ? A : B; }
 
-NEINLINE bool neIsFinite(f32 n) { return neFinite((double) n); }
+NEINLINE bool neIsFinite(neReal n) { return neFinite((double) n); }
 
 #endif

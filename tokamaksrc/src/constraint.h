@@ -71,13 +71,13 @@ struct neLimitState {
 
     bool enableLimit;
 
-    f32 limitAngularPenetration;
+    neReal limitAngularPenetration;
 
-    f32 limitAngularPenetration2;
+    neReal limitAngularPenetration2;
 
-    f32 upperLimit;
+    neReal upperLimit;
 
-    f32 lowerLimit;
+    neReal lowerLimit;
 
     _neConstraint *constr;
 
@@ -107,9 +107,9 @@ struct neMotor {
 
     neJoint::MotorType motorType;
 
-    f32 desireVelocity;
+    neReal desireVelocity;
 
-    f32 maxForce;
+    neReal maxForce;
 
     neV3 axis;//for ball joint
 
@@ -161,24 +161,24 @@ public:
 /*	
 	neV3 cpointResults[2][2];
 
-	f32 clength[2];
-	f32 clengthSq[2];
+	neReal clength[2];
+	neReal clengthSq[2];
 */
     bool enable;
 
     bool infiniteMassB;
 
-    f32 accuracy;
+    neReal accuracy;
 
     s32 iteration;
 
-    f32 jointLength;
+    neReal jointLength;
 
-    f32 pos;
+    neReal pos;
 
-    f32 pos2;
+    neReal pos2;
 
-    f32 jointDampingFactor;
+    neReal jointDampingFactor;
 
     bool alreadySetup;
     /*
@@ -206,7 +206,7 @@ public:
 
     void UpdateConstraintPoint();
 
-//	f32 ApplyConstraintImpulse(neFixedTimeStepSimulator & sim);
+//	neReal ApplyConstraintImpulse(neFixedTimeStepSimulator & sim);
 
     void InfiniteMassB(bool yes);
 
@@ -268,7 +268,7 @@ public:
 
     neConstraintHeader() { Reset(); }
 
-    void AddToSolver(f32 &epsilon, s32 &iteration);
+    void AddToSolver(neReal &epsilon, s32 &iteration);
 
     void Reset() {
         head = nullptr;

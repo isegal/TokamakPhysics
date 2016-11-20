@@ -57,7 +57,7 @@ void neCollisionBody_::UpdateAABB() {
     int i;
 
     for (i = 0; i < 3; i++) {
-        f32 a = neAbs(c2w.rot[0][i]) + neAbs(c2w.rot[1][i]) + neAbs(c2w.rot[2][i]);
+        neReal a = neAbs(c2w.rot[0][i]) + neAbs(c2w.rot[1][i]) + neAbs(c2w.rot[2][i]);
 
         minBound[i] = pos[i] - a;
         maxBound[i] = pos[i] + a;

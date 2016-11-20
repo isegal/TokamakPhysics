@@ -74,7 +74,7 @@ public:
         HighEnd = 1,
     };
     neByte flag;
-    f32 value;
+    neReal value;
     neRigidBodyBase *bb;
 };
 
@@ -321,7 +321,7 @@ public:
     neV3 angularVel; // w
     neQ qDot;
     neM3 Iinv; // R * IbodyInv * Rtrans
-    f32 speed;
+    neReal speed;
 };
 
 struct neImpulseRecord {
@@ -378,9 +378,9 @@ public:
     neV3 worldDiff;
     neV3 normalBody; //normal define in the body space of otherBody
     neV3 normalWorld; //normal define in the world space
-    f32 depth;
-    f32 normalDiff;
-    f32 tangentialDiffSq;
+    neReal depth;
+    neReal normalDiff;
+    neReal tangentialDiffSq;
     s32 material;
     s32 otherMaterial;
 
@@ -496,8 +496,8 @@ public:
         NE_RBSTATUS_IDLE,
         NE_RBSTATUS_ANIMATED,
     };
-    f32 mass;
-    f32 oneOnMass;
+    neReal mass;
+    neReal oneOnMass;
     neM3 IbodyInv;
     neM3 Ibody;
     neV3 force;
@@ -511,8 +511,8 @@ public:
     neV3 totalForce;
     neV3 acc;
 
-    f32 linearDamp;
-    f32 angularDamp;
+    neReal linearDamp;
+    neReal angularDamp;
 
     uint32_t curState;
 
@@ -574,7 +574,7 @@ public:
 
     neCollisionResult *maxErrCResult;
 
-    f32 sleepingParam;
+    neReal sleepingParam;
 
     neV3 oldPosition;
 
@@ -697,17 +697,17 @@ public:
 
     bool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
 
-    neV3 GetCorrectRotation(neRigidBody_ *otherBody, f32 massOther, neV3 &pointThis, neV3 &pointOther);
+    neV3 GetCorrectRotation(neRigidBody_ *otherBody, neReal massOther, neV3 &pointThis, neV3 &pointOther);
 
     void CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast);
 
-    void CorrectRotation(f32 massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag, s32 changeLast);
+    void CorrectRotation(neReal massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag, s32 changeLast);
 
     void CorrectPenetrationDrift();
 
     void CorrectPenetrationDrift2(s32 index, bool slide, s32 flag);
 
-    f32 TestImpulse(neV3 &dir, neV3 &pt, f32 &linear, f32 &angular);
+    neReal TestImpulse(neV3 &dir, neV3 &pt, neReal &linear, neReal &angular);
 
     void UpdateDerive();
 
@@ -727,11 +727,11 @@ public:
 
     bool TestWakeUpImpulse(const neV3 &impulse);
 
-    void MidPointIntegration(const neV3 &totalTorque, f32 tStep);
+    void MidPointIntegration(const neV3 &totalTorque, neReal tStep);
 
-    void ImprovedEulerIntegration(const neV3 &totalTorque, f32 tStep);
+    void ImprovedEulerIntegration(const neV3 &totalTorque, neReal tStep);
 
-    void RungeKutta4Integration(const neV3 &totalTorque, f32 tStep);
+    void RungeKutta4Integration(const neV3 &totalTorque, neReal tStep);
 
     void WakeUpAllJoint();
 
@@ -749,9 +749,9 @@ public:
 
 protected:
 
-    void AdvanceDynamic(f32 tStep);
+    void AdvanceDynamic(neReal tStep);
 
-    void AdvancePosition(f32 tStep);
+    void AdvancePosition(neReal tStep);
 
     void IsCollideWith(neRigidBody_ &rb);
 

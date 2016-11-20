@@ -274,7 +274,7 @@ void neFixedTimeStepSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl) {
 *
 ****************************************************************************/
 
-bool neFixedTimeStepSimulator::SetMaterial(s32 index, f32 friction, f32 restitution, f32 density) {
+bool neFixedTimeStepSimulator::SetMaterial(s32 index, neReal friction, neReal restitution, neReal density) {
     if (index < 0)
         return false;
 
@@ -294,7 +294,7 @@ bool neFixedTimeStepSimulator::SetMaterial(s32 index, f32 friction, f32 restitut
 *
 ****************************************************************************/
 
-bool neFixedTimeStepSimulator::GetMaterial(s32 index, f32 &friction, f32 &restitution, f32 &density) {
+bool neFixedTimeStepSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution, neReal &density) {
     if (index < 0)
         return false;
 
@@ -612,8 +612,8 @@ void neFixedTimeStepSimulator::Advance(nePerformanceReport *_perfReport) {
     UPDATE_PERF_REPORT(UpdateControllerCallback);
 }
 
-void neFixedTimeStepSimulator::Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport) {
-    _currentTimeStep = time / (f32) nStep;
+void neFixedTimeStepSimulator::Advance(neReal time, size_t nStep, nePerformanceReport *_perfReport) {
+    _currentTimeStep = time / (neReal) nStep;
 
     oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
 
@@ -647,7 +647,7 @@ void neFixedTimeStepSimulator::Advance(f32 time, size_t nStep, nePerformanceRepo
     }
     if (perfReport) {
         if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
-            f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
+            neReal totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
 
 #ifdef DETAIL_PERF_REPORTING
 
@@ -662,7 +662,7 @@ void neFixedTimeStepSimulator::Advance(f32 time, size_t nStep, nePerformanceRepo
             perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
 #endif
         } else {
-            f32 totalTime = perf->GetTotalTime();
+            neReal totalTime = perf->GetTotalTime();
 
             if (totalTime < 100.0f) {
                 perfReport->numSample++;
@@ -700,7 +700,7 @@ void neFixedTimeStepSimulator::Advance(f32 time, size_t nStep, nePerformanceRepo
     stepSoFar++;
 }
 
-void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport) {
+void neFixedTimeStepSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *_perfReport) {
     perfReport = _perfReport;
 
 #ifdef _WIN32
@@ -714,16 +714,16 @@ void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep
     }
 #endif
 
-    const f32 frameDiffTolerance = 0.2f;
+    const neReal frameDiffTolerance = 0.2f;
 
-    f32 timeLeft = sec + timeFromLastFrame;
+    neReal timeLeft = sec + timeFromLastFrame;
 
-    f32 currentTimeStep = maxTimeStep;
+    neReal currentTimeStep = maxTimeStep;
 
     while (minTimeStep <= timeLeft) {
         while (currentTimeStep <= timeLeft) {
             if ((lastTimeStep > 0.0f) && neIsFinite(lastTimeStep)) {
-                f32 diffPercent = neAbs((currentTimeStep - lastTimeStep) / lastTimeStep);
+                neReal diffPercent = neAbs((currentTimeStep - lastTimeStep) / lastTimeStep);
 
                 if (diffPercent > frameDiffTolerance) // more than 20% different
                 {
@@ -762,7 +762,7 @@ void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep
     }
     if (perfReport) {
         if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
-            f32 totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
+            neReal totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
 
 #ifdef DETAIL_PERF_REPORTING
 
@@ -777,7 +777,7 @@ void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep
             perfReport->time[nePerformanceReport::NE_PERF_CONTROLLER_CALLBACK] = perf->controllerCallback / totalTime * 100.0f;;
 #endif
         } else {
-            f32 totalTime = perf->GetTotalTime();
+            neReal totalTime = perf->GetTotalTime();
 
             if (totalTime < 100.0f) {
                 perfReport->numSample++;
@@ -1545,10 +1545,10 @@ void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRig
 
     rc.depth = cresult.depth;
 
-    f32 alignWithGravity = cresult.collisionFrame[2].Dot(gravityVector);
+    neReal alignWithGravity = cresult.collisionFrame[2].Dot(gravityVector);
 
-    //f32 angle = 0.3f;
-    f32 angle = 0.3f;
+    //neReal angle = 0.3f;
+    neReal angle = 0.3f;
 
     if (1)//neAbs(alignWithGravity) > angle)
     {
@@ -1615,7 +1615,7 @@ void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRig
     {
         if (ba && bb) {
             if (!ba->isShifted && ba->status == neRigidBody_::NE_RBSTATUS_IDLE) {
-                f32 e = ba->Derive().linearVel.Dot(ba->Derive().linearVel);
+                neReal e = ba->Derive().linearVel.Dot(ba->Derive().linearVel);
 
                 e += ba->Derive().angularVel.Dot(ba->Derive().angularVel);
 
@@ -1627,7 +1627,7 @@ void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRig
                     bb->isShifted2 = true;
                 }
             } else if (!bb->isShifted && bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
-                f32 e = bb->Derive().linearVel.Dot(bb->Derive().linearVel);
+                neReal e = bb->Derive().linearVel.Dot(bb->Derive().linearVel);
 
                 e += bb->Derive().angularVel.Dot(bb->Derive().angularVel);
 
@@ -1666,7 +1666,7 @@ void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
     neV3 shift;
     shift = cresult.collisionFrame[2] * cresult.depth;
 
-    f32 aratio, bratio;
+    neReal aratio, bratio;
 
     neRigidBodyBase *bodyA = cresult.bodyA;
 
@@ -1692,7 +1692,7 @@ void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
         ba->isShifted2 = true;
         bb->isShifted2 = true;
 
-        f32 totalMass = ba->mass + bb->mass;
+        neReal totalMass = ba->mass + bb->mass;
 
         aratio = bb->mass / totalMass;
 
@@ -1710,7 +1710,7 @@ void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
 
 bool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
                                                neV3 &impulse) {
-    f32 impulseMag;
+    neReal impulseMag;
 
     neV3 breakPlane;
 
@@ -1728,7 +1728,7 @@ bool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TCon
         return false;
     }
 
-    f32 dot = impulse.Dot(breakPlane);
+    neReal dot = impulse.Dot(breakPlane);
 
     impulse = breakPlane * dot;
 

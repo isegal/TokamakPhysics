@@ -15,7 +15,7 @@ class nePerformanceDataWin32 : public nePerformanceData {
 public:
     void Start();
 
-    f32 GetCount();
+    neReal GetCount();
 
     LARGE_INTEGER perfFreq;
 

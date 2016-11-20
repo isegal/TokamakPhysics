@@ -169,7 +169,7 @@ void nePerformanceData::Start() {
     //m_ticks_at_start = getTickCounter();
 }
 
-f32 nePerformanceData::GetCount() {
+neReal nePerformanceData::GetCount() {
     //u64 ticks_now = getTickCounter();
 
     //u64 m_ticks_total = ticks_now - m_ticks_at_start;
@@ -216,7 +216,7 @@ f32 nePerformanceData::GetCount() {
     else
         time = ((double) (tStop.LowPart - tStart.LowPart - Oht)) / Freq.LowPart;
 
-    return (f32) time;
+    return (neReal) time;
 }
 
 void nePerformanceData::UpdateDynamic() {

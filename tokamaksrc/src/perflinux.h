@@ -15,7 +15,7 @@ class nePerformanceDataLinux : public nePerformanceData {
 public:
     void Start();
 
-    f32 GetCount();
+    neReal GetCount();
 
     s64 perfFreq;
 

@@ -49,10 +49,10 @@ NEINLINE void neM4::SetZero(void) {
 
 //=========================================================================
 
-NEINLINE f32 &neM4::operator[](s32 I) {
+NEINLINE neReal &neM4::operator[](s32 I) {
     ASSERT(I >= 0);
     ASSERT(I < 4 * 4);
-    return ((f32 *) this)[I];
+    return ((neReal *) this)[I];
 }
 
 //=========================================================================
@@ -170,13 +170,13 @@ NEINLINE neV3 neM4::TransformAs3x3(const neV3 &V) const {
 
 NEINLINE neM4 operator*(const neM4 &M1, const neM4 &M2) {
     neM4 Temp;
-    f32 *L;
-    f32 *R;
+    neReal *L;
+    neReal *R;
 
-    L = (f32 *) M1.M;
-    R = (f32 *) M2.M;
+    L = (neReal *) M1.M;
+    R = (neReal *) M2.M;
 
-    for (f32 *D = (f32 *) &Temp.M[0]; D < (f32 *) &Temp.M[4]; D += 4, R += 4) {
+    for (neReal *D = (neReal *) &Temp.M[0]; D < (neReal *) &Temp.M[4]; D += 4, R += 4) {
         D[0] = L[0] * R[0] + L[4] * R[1] + L[8] * R[2] + L[12] * R[3];
         D[1] = L[1] * R[0] + L[5] * R[1] + L[9] * R[2] + L[13] * R[3];
         D[2] = L[2] * R[0] + L[6] * R[1] + L[10] * R[2] + L[14] * R[3];
@@ -198,7 +198,7 @@ NEINLINE neV3 operator*(const neM4 &M, const neV3 &V) {
 //=========================================================================
 
 NEINLINE void neM4::SetFastInvert(const neM4 &Src) {
-    f32 Determinant;
+    neReal Determinant;
     neM4 &Matrix = (*this);
 
     //
@@ -244,8 +244,8 @@ NEINLINE void neM4::SetFastInvert(const neM4 &Src) {
 //=========================================================================
 
 NEINLINE neM4 neM4_BuildRotX(neRadian Rx) {
-    f32 s = (f32) sin(Rx);
-    f32 c = (f32) cos(Rx);
+    neReal s = (neReal) sin(Rx);
+    neReal c = (neReal) cos(Rx);
     neM4 Temp;
 
     Temp.SetIdentity();
@@ -260,8 +260,8 @@ NEINLINE neM4 neM4_BuildRotX(neRadian Rx) {
 //=========================================================================
 
 NEINLINE neM4 neM4_BuildRotY(neRadian Ry) {
-    f32 s = (f32) sin(Ry);
-    f32 c = (f32) cos(Ry);
+    neReal s = (neReal) sin(Ry);
+    neReal c = (neReal) cos(Ry);
     neM4 Temp;
 
     Temp.SetIdentity();
@@ -275,8 +275,8 @@ NEINLINE neM4 neM4_BuildRotY(neRadian Ry) {
 //=========================================================================
 
 NEINLINE neM4 neM4_BuildRotZ(neRadian Rz) {
-    f32 s = (f32) sin(Rz);
-    f32 c = (f32) cos(Rz);
+    neReal s = (neReal) sin(Rz);
+    neReal c = (neReal) cos(Rz);
     neM4 Temp;
 
     Temp.SetIdentity();

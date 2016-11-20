@@ -21,7 +21,7 @@ NEINLINE neV2::neV2(void) {}
 
 //=========================================================================
 
-NEINLINE neV2::neV2(f32 x, f32 y) {
+NEINLINE neV2::neV2(neReal x, neReal y) {
     X = x;
     Y = y;
 }
@@ -34,9 +34,9 @@ NEINLINE neV2::neV2(const neV2 &V) {
 
 //==============================================================================
 
-NEINLINE neV2::neV2(const f32 &K) {
-    X = K;//(f32)cos( R );
-    Y = K;//(f32)sin( R );
+NEINLINE neV2::neV2(const neReal &K) {
+    X = K;//(neReal)cos( R );
+    Y = K;//(neReal)sin( R );
 }
 
 //=========================================================================
@@ -47,13 +47,13 @@ NEINLINE void neV2::Zero(void) {
 
 //=========================================================================
 
-NEINLINE f32
+NEINLINE neReal
 &
 
 neV2::operator[](s32 I) {
     ASSERT(I >= 0);
     ASSERT(I <= 1);
-    return ((f32 * )(this))[I];
+    return ((neReal * )(this))[I];
 }
 
 //=========================================================================
@@ -82,7 +82,7 @@ neV2::operator-=(const neV2 &V) {
 
 NEINLINE neV2
 &
-neV2::operator/=(f32
+neV2::operator/=(neReal
 S )
 {
 *this = *this /
@@ -94,7 +94,7 @@ return *this;
 
 NEINLINE neV2
 &
-neV2::operator*=(f32
+neV2::operator*=(neReal
 S )
 {
 *this = *this *
@@ -104,9 +104,9 @@ return *this;
 
 //=========================================================================
 
-NEINLINE void neV2::Set(f32
+NEINLINE void neV2::Set(neReal
 x,
-f32 y
+neReal y
 )
 {
 X = x;
@@ -115,10 +115,10 @@ Y = y;
 
 //=========================================================================
 
-NEINLINE f32
+NEINLINE neReal
 
 neV2::Length(void) const {
-    return (f32)
+    return (neReal)
     sqrt(this->Dot(*this));
 }
 
@@ -134,7 +134,7 @@ neV2::Normalize(void) {
 
 //=========================================================================
 
-NEINLINE f32
+NEINLINE neReal
 
 neV2::Dot(const neV2 &V) const {
     return X * V.X + Y * V.Y;
@@ -150,10 +150,10 @@ neV2::Cross(const neV2 &V) const {
 
 //==============================================================================
 
-NEINLINE f32
+NEINLINE neReal
 
 neV2::GetAngle(void) const {
-    return (f32)
+    return (neReal)
     atan2(Y, X);
 }
 
@@ -164,12 +164,12 @@ NEINLINE neV2
 neV2::Rotate( neRadian
 R )
 {
-f32 s = (f32)
+neReal s = (neReal)
 sin( R );
-f32 c = (f32)
+neReal c = (neReal)
 cos( R );
-f32 x = X;
-f32 y = Y;
+neReal x = X;
+neReal y = Y;
 
 X = (c * x) - (s * y);
 Y = (c * y) + (s * x);
@@ -209,7 +209,7 @@ operator-(const neV2 &V1, const neV2 &V2) {
 
 NEINLINE neV2
 
-operator/(const neV2 &V, f32 S) {
+operator/(const neV2 &V, neReal S) {
     return V * (1 / S);
 }
 
@@ -217,14 +217,14 @@ operator/(const neV2 &V, f32 S) {
 
 NEINLINE neV2
 
-operator*(const neV2 &V, const f32 S) {
+operator*(const neV2 &V, const neReal S) {
     return neV2(V.X * S, V.Y * S);
 }
 
 //=========================================================================
 
 NEINLINE neV2
-operator*(f32
+operator*(neReal
 S,
 const neV2 &V
 )
@@ -238,7 +238,7 @@ V *S;
 NEINLINE neRadian
 
 neV2_AngleBetween(const neV2 &V1, const neV2 &V2) {
-    f32 D, C;
+    neReal D, C;
 
     D = V1.Length() * V2.Length();
 
@@ -249,7 +249,7 @@ neV2_AngleBetween(const neV2 &V1, const neV2 &V2) {
     if (C > 1.0f) C = 1.0f;
     else if (C < -1.0f) C = -1.0f;
 
-    return (f32)
+    return (neReal)
     acos(C);
 }
 

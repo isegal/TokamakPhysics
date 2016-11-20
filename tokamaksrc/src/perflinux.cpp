@@ -57,9 +57,9 @@ void nePerformanceData::Start() {
     gettimeofday(&counter, nullptr);
 }
 
-f32 nePerformanceData::GetCount() {
+neReal nePerformanceData::GetCount() {
     timeval tStart, tStop;
-    f32 start, end;
+    neReal start, end;
 
     tStart = counter;
 
