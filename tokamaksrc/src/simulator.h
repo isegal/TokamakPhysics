@@ -346,7 +346,7 @@ public:
 
     void Advance(nePerformanceReport *_perfReport = nullptr);
 
-    void ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback);
+    void ForeachActiveRB(const std::function<bool(neRigidBody&)>& rbCallback);
 
     bool SetMaterial(s32 index, f32 friction, f32 restitution, f32 density);
 

@@ -813,7 +813,7 @@ void neFixedTimeStepSimulator::Advance(f32 sec, f32 minTimeStep, f32 maxTimeStep
     }
 }
 
-void neFixedTimeStepSimulator::ForeachActiveRB(std::function<bool(neRigidBody &)> rbCallback) {
+void neFixedTimeStepSimulator::ForeachActiveRB(const std::function<bool(neRigidBody &)>& rbCallback) {
     neRigidBody_ *rb = activeRB.GetHead();
     while (rb) {
         if(!rbCallback(*(reinterpret_cast<neRigidBody*>(rb)))) {
