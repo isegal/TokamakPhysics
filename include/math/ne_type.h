@@ -48,7 +48,6 @@ using s8 = signed char;
 using s16 = short;
 using s32 = int;
 using neReal = float;
-using f64 = double;
 using neByte = uint8_t;
 using neErr = s32;
 
