@@ -1810,7 +1810,7 @@ neBool neRigidBody::IsIdle() {
 
 neSimulator *
 neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc, const neV3 *grav) {
-    neFixedTimeStepSimulator *s = new neFixedTimeStepSimulator(sizeInfo, alloc, grav);
+    auto *s = new neFixedTimeStepSimulator(sizeInfo, alloc, grav);
 
     return reinterpret_cast<neSimulator *>(s);
 }

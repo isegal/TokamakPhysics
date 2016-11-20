@@ -281,7 +281,7 @@ public:
                 size += growBy;
 
         }
-        T *ret = new((void *) (nextFree++)) T;
+        auto *ret = new((void *) (nextFree++)) T;
 
         return ret;
     }
