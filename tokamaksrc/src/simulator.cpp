@@ -65,10 +65,10 @@ neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo &_s
 
     neFixedTimeStepSimulator::Initialise(g);
 
-    for (int i = 0; i < MAX_MATERIAL; i++) {
-        materials[i].density = 1.0f;
-        materials[i].friction = .5f;
-        materials[i].resititution = 0.4f;
+    for (auto & material : materials) {
+        material.density = 1.0f;
+        material.friction = .5f;
+        material.resititution = 0.4f;
     }
     perfReport = nullptr;
 

@@ -256,24 +256,24 @@ bool BoxTestParam::TriHeightTest(ConvexTestResult &result, TriangleParam &tri) {
 
     bool found = false;
 
-    for (s32 i = 0; i < 8; i++) {
-        if (!tri.PointInYProjection(verts[i])) // vert in tri projection
+    for (auto & vert : verts) {
+        if (!tri.PointInYProjection(vert)) // vert in tri projection
             continue;
 
-        f32 height = tri.d - tri.normal[0] * verts[i][0] - tri.normal[2] * verts[i][2];
+        f32 height = tri.d - tri.normal[0] * vert[0] - tri.normal[2] * vert[2];
 
         height /= tri.normal[1];
 
-        f32 penetrate = height - verts[i][1];
+        f32 penetrate = height - vert[1];
 
         if (penetrate > deepest) {
             deepest = penetrate;
 
             result.depth = penetrate;
 
-            result.contactA = verts[i];
+            result.contactA = vert;
 
-            result.contactB = verts[i];
+            result.contactB = vert;
 
             result.contactB[1] = height;//verts[i][1] + penetrate;
 

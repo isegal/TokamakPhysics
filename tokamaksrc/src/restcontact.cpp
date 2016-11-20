@@ -189,8 +189,8 @@ void neRigidBody_::CheckForIdleJoint() {
 
         sum.SetZero();
 
-        for (s32 i = 0; i < NE_RB_MAX_PAST_RECORDS; i++) {
-            sum += dvRecord[i];
+        for (auto i : dvRecord) {
+            sum += i;
         }
 
         ASSERT(sum.IsFinite());
