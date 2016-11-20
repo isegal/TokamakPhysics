@@ -35,9 +35,9 @@
 static s32 neNextDim1[] = {1, 2, 0};
 static s32 neNextDim2[] = {2, 0, 1};
 
-typedef struct neQ neQ;
+using neQ = struct neQ;
 
-typedef struct neM3 neM3;
+using neM3 = struct neM3;
 
 //struct __declspec(align(16)) neV3
 struct neV3 {

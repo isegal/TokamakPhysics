@@ -33,7 +33,6 @@ public:
     s32 IsPointInside(const neV3 &point);
 };
 
-typedef struct ConvexTestResult ConvexTestResult;
 
 struct ConvexTestResult {
     neV3 contactA;

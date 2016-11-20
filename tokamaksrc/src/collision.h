@@ -40,7 +40,7 @@ class neRigidBody_;
 //
 ///////////////////////////////////////////////////////////////////
 
-typedef struct {
+struct TCollisionResult {
     neV3 point[2];        // closest point in world space, but relative to object centre
     neV3 normal;            // toward feature on body A
 
@@ -48,16 +48,16 @@ typedef struct {
     bool penetrated;
 
     int matIndex[2];
-} TCollisionResult;
+};
 
 ///////////////////////////////////////////////////////////////////
 
 //typedef struct neBox neBox; 
 
-typedef struct _neBox {
+struct neBox {
     neV3 boxSize; //half of dimensions
     //f32 boxSize[4];
-} neBox;
+};
 
 struct neTri {
     s32 indices[3];
@@ -104,7 +104,6 @@ struct neOPCMesh
 
 #endif
 
-typedef struct neBreakInfo neBreakInfo;
 
 struct neBreakInfo {
     neV3 inertiaTensor;
@@ -116,7 +115,6 @@ struct neBreakInfo {
     neGeometry::neBreakFlag flag; //break all,
 };
 
-typedef struct TConvex TConvex;
 
 struct TConvex {
     enum {
@@ -281,7 +279,7 @@ public:
 *
 ****************************************************************************/
 
-typedef neFreeListItem<TConvex> TConvexItem;
+using TConvexItem = neFreeListItem<TConvex>;
 
 class neCollision {
 public:
@@ -309,7 +307,7 @@ public:
 
 class neCollisionResult;
 
-typedef neCollection<neCollisionResult>::itemType neCollisionResultHandle;
+using neCollisionResultHandle = neCollection<neCollisionResult>::itemType;
 
 class neCollisionResult {
 PLACEMENT_MAGIC

@@ -78,9 +78,9 @@ public:
     neRigidBodyBase *bb;
 };
 
-typedef CCoordListEntry *PCCoordListEntry;
+using PCCoordListEntry = CCoordListEntry *;
 
-typedef neDLinkList<CCoordListEntry>::listItem CCoordListEntryItem;
+using CCoordListEntryItem = neDLinkList<CCoordListEntry>::listItem;
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -89,11 +89,11 @@ typedef neDLinkList<CCoordListEntry>::listItem CCoordListEntryItem;
 ///////////////////////////////////////////////////////////////////
 class _neConstraint;
 
-typedef neFreeListItem<neSensor_> neSensorItem;
+using neSensorItem = neFreeListItem<neSensor_>;
 
 class neCollisionBody_;
 
-typedef neCollection<neRigidBodyBase>::itemType neBodyHandle;
+using neBodyHandle = neCollection<neRigidBodyBase>::itemType;
 
 //neCollection<_neConstraint>::itemType neConstraintItem;
 
@@ -324,8 +324,6 @@ public:
     f32 speed;
 };
 
-typedef struct neImpulseRecord neImpulseRecord;
-
 struct neImpulseRecord {
     neV3 point;
     uint32_t stepCount;
@@ -361,7 +359,7 @@ class neStackHeader;
 
 /////////////////////////////////////////////////////////////////
 
-typedef neCollection<neRestRecord>::itemType neRestRecordHandle;
+using neRestRecordHandle = neCollection<neRestRecord>::itemType;
 
 class neRestRecord {
 public:

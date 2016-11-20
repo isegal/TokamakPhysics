@@ -52,11 +52,9 @@ public:
 ****************************************************************************/
 class neController;
 
-typedef neFreeListItem<neController> neControllerItem;
+using neControllerItem = neFreeListItem<neController>;
 
-typedef neCollection<_neConstraint>::itemType neConstraintHandle;
-
-typedef struct neLimitState neLimitState;
+using neConstraintHandle = neCollection<_neConstraint>::itemType;
 
 struct neLimitState {
     s32 limitType;
@@ -249,7 +247,7 @@ public:
 //	void SolveAngularConstraint();
 };
 
-typedef neFreeListItem<neRigidBodyBase *> neCBodyItem;
+using neCBodyItem = neFreeListItem<neRigidBodyBase *>;
 
 class neConstraintHeader {
 public:

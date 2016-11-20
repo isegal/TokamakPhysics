@@ -24,7 +24,7 @@
 #define NE_RI              NE_DEG_TO_RAD(1)
 #define NE_ZERO (1.0e-6f)
 
-typedef f32 neRadian;
+using neRadian = f32;
 
 ///////////////////////////////////////////////////////////////////////////
 //

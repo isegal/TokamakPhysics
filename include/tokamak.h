@@ -155,8 +155,7 @@ public:
 
 class TOKAMAK_API neGeometry;
 
-typedef void (neBreakageCallback)(neByte *originalBody, neBodyType bodyType, neGeometry *brokenGeometry,
-                                  neRigidBody *newBody);
+using neBreakageCallback = void (neByte *, neBodyType, neGeometry *, neRigidBody *);
 
 class TOKAMAK_API neGeometry {
 NE_INTERFACE(neGeometry)
@@ -910,7 +909,7 @@ public:
 *	Desc:
 *
 ****************************************************************************/
-typedef struct neCollisionInfo neCollisionInfo;
+using neCollisionInfo = struct neCollisionInfo;
 
 struct neCollisionInfo {
     neByte *bodyA;
@@ -929,19 +928,13 @@ struct neCollisionInfo {
     neV3 collisionNormal;
 };
 
-typedef void (neLogOutputCallback)(char *logString);
+using neLogOutputCallback = void (char *);
 
-typedef void (neCollisionCallback)(neCollisionInfo &collisionInfo);
+using neCollisionCallback = void (neCollisionInfo &);
 
-typedef void (neTerrainTriangleQueryCallback)(const neV3 &minBound, const neV3 &maxBound,
-                                              s32 **candidateTriangles,
-                                              neTriangle **triangles,
-                                              neV3 **vertices,
-                                              s32 *candidateCount,
-                                              s32 *triangleCount,
-                                              neRigidBody *body);
+using neTerrainTriangleQueryCallback = void (const neV3 &, const neV3 &, s32 **, neTriangle **, neV3 **, s32 *, s32 *, neRigidBody *);
 
-typedef struct neCustomCDInfo neCustomCDInfo;
+using neCustomCDInfo = struct neCustomCDInfo;
 
 struct neCustomCDInfo {
     neV3 collisionNormal;
@@ -952,9 +945,9 @@ struct neCustomCDInfo {
     s32 materialIdB;
 };
 
-typedef neBool (neCustomCDRB2RBCallback)(neRigidBody *bodyA, neRigidBody *bodyB, neCustomCDInfo &cdInfo);
+using neCustomCDRB2RBCallback = neBool (neRigidBody *, neRigidBody *, neCustomCDInfo &);
 
-typedef neBool (neCustomCDRB2ABCallback)(neRigidBody *bodyA, neAnimatedBody *bodyB, neCustomCDInfo &cdInfo);
+using neCustomCDRB2ABCallback = neBool (neRigidBody *, neAnimatedBody *, neCustomCDInfo &);
 
 class TOKAMAK_API neSimulator {
 NE_INTERFACE(neSimulator)

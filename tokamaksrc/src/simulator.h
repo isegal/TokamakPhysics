@@ -110,16 +110,12 @@ public:
     neRegion *region;
 };
 
-typedef struct neOverlappedPair neOverlappedPair;
-
 struct neOverlappedPair {
 PLACEMENT_MAGIC
 
     neRigidBodyBase *bodyA;
     neRigidBodyBase *bodyB;
 };
-
-typedef struct neOverlapped neOverlapped;
 
 struct neOverlapped {
     neByte status;

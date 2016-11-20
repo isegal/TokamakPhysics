@@ -424,7 +424,7 @@ public:
 template<class T, int initFixedSize = 1>
 class neDLinkList {
 public:
-    typedef neFreeListItem<T> listItem;
+    using listItem = neFreeListItem<T>;
 
     NEINLINE bool IsFixedSize() {
         return (initFixedSize != 1);
@@ -903,7 +903,7 @@ protected:
 template<class T>
 class neCollection {
 public:
-    typedef neFreeListItem<T *> itemType;
+    using itemType = neFreeListItem<T *>;
 
     neCollection() {
         Reset();
@@ -966,7 +966,7 @@ public:
 template<class T>
 class neList {
 public:
-    typedef neFreeListItem<T> itemType;
+    using itemType = neFreeListItem<T>;
 
     neList() {
         Reset();

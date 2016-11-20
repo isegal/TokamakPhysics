@@ -50,9 +50,9 @@ public:
     //neRestRecord restRecords[neRigidBody_::NE_RB_MAX_RESTON_RECORDS];
 };
 
-typedef neDLinkList<neStackInfo> neStackInfoHeap;
+using neStackInfoHeap = neDLinkList<neStackInfo>;
 
-typedef neFreeListItem<neStackInfo> neStackInfoItem;
+using neStackInfoItem = neFreeListItem<neStackInfo>;
 
 class neStackHeader {
 public:
@@ -240,8 +240,8 @@ public:
     void ResetRigidBodyFlag();
 };
 
-typedef neDLinkList<neStackHeader> neStackHeaderHeap;
+using neStackHeaderHeap = neDLinkList<neStackHeader>;
 
-typedef neFreeListItem<neStackHeader> neStackHeaderItem;
+using neStackHeaderItem = neFreeListItem<neStackHeader>;
 
 #endif //NE_STACK_H

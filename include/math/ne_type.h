@@ -44,14 +44,14 @@
 // BASIC TYPES
 ///////////////////////////////////////////////////////////////////////////
 
-typedef signed char s8;
-typedef signed short s16;
-typedef signed int s32;
-typedef float f32;
-typedef double f64;
-typedef uint8_t neByte;
-typedef s32 neErr;
-typedef s32 neBool;
+using s8 = signed char;
+using s16 = short;
+using s32 = int;
+using f32 = float;
+using f64 = double;
+using neByte = uint8_t;
+using neErr = s32;
+using neBool = s32;
 
 #if _MSC_VER
 typedef signed   __int64    s64;
@@ -61,8 +61,8 @@ typedef unsigned __int64    u64;
 #define NEINLINE __forceinline
 const char PATH_SEP = '\\';
 #elif defined __GNUC__
-typedef signed long long s64;
-typedef unsigned long long u64;
+using s64 = long long;
+using u64 = unsigned long long;
 #define neFinite isfinite
 #define NEINLINE inline
 const char PATH_SEP = '/';
