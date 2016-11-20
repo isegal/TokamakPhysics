@@ -181,18 +181,18 @@ void _neConstraint::Enable(neBool yes) {
 }
 
 void _neConstraint::AddToRigidBody() {
-    neConstraintHeader *header = NULL;
+    neConstraintHeader *header = nullptr;
 
-    neRigidBody_ *rb = bodyB ? bodyB->AsRigidBody() : NULL;
+    neRigidBody_ *rb = bodyB ? bodyB->AsRigidBody() : nullptr;
 
-    neCollisionBody_ *cb = bodyB ? bodyB->AsCollisionBody() : NULL;
+    neCollisionBody_ *cb = bodyB ? bodyB->AsCollisionBody() : nullptr;
 
     if (bodyA->GetConstraintHeader()) {
         header = bodyA->GetConstraintHeader();
     }
 
     if (!bodyB) {
-        if (header == NULL) {
+        if (header == nullptr) {
             header = sim->NewConstraintHeader();
 
             if (!header) {
@@ -213,7 +213,7 @@ void _neConstraint::AddToRigidBody() {
             header->Add(this);
         }
     } else {
-        neConstraintHeader *bHeader = NULL;
+        neConstraintHeader *bHeader = nullptr;
 
         if (cb && cb->GetConstraintHeader()) {
             bHeader = cb->GetConstraintHeader();
@@ -221,7 +221,7 @@ void _neConstraint::AddToRigidBody() {
             bHeader = rb->GetConstraintHeader();
         }
         if (bHeader) {
-            if (header == NULL) {
+            if (header == nullptr) {
                 bodyA->SetConstraintHeader(bHeader);
 
                 //header = rb->GetConstraintHeader();
@@ -239,7 +239,7 @@ void _neConstraint::AddToRigidBody() {
                     //ASSERT(0);
                     header->Add(this);
 
-                    while (bHeader->head != NULL) {
+                    while (bHeader->head != nullptr) {
                         _neConstraint *c = bHeader->head;
 
                         bHeader->Remove(bHeader->head);
@@ -263,7 +263,7 @@ void _neConstraint::AddToRigidBody() {
                 }
             }
         } else {
-            if (header == NULL) {
+            if (header == nullptr) {
                 //create new header
                 header = sim->NewConstraintHeader();
 
@@ -301,15 +301,15 @@ void _neConstraint::InfiniteMassB(neBool yes) {
 }
 
 void _neConstraint::Reset() {
-    bodyA = NULL;
-    bodyB = NULL;
+    bodyA = nullptr;
+    bodyB = nullptr;
     enable = false;
     infiniteMassB = false;
     type = neJoint::NE_JOINT_BALLSOCKET;
     accuracy = -1.0f;//0.5f;
-    sim = NULL;
-    controllers = NULL;
-    controllerCursor = NULL;
+    sim = nullptr;
+    controllers = nullptr;
+    controllerCursor = nullptr;
     frameA.rot.SetIdentity();
     frameA.pos.SetZero();
     frameB.rot.SetIdentity();
@@ -361,7 +361,7 @@ void _neConstraint::SetType(neJoint::ConstraintType t) {
 
 neController *_neConstraint::AddController(neJointControllerCallback *jc, s32 period) {
     if (!jc)
-        return NULL;
+        return nullptr;
 
     neController *c = sim->controllerHeap.Alloc(1);
 
@@ -370,18 +370,18 @@ neController *_neConstraint::AddController(neJointControllerCallback *jc, s32 pe
 
         sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
     if (!controllers) {
         controllers = c;
     } else {
         ((neControllerItem *) controllers)->Append((neControllerItem *) c);
     }
-    c->rb = NULL;
+    c->rb = nullptr;
 
     c->constraint = this;
 
-    c->rbc = NULL;
+    c->rbc = nullptr;
 
     c->jc = jc;
 
@@ -406,7 +406,7 @@ void _neConstraint::BeginIterateController() {
 
 neController *_neConstraint::GetNextController() {
     if (!controllerCursor)
-        return NULL;
+        return nullptr;
 
     neController *ret = (neController *) controllerCursor;
 
@@ -455,9 +455,9 @@ void _neConstraint::UpdateConstraintPoint() {
 
     ASSERT(bodyA);
 
-    neRigidBody_ *rbodyB = NULL;
+    neRigidBody_ *rbodyB = nullptr;
 
-    neCollisionBody_ *cbodyB = NULL;
+    neCollisionBody_ *cbodyB = nullptr;
 
     if (bodyB) {
         rbodyB = bodyB->AsRigidBody();
@@ -494,9 +494,9 @@ void _neConstraint::UpdateConstraintPoint() {
 ****************************************************************************/
 
 void _neConstraint::FindGreatest() {
-    neRigidBody_ *rbodyB = NULL;
+    neRigidBody_ *rbodyB = nullptr;
 
-    neCollisionBody_ *cbodyB = NULL;
+    neCollisionBody_ *cbodyB = nullptr;
 
     if (bodyB) {
         rbodyB = bodyB->AsRigidBody();
@@ -648,7 +648,7 @@ void _neConstraint::DrawCPointLine() {
 neT3 _neConstraint::GetFrameBWorld() {
     neT3 ret;
 
-    neRigidBody_ *rb = NULL;
+    neRigidBody_ *rb = nullptr;
 
     if (bodyB) {
         rb = bodyB->AsRigidBody();
@@ -667,7 +667,7 @@ neT3 _neConstraint::GetFrameBWorld() {
 neT3 _neConstraint::GetBodyB2W() {
     neT3 ret;
 
-    neRigidBody_ *rb = NULL;
+    neRigidBody_ *rb = nullptr;
 
     if (bodyB) {
         rb = bodyB->AsRigidBody();
@@ -701,7 +701,7 @@ void _neConstraint::CheckLimit() {
 }
 
 void _neConstraint::UpdateCurrentPosition() {
-    neRigidBody_ *rb = NULL;
+    neRigidBody_ *rb = nullptr;
 
     if (bodyB && bodyB->AsRigidBody()) {
         rb = bodyB->AsRigidBody();
@@ -1151,7 +1151,7 @@ void neConstraintHeader::AddToSolver(f32 &epsilon, s32 &iteration) {
 void _neConstraint::ApplyDamping() {
     // rel vel between a and b, as if b was hold still
 
-    neRigidBody_ *rb = NULL;
+    neRigidBody_ *rb = nullptr;
 
     if (bodyB && bodyB->AsRigidBody()) {
         rb = bodyB->AsRigidBody();
@@ -1320,7 +1320,7 @@ void neConstraintHeader::RemoveAll() {
 
         bodyHandle = bodyHandle->next;
 
-        rb->SetConstraintHeader(NULL);
+        rb->SetConstraintHeader(nullptr);
 
         bodies.Remove(&rb->constraintHeaderItem);
     }

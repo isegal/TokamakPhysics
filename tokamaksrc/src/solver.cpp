@@ -540,9 +540,9 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
 }
 
 f32 neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     f32 ava = 0.0f, avb = 0.0f;
 
@@ -561,9 +561,9 @@ f32 neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
 }
 
 f32 neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     f32 ava = 0.0f, avb = 0.0f;
 
@@ -602,9 +602,9 @@ f32 neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
 }
 
 f32 neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim) {
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     f32 ava = 0.0f, avb = 0.0f;
 
@@ -694,7 +694,7 @@ void neFixedTimeStepSimulator::SolveContactConstrain() {
             continue;
         }
 
-        neRigidBody_ *rb = NULL;
+        neRigidBody_ *rb = nullptr;
 
 
         for (s32 tt = 0; tt < cresultHeap2.GetUsedCount(); tt++) {
@@ -738,7 +738,7 @@ void neFixedTimeStepSimulator::SolveContactConstrain() {
         if (s->isTerminator) {
             ASSERT(rb->AllRestRecordInvalid());
 
-            rb->stackInfo = NULL;
+            rb->stackInfo = nullptr;
 
             sheader->Remove(s, 1);
 
@@ -800,9 +800,9 @@ f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
 
     neV3 velB;
 
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     if (cr->bodyA && cr->bodyA->AsRigidBody()) {
         ba = cr->bodyA->AsRigidBody();
@@ -1096,13 +1096,13 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
 
                     ASSERT(rb->AllRestRecordInvalid());
 
-                    rb->stackInfo = NULL;
+                    rb->stackInfo = nullptr;
                 }
             }
 
             if (v <= 1) //no longer resting
             {
-                if (rb->status == neRigidBody_::NE_RBSTATUS_IDLE && rb->_constraintHeader == NULL) {
+                if (rb->status == neRigidBody_::NE_RBSTATUS_IDLE && rb->_constraintHeader == nullptr) {
                     rb->WakeUp();
                 }
             }
@@ -1251,9 +1251,9 @@ f32 neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
 
     neV3 velB;
 
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     if (bodyA && bodyA->AsRigidBody()) {
         ba = bodyA->AsRigidBody();
@@ -1441,13 +1441,13 @@ void neFixedTimeStepSimulator::SolveAllConstrain() {
 
         s32 allIdle = 0;
         s32 nbody = 0;
-        neRigidBody_ *lastrb = NULL;
+        neRigidBody_ *lastrb = nullptr;
 
         while (bodyHandle) {
             neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
 
             if (rb) {
-                rb->maxErrCResult = NULL;
+                rb->maxErrCResult = nullptr;
 
                 nbody++;
             }

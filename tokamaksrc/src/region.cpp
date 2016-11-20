@@ -138,19 +138,19 @@ void neRegion::RemoveBody(neRigidBodyBase *bb) {
             if (bb->maxCoord[i]) {
                 coordLists[i].coordList.Dealloc(bb->maxCoord[i]);
 
-                bb->maxCoord[i] = NULL;
+                bb->maxCoord[i] = nullptr;
             }
             if (bb->minCoord[i]) {
                 coordLists[i].coordList.Dealloc(bb->minCoord[i]);
 
-                bb->minCoord[i] = NULL;
+                bb->minCoord[i] = nullptr;
             }
         }
     }
     if (bb->regionHandle)
         bodies.Dealloc((neRigidBodyBase **) bb->regionHandle);
 
-    bb->regionHandle = NULL;
+    bb->regionHandle = nullptr;
 
     neFreeListItem<neOverlappedPair> *oitem = (neFreeListItem<neOverlappedPair> *) (*overlappedPairs.BeginUsed());
 
@@ -241,7 +241,7 @@ void neRegion::Update() {
         for (iter = bodies.BeginUsed(); iter.Valid(); iter++) {
             neRigidBodyBase *b = *(*iter);
 
-            if (b->minCoord[0] == NULL && b->minCoord[1] == NULL && b->minCoord[2] == NULL)
+            if (b->minCoord[0] == nullptr && b->minCoord[1] == nullptr && b->minCoord[2] == nullptr)
                 continue;
 
             if (b == bi->body)
@@ -339,7 +339,7 @@ void neRegion::ToggleOverlapStatus(neRigidBodyBase *a, neRigidBodyBase *b, neByt
             //remove
             overlappedPairs.Dealloc(o->pairItem);
 
-            o->pairItem = NULL;
+            o->pairItem = nullptr;
         }
     } else {
         o->status ^= dimp2;
@@ -404,7 +404,7 @@ void neRegion::ResetOverlapStatus(neRigidBodyBase *a, neRigidBodyBase *b) {
             o->pairItem->bodyB = a;
         }
     } else {
-        o->pairItem = NULL;
+        o->pairItem = nullptr;
     }
 }
 
@@ -421,8 +421,8 @@ void neRegion::InsertCoordList(neRigidBodyBase *bb, neRigidBodyBase *hint) {
         if (sortDimension & (1 << i)) {
             coordLists[i].Add(bb, hint, i);
         } else {
-            bb->maxCoord[i] = NULL;
-            bb->minCoord[i] = NULL;
+            bb->maxCoord[i] = nullptr;
+            bb->minCoord[i] = nullptr;
         }
     }
 }
@@ -479,7 +479,7 @@ void neCoordList::Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord)
 
     if (hint) {
         if (hint->minBound[hintCoord] == 0) {
-            hint = NULL;
+            hint = nullptr;
         } else {
             ASSERT(hint->minBound[hintCoord] && hint->maxBound[hintCoord]);
         }
@@ -635,7 +635,7 @@ void neCoordList::Sort(bool sortOnly) {
 
     neDLinkList<CCoordListEntry>::listItem *usedStart = sortStart;
 
-    neDLinkList<CCoordListEntry>::listItem *usedTail = NULL;
+    neDLinkList<CCoordListEntry>::listItem *usedTail = nullptr;
 
     while (coordList.used) {
         neDLinkList<CCoordListEntry>::listItem *nextUsed;

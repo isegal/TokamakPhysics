@@ -91,7 +91,7 @@ public:
 
     void Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord);
 
-    bool Reserve(s32 size, neAllocatorAbstract *all = NULL) {
+    bool Reserve(s32 size, neAllocatorAbstract *all = nullptr) {
         return coordList.Reserve(size, all);
     }
 
@@ -329,8 +329,8 @@ public:
         MAX_MATERIAL = 256,
     };
 
-    neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = NULL,
-                             const neV3 *grav = NULL);
+    neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = nullptr,
+                             const neV3 *grav = nullptr);
 
     ~neFixedTimeStepSimulator();
 
@@ -344,11 +344,11 @@ public:
 
     void Free(neRigidBodyBase *bb);
 
-    void Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport = NULL);
+    void Advance(f32 time, size_t nStep, nePerformanceReport *_perfReport = nullptr);
 
-    void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = NULL);
+    void Advance(f32 time, f32 minTimeStep, f32 maxTimeStep, nePerformanceReport *_perfReport = nullptr);
 
-    void Advance(nePerformanceReport *_perfReport = NULL);
+    void Advance(nePerformanceReport *_perfReport = nullptr);
 
     void ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback);
 

@@ -708,7 +708,7 @@ neBool neAnimatedBody::RemoveGeometry(neGeometry *g) {
             ab.col.convexCount--;
 
             if (ab.col.convexCount == 0) {
-                ab.col.convex = NULL;
+                ab.col.convex = nullptr;
 
                 if (ab.IsInRegion() && !ab.isCustomCD)
                     ab.sim->region.RemoveBody(&ab);
@@ -775,7 +775,7 @@ void neAnimatedBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f3
         ab.isCustomCD = yes;
 
         if (ab.isActive && !ab.IsInRegion()) {
-            ab.sim->region.AddBody(&ab, NULL);
+            ab.sim->region.AddBody(&ab, nullptr);
         }
     } else {
         ab.isCustomCD = yes;
@@ -1601,7 +1601,7 @@ neBool neRigidBody::RemoveGeometry(neGeometry *g) {
             rb.col.convexCount--;
 
             if (rb.col.convexCount == 0) {
-                rb.col.convex = NULL;
+                rb.col.convex = nullptr;
 
                 if (rb.IsInRegion() && !rb.isCustomCD)
                     rb.sim->region.RemoveBody(&rb);
@@ -1667,7 +1667,7 @@ void neRigidBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 b
         rb.isCustomCD = yes;
 
         if (rb.isActive && !rb.IsInRegion()) {
-            rb.sim->region.AddBody(&rb, NULL);
+            rb.sim->region.AddBody(&rb, nullptr);
         }
     } else {
         rb.isCustomCD = yes;
@@ -2014,7 +2014,7 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     if (!bodyA)
-        return NULL;
+        return nullptr;
 
     _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
 
@@ -2023,7 +2023,7 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA) {
 
         sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
 
     constr->Reset();
@@ -2049,10 +2049,10 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     if (!bodyA)
-        return NULL;
+        return nullptr;
 
     if (!bodyB)
-        return NULL;
+        return nullptr;
 
     _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
 
@@ -2061,7 +2061,7 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB) {
 
         sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
 
     constr->Reset();
@@ -2093,10 +2093,10 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
     CAST_THIS(neFixedTimeStepSimulator, sim);
 
     if (!bodyA)
-        return NULL;
+        return nullptr;
 
     if (!bodyB)
-        return NULL;
+        return nullptr;
 
     _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
 
@@ -2105,7 +2105,7 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
 
         sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
 
     constr->Reset();
@@ -2429,10 +2429,10 @@ neRigidBody *neJoint::GetRigidBodyB() {
     CAST_THIS(_neConstraint, c);
 
     if (!c.bodyB)
-        return NULL;
+        return nullptr;
 
     if (c.bodyB->AsCollisionBody())
-        return NULL;
+        return nullptr;
 
     return reinterpret_cast<neRigidBody *>(c.bodyB);
 }
@@ -2447,10 +2447,10 @@ neAnimatedBody *neJoint::GetAnimatedBodyB() {
     CAST_THIS(_neConstraint, c);
 
     if (!c.bodyB)
-        return NULL;
+        return nullptr;
 
     if (c.bodyB->AsRigidBody())
-        return NULL;
+        return nullptr;
 
     return reinterpret_cast<neAnimatedBody *>(c.bodyB);
 }
@@ -3173,10 +3173,10 @@ neRigidBody *neSensor::GetDetectRigidBody() {
     CAST_THIS(neSensor_, sensor);
 
     if (!sensor.body)
-        return NULL;
+        return nullptr;
 
     if (sensor.body->AsCollisionBody())
-        return NULL;
+        return nullptr;
 
     return (neRigidBody *) sensor.body;
 }
@@ -3191,10 +3191,10 @@ neAnimatedBody *neSensor::GetDetectAnimatedBody() {
     CAST_THIS(neSensor_, sensor);
 
     if (!sensor.body)
-        return NULL;
+        return nullptr;
 
     if (sensor.body->AsRigidBody())
-        return NULL;
+        return nullptr;
 
     return (neAnimatedBody *) sensor.body;
 }

@@ -69,7 +69,7 @@ neBool neCollisionResult::CheckIdle() {
 
     neRigidBody_ *ba = bodyA->AsRigidBody();
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     if (bodyB) {
         bb = bodyB->AsRigidBody();
@@ -80,7 +80,7 @@ neBool neCollisionResult::CheckIdle() {
             if (bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
                 return true;
             } else {
-                bodyA = NULL;
+                bodyA = nullptr;
 
                 return false;
             }
@@ -89,7 +89,7 @@ neBool neCollisionResult::CheckIdle() {
         }
     } else if (bb && bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
         if (ba) {
-            bodyB = NULL;
+            bodyB = nullptr;
 
             return false;
         }
@@ -276,9 +276,9 @@ void neCollisionResult::CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb)
 }
 
 void neCollisionResult::PrepareForSolver(neBool aIdle, neBool bIdle) {
-    neRigidBody_ *ba = NULL;
+    neRigidBody_ *ba = nullptr;
 
-    neRigidBody_ *bb = NULL;
+    neRigidBody_ *bb = nullptr;
 
     if (bodyA && bodyA->AsRigidBody() && !aIdle) {
         ba = bodyA->AsRigidBody();
@@ -707,7 +707,7 @@ void TConvex::Initialise() {
     SetTransform(t);
     matIndex = 0;
     //id = 0;
-    userData = 0;
+    userData = nullptr;
 
     breakInfo.mass = 1.0f;
     breakInfo.inertiaTensor = neBoxInertiaTensor(1.0f, 1.0f, 1.0f, 1.0f);

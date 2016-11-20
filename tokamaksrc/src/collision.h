@@ -263,11 +263,11 @@ public:
     neSensor_() {
         pos.SetZero();
         dir.SetZero();
-        cookies = 0;
+        cookies = nullptr;
         normal.SetZero();
         depth = 0;
         materialID = 0;
-        body = NULL;
+        body = nullptr;
     }
 };
 
@@ -286,7 +286,7 @@ typedef neFreeListItem<TConvex> TConvexItem;
 class neCollision {
 public:
     neCollision() {
-        convex = NULL;
+        convex = nullptr;
         convexCount = 0;
         boundingRadius = 0.0f;
         obb.SetBoxSize(1.0f, 1.0f, 1.0f);

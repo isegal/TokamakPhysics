@@ -338,7 +338,7 @@ neBool neStackHeader::CheckStackDisconnected() {
                         if (sinfo->stackHeader) {
                             sinfo->stackHeader->Add(otherbody->stackInfo);
                         } else {
-                            neStackHeader *newStackHeader = sim->NewStackHeader(NULL);
+                            neStackHeader *newStackHeader = sim->NewStackHeader(nullptr);
 
                             newStackHeader->dynamicSolved = dynamicSolved;
 
@@ -363,7 +363,7 @@ neBool neStackHeader::CheckStackDisconnected() {
                 rb->GetRestRecord(i).SetInvalid();
             }
 
-            rb->stackInfo = NULL;
+            rb->stackInfo = nullptr;
         }
     }
 
@@ -567,7 +567,7 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
 
     if (startTime > 0) // already visited
     {
-        return NULL;
+        return nullptr;
     }
 
     startTime = ++neStackHeader::golbalTime;
@@ -577,24 +577,24 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
         if (stackHeader != newHeader) {
             return stackHeader;
         } else {
-            return NULL;
+            return nullptr;
         }
     }
     if (isTerminator) {
         newHeader->Add(this);
 
-        return NULL;
+        return nullptr;
     }
     if (isBroken) {
         newHeader->Add(this);
 
         isTerminator = true;
 
-        return NULL;
+        return nullptr;
     }
     neBool anotherHeaderFound = false;
 
-    neStackHeader *anotherHeader = NULL;
+    neStackHeader *anotherHeader = nullptr;
 
     neRigidBody_ *foundBody;
 
@@ -616,7 +616,7 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
 
         ASSERT(anotherHeader != newHeader);
 
-        if (anotherHeader != NULL) {
+        if (anotherHeader != nullptr) {
             anotherHeaderFound = true;
             foundBody = otherBody;
             break;
@@ -643,7 +643,7 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
     } else {
         newHeader->Add(this);
 
-        return NULL;
+        return nullptr;
     }
 }
 

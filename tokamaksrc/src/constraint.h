@@ -273,9 +273,9 @@ public:
     void AddToSolver(f32 &epsilon, s32 &iteration);
 
     void Reset() {
-        head = NULL;
+        head = nullptr;
 
-        tail = NULL;
+        tail = nullptr;
 
         flag = FLAG_NEED_SETUP;
 

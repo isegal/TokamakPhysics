@@ -346,7 +346,7 @@ neTreeNode::neTreeNode() {
 
     maxBound.SetZero();
 
-    Initialise(NULL, 0, minBound, maxBound);
+    Initialise(nullptr, 0, minBound, maxBound);
 }
 
 void neTreeNode::Initialise(neTriangleTree *_tree, s32 _parent, const neV3 &minBound, const neV3 &maxBound) {
@@ -673,13 +673,11 @@ void neTreeNode::GetCandidateNodes(neSimpleArray<neTreeNode *> &nodes, const neV
 ****************************************************************************/
 
 neTriangleTree::neTriangleTree() {
-    alloc = NULL;
-
+    alloc = nullptr;
     vertexCount = 0;
 
-    vertices = NULL;
-
-    sim = NULL;
+    vertices = nullptr;
+    sim = nullptr;
 }
 
 #pragma optimize( "", off )
@@ -836,7 +834,7 @@ void neTriangleTree::FreeTree() {
     if (vertices) {
         alloc->Free((neByte *) vertices);
 
-        vertices = NULL;
+        vertices = nullptr;
     }
 
     nodes.Free();
@@ -844,7 +842,7 @@ void neTriangleTree::FreeTree() {
     neV3 minBound, maxBound;
     minBound.SetZero();
     maxBound.SetZero();
-    root.Initialise(NULL, 0, minBound, maxBound);
+    root.Initialise(nullptr, 0, minBound, maxBound);
 
     vertexCount = 0;
 }

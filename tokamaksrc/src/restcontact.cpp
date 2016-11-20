@@ -906,7 +906,7 @@ void neRigidBody_::FreeStackInfo() {
 
     sim->stackInfoHeap.Dealloc(stackInfo, 1);
 
-    stackInfo = NULL;
+    stackInfo = nullptr;
 }
 
 neBool neRigidBody_::NewStackInfo(neRestRecord & rc) {

@@ -54,10 +54,10 @@ public:
     neController() {
         period = 0;
         count = 0;
-        rbc = NULL;
-        jc = NULL;
-        constraint = NULL;
-        rb = NULL;
+        rbc = nullptr;
+        jc = nullptr;
+        constraint = nullptr;
+        rb = nullptr;
     }
 };
 
@@ -112,29 +112,29 @@ public:
     neRigidBodyBase() {
         //isAnimated = true;
         btype = NE_OBJECT_COLISION;
-        col.convex = NULL;
+        col.convex = nullptr;
         col.convexCount = 0;
         col.obb.Initialise();
-        sim = NULL;
+        sim = nullptr;
         cid = 0;
         isCollideConnected = false;
         isCollideDirectlyConnected = false;
-        sensors = NULL;
+        sensors = nullptr;
 
-        geometryCursor = NULL;
-        sensorCursor = NULL;
+        geometryCursor = nullptr;
+        sensorCursor = nullptr;
 
         constraintHeaderItem.thing = this;
         isActive = true;
-        regionHandle = NULL;
+        regionHandle = nullptr;
 
-        _constraintHeader = NULL;
+        _constraintHeader = nullptr;
 
         isCustomCD = false;
 
         for (s32 i = 0; i < 3; i++) {
-            maxCoord[i] = NULL;
-            minCoord[i] = NULL;
+            maxCoord[i] = nullptr;
+            minCoord[i] = nullptr;
         }
 
         backupVector.SetZero();
@@ -197,14 +197,14 @@ public:
 
     NEINLINE neCollisionBody_ *AsCollisionBody() {
         if (btype != NE_OBJECT_COLISION)
-            return NULL;
+            return nullptr;
 
         return (neCollisionBody_ *) this;
     }
 
     NEINLINE neRigidBody_ *AsRigidBody() {
         if (btype != NE_OBJECT_RIGID)
-            return NULL;
+            return nullptr;
 
         return (neRigidBody_ *) this;
     }
@@ -222,7 +222,7 @@ public:
     void RemoveConstraintHeader();
 
     NEINLINE neBool IsInRegion() {
-        return (regionHandle != NULL);
+        return (regionHandle != nullptr);
     }
 
     neBodyHandle constraintHeaderItem;
@@ -401,8 +401,8 @@ public:
     void Init() {
         rtype = REST_ON_NOT_VALID;
         counter = 0;
-        otherBody = NULL;
-        body = NULL;
+        otherBody = nullptr;
+        body = nullptr;
         restOnHandle.Remove();
     }
 
@@ -418,14 +418,14 @@ public:
 
     neRigidBody_ *GetOtherRigidBody() const {
         if (!otherBody)
-            return NULL;
+            return nullptr;
 
         return otherBody->AsRigidBody();
     }
 
     neCollisionBody_ *GetOtherCollisionBody() const {
         if (!otherBody)
-            return NULL;
+            return nullptr;
 
         return otherBody->AsCollisionBody();
     }

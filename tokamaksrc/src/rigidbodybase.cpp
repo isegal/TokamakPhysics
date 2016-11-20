@@ -136,7 +136,7 @@ neSensor_ *neRigidBodyBase::AddSensor() {
 
         sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
     if (sensors) {
         //((neSensorItem *)sensors)->Append((neSensorItem *)newSensor);
@@ -159,7 +159,7 @@ void neRigidBodyBase::BeginIterateSensor() {
 
 neSensor_ *neRigidBodyBase::GetNextSensor() {
     if (!sensorCursor)
-        return NULL;
+        return nullptr;
 
     neSensor_ *ret = (neSensor_ *) sensorCursor;
 
@@ -178,7 +178,7 @@ void neRigidBodyBase::ClearSensor() {
 
         s->depth = 0.0f;
 
-        s->body = NULL;
+        s->body = nullptr;
     }
 }
 
@@ -190,7 +190,7 @@ TConvex *neRigidBodyBase::AddGeometry() {
 
         sim->LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
 
-        return NULL;
+        return nullptr;
     }
     newConvex->Initialise();
 
@@ -212,7 +212,7 @@ TConvex *neRigidBodyBase::AddGeometry() {
     col.convexCount++;
 
     if (isActive && !IsInRegion())
-        sim->region.AddBody(this, NULL);
+        sim->region.AddBody(this, nullptr);
 
     return newConvex;
 }
@@ -223,7 +223,7 @@ void neRigidBodyBase::BeginIterateGeometry() {
 
 TConvex *neRigidBodyBase::GetNextGeometry() {
     if (!geometryCursor)
-        return NULL;
+        return nullptr;
 
     TConvex *ret = (TConvex *) geometryCursor;
 
@@ -240,7 +240,7 @@ void neRigidBodyBase::RemoveConstraintHeader() {
 
         h->flag = neConstraintHeader::FLAG_NEED_REORG;
 
-        SetConstraintHeader(NULL);
+        SetConstraintHeader(nullptr);
 
         if (h->bodies.count == 0) {
             sim->constraintHeaders.Dealloc(h);
@@ -262,7 +262,7 @@ void neRigidBodyBase::Free() {
 
         si = next;
     }
-    sensors = NULL;
+    sensors = nullptr;
 
     //remove from region
     if (IsInRegion())
@@ -281,7 +281,7 @@ void neRigidBodyBase::Free() {
 
         gi = next;
     }
-    col.convex = NULL;
+    col.convex = nullptr;
 
     col.convexCount = 0;
 
@@ -312,7 +312,7 @@ void neRigidBodyBase::Free() {
 
             ci = next;
         }
-        c->controllers = NULL;
+        c->controllers = nullptr;
 
         sim->constraintHeap.Dealloc(c, 1);
     }

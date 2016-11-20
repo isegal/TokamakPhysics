@@ -21,8 +21,8 @@ class neStackHeader;
 class neStackInfo {
 public:
     void Init() {
-        stackHeader = NULL;
-        body = NULL;
+        stackHeader = nullptr;
+        body = nullptr;
         isTerminator = true;
         isBroken = false;
     }
@@ -67,9 +67,9 @@ public:
     neBool dynamicSolved;
 
     void Null() {
-        head = NULL;
+        head = nullptr;
 
-        tail = NULL;
+        tail = nullptr;
 
         infoCount = 0;
 
@@ -155,7 +155,7 @@ public:
 
         infoCount--;
 
-        add->stackHeader = NULL;
+        add->stackHeader = nullptr;
     }
 
     neBool Check(neStackInfo *st) {
@@ -183,7 +183,7 @@ public:
     neBool CheckStackDisconnected();
 
     neRigidBody_ *GetBottomStackBody() {
-        return NULL;
+        return nullptr;
 /*		if (!head)
 			return NULL;
 

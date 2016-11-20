@@ -48,13 +48,13 @@ void nePerformanceData::Init() {
 
     void (*pFunc)() = DunselFunction;
 
-    gettimeofday(&counter, NULL);
+    gettimeofday(&counter, nullptr);
 }
 
 void nePerformanceData::Start() {
     Reset();
 
-    gettimeofday(&counter, NULL);
+    gettimeofday(&counter, nullptr);
 }
 
 f32 nePerformanceData::GetCount() {
@@ -63,7 +63,7 @@ f32 nePerformanceData::GetCount() {
 
     tStart = counter;
 
-    gettimeofday(&tStop, NULL);
+    gettimeofday(&tStop, nullptr);
 
     start = (tStart.tv_sec * 1000000.0) + tStart.tv_usec;
     end = (tStop.tv_sec * 1000000.0) + tStop.tv_usec;
