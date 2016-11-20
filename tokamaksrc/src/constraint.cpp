@@ -135,7 +135,7 @@ void _neConstraint::GeneratePointsFromFrame() {
     }
 }
 
-void _neConstraint::Enable(neBool yes) {
+void _neConstraint::Enable(bool yes) {
     if (!bodyA)
         return;
 
@@ -296,7 +296,7 @@ void _neConstraint::AddToRigidBody() {
     bodyA->GetConstraintHeader()->flag |= neConstraintHeader::FLAG_NEED_SETUP;
 }
 
-void _neConstraint::InfiniteMassB(neBool yes) {
+void _neConstraint::InfiniteMassB(bool yes) {
     infiniteMassB = yes;
 }
 
@@ -1210,7 +1210,7 @@ void _neConstraint::ApplyDamping() {
     }
 }
 
-void neConstraintHeader::TraverseApplyConstraint(neBool doCheckSleep) {
+void neConstraintHeader::TraverseApplyConstraint(bool doCheckSleep) {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {
@@ -1245,8 +1245,8 @@ void neConstraintHeader::TraverseApplyConstraint(neBool doCheckSleep) {
     }// while (bodyHanle)   next body in the constraint
 }
 
-neBool neConstraintHeader::StationaryCheck() {
-    neBool allStationary = true;
+bool neConstraintHeader::StationaryCheck() {
+    bool allStationary = true;
 
     neBodyHandle *bodyHandle = bodies.GetHead();
 
@@ -1267,7 +1267,7 @@ neBool neConstraintHeader::StationaryCheck() {
     return allStationary;
 }
 
-void neConstraintHeader::BecomeIdle(neBool checkResting) {
+void neConstraintHeader::BecomeIdle(bool checkResting) {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {

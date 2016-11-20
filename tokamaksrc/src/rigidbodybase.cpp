@@ -57,13 +57,13 @@ TConvex * neRigidBodyBase::GetConvex(s32 index)
 	return &col.convex[index];
 }
 */
-void neRigidBodyBase::CollideConnected(neBool
+void neRigidBodyBase::CollideConnected(bool
 yes)
 {
 isCollideConnected = yes;
 }
 
-neBool neRigidBodyBase::CollideConnected() {
+bool neRigidBodyBase::CollideConnected() {
     return isCollideConnected;
 }
 
@@ -327,7 +327,7 @@ void neRigidBodyBase::Free() {
     };
 }
 
-neBool neRigidBodyBase::IsValid() {
+bool neRigidBodyBase::IsValid() {
     if (btype == NE_OBJECT_COLISION) {
         return ((neList<neCollisionBody_>::itemType *) this)->state;// sim->abHeap.IsInUse((neCollisionBody_*)this);
     } else {
@@ -385,7 +385,7 @@ void neRigidBody_::DrawCPointLine() {
 #endif
 }
 
-void neRigidBodyBase::Active(neBool
+void neRigidBodyBase::Active(bool
                              yes,
                              neRigidBodyBase *hint
 ) {

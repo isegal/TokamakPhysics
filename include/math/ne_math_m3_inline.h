@@ -177,7 +177,7 @@ NEINLINE void neM3::SetColumns(const neV3 &V1, const neV3 &V2, const neV3 &V3) {
     M[2][2] = V3.Z();
 }
 
-NEINLINE neBool neM3::IsIdentity() const {
+NEINLINE bool neM3::IsIdentity() const {
     if (!(neIsConsiderZero(M[0][0] - 1.0f) &&
           neIsConsiderZero(M[1][1] - 1.0f) &&
           neIsConsiderZero(M[2][2] - 1.0f)))
@@ -191,7 +191,7 @@ NEINLINE neBool neM3::IsIdentity() const {
             neIsConsiderZero(M[2][1]));
 }
 
-NEINLINE neBool neM3::SetInvert(const neM3 &rhs) {
+NEINLINE bool neM3::SetInvert(const neM3 &rhs) {
     f32 det, invDet;
 
     M[2] = rhs.M[0].Cross(rhs.M[1]);
@@ -293,7 +293,7 @@ NEINLINE neM3 operator^(const neV3 &v, const neM3 &matrix) {
     return ret;
 }
 
-NEINLINE neBool neM3::IsOrthogonalNormal() const {
+NEINLINE bool neM3::IsOrthogonalNormal() const {
     neV3 cross;
 
     const neM3 &me = (*this);
@@ -380,7 +380,7 @@ NEINLINE neM3 &neM3::SkewSymmetric(const neV3 &V) {
     return (*this);
 }
 
-neBool neM3::IsFinite() const {
+bool neM3::IsFinite() const {
     return ((*this)[0].IsFinite() &&
             (*this)[1].IsFinite() &&
             (*this)[2].IsFinite());

@@ -61,7 +61,7 @@ s32 magicN;
 //#pragma inline_recursion( on )
 //#pragma inline_depth( 50 )
 
-neBool neCollisionResult::CheckIdle() {
+bool neCollisionResult::CheckIdle() {
     f32 theshold = 1.0f;
 
     if (relativeSpeed > theshold)
@@ -163,7 +163,7 @@ void neCollisionResult::UpdateConstraintRelativeSpeed() {
     }
 }
 
-void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, neBool isWorld) {
+void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, bool isWorld) {
     neM3 zero;
 
     zero.SetZero();
@@ -275,7 +275,7 @@ void neCollisionResult::CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb)
     kInv.SetInvert(kk);
 }
 
-void neCollisionResult::PrepareForSolver(neBool aIdle, neBool bIdle) {
+void neCollisionResult::PrepareForSolver(bool aIdle, bool bIdle) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
@@ -2130,7 +2130,7 @@ bool BoxTestParam::MeasureVertexFacePeneration(ConvexTestResult &result, BoxTest
     return true;
 }
 
-neBool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam &otherBox, s32 dim1, s32 dim2) {
+bool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam &otherBox, s32 dim1, s32 dim2) {
     neV3 contactA = trans->pos;
 
     neV3 contactB = otherBox.trans->pos;
@@ -2214,7 +2214,7 @@ neBool BoxTestParam::MeasureEdgePeneration(ConvexTestResult &result, BoxTestPara
     return true;
 }
 
-neBool ConvexTestResult::ComputerEdgeContactPoint(ConvexTestResult &res) {
+bool ConvexTestResult::ComputerEdgeContactPoint(ConvexTestResult &res) {
     f32 d1343, d4321, d1321, d4343, d2121;
     f32 numer, denom, au, bu;
 
@@ -2280,7 +2280,7 @@ neBool ConvexTestResult::ComputerEdgeContactPoint(ConvexTestResult &res) {
     return false;
 }
 
-neBool ConvexTestResult::ComputerEdgeContactPoint2(f32 &au, f32 &bu) {
+bool ConvexTestResult::ComputerEdgeContactPoint2(f32 &au, f32 &bu) {
     f32 d1343, d4321, d1321, d4343, d2121;
     f32 numer, denom;
 
@@ -2350,6 +2350,6 @@ neBool ConvexTestResult::ComputerEdgeContactPoint2(f32 &au, f32 &bu) {
     return false;
 }
 
-neBool BoxTestParam::LineTest(ConvexTestResult &res, neV3 &point1, neV3 &point2) {
+bool BoxTestParam::LineTest(ConvexTestResult &res, neV3 &point1, neV3 &point2) {
     return false;
 }

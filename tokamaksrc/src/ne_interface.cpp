@@ -102,7 +102,7 @@ void neGeometry::SetCylinder(f32 diameter, f32 height) {
 *
 ****************************************************************************/
 
-neBool neGeometry::GetCylinder(f32 &diameter, f32 &height) // return false if geometry is not a cylinder
+bool neGeometry::GetCylinder(f32 &diameter, f32 &height) // return false if geometry is not a cylinder
 {
     CAST_THIS(TConvex, con);
 
@@ -134,7 +134,7 @@ void neGeometry::SetConvexMesh(neByte *convexData) {
 *
 ****************************************************************************/
 
-neBool neGeometry::GetConvexMesh(neByte *&convexData) {
+bool neGeometry::GetConvexMesh(neByte *&convexData) {
     CAST_THIS(TConvex, con);
 
     if (con.type != TConvex::CONVEXDCD)
@@ -223,7 +223,7 @@ void * neGeometry::GetUserData() {
 *
 ****************************************************************************/
 
-neBool neGeometry::GetBoxSize(neV3 &boxSize) // return false if geometry is not a box
+bool neGeometry::GetBoxSize(neV3 &boxSize) // return false if geometry is not a box
 {
     CAST_THIS(TConvex, con);
 
@@ -257,7 +257,7 @@ void neGeometry::SetSphereDiameter(f32 diameter) {
 *
 ****************************************************************************/
 
-neBool neGeometry::GetSphereDiameter(f32 &diameter) // return false if geometry is not a sphere
+bool neGeometry::GetSphereDiameter(f32 &diameter) // return false if geometry is not a sphere
 {
     CAST_THIS(TConvex, con);
 
@@ -625,7 +625,7 @@ void neAnimatedBody::UpdateBoundingInfo() {
 *
 ****************************************************************************/
 
-void neAnimatedBody::CollideConnected(neBool yes) {
+void neAnimatedBody::CollideConnected(bool yes) {
     CAST_THIS(neRigidBodyBase, rb);
 
     rb.CollideConnected(yes);
@@ -637,7 +637,7 @@ void neAnimatedBody::CollideConnected(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::CollideConnected() {
+bool neAnimatedBody::CollideConnected() {
     CAST_THIS(neRigidBodyBase, rb);
 
     return rb.CollideConnected();
@@ -649,7 +649,7 @@ neBool neAnimatedBody::CollideConnected() {
 *
 ****************************************************************************/
 
-void neAnimatedBody::CollideDirectlyConnected(neBool yes) {
+void neAnimatedBody::CollideDirectlyConnected(bool yes) {
     CAST_THIS(neRigidBodyBase, rb);
 
     rb.isCollideDirectlyConnected = yes;
@@ -661,7 +661,7 @@ void neAnimatedBody::CollideDirectlyConnected(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::CollideDirectlyConnected() {
+bool neAnimatedBody::CollideDirectlyConnected() {
     CAST_THIS(neRigidBodyBase, rb);
 
     return rb.isCollideDirectlyConnected;
@@ -687,7 +687,7 @@ neGeometry *neAnimatedBody::AddGeometry() {
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::RemoveGeometry(neGeometry *g) {
+bool neAnimatedBody::RemoveGeometry(neGeometry *g) {
     CAST_THIS(neCollisionBody_, ab);
 
     if (!ab.col.convex)
@@ -766,7 +766,7 @@ neRigidBody *neAnimatedBody::BreakGeometry(neGeometry *g) {
 *
 ****************************************************************************/
 
-void neAnimatedBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius) {
+void neAnimatedBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius) {
     CAST_THIS(neCollisionBody_, ab);
 
     if (yes) {
@@ -796,7 +796,7 @@ void neAnimatedBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f3
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::UseCustomCollisionDetection() {
+bool neAnimatedBody::UseCustomCollisionDetection() {
     CAST_THIS(neCollisionBody_, ab);
 
     return ab.isCustomCD;
@@ -822,7 +822,7 @@ neSensor *neAnimatedBody::AddSensor() {
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::RemoveSensor(neSensor *s) {
+bool neAnimatedBody::RemoveSensor(neSensor *s) {
     CAST_THIS(neRigidBodyBase, ab);
 
     if (!ab.sensors)
@@ -876,7 +876,7 @@ neSensor *neAnimatedBody::GetNextSensor() {
 *
 ****************************************************************************/
 
-void neAnimatedBody::Active(neBool yes, neRigidBody *hint) {
+void neAnimatedBody::Active(bool yes, neRigidBody *hint) {
     CAST_THIS(neRigidBodyBase, ab);
 
     ab.Active(yes, (neRigidBodyBase *) hint);
@@ -888,7 +888,7 @@ void neAnimatedBody::Active(neBool yes, neRigidBody *hint) {
 *
 ****************************************************************************/
 
-void neAnimatedBody::Active(neBool yes, neAnimatedBody *hint) {
+void neAnimatedBody::Active(bool yes, neAnimatedBody *hint) {
     CAST_THIS(neRigidBodyBase, ab);
 
     ab.Active(yes, (neRigidBodyBase *) hint);
@@ -900,7 +900,7 @@ void neAnimatedBody::Active(neBool yes, neAnimatedBody *hint) {
 *
 ****************************************************************************/
 
-neBool neAnimatedBody::Active() {
+bool neAnimatedBody::Active() {
     CAST_THIS(neRigidBodyBase, ab);
 
     return ab.isActive;
@@ -1441,7 +1441,7 @@ neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback 
 *
 ****************************************************************************/
 
-neBool neRigidBody::RemoveController(neRigidBodyController *rbController) {
+bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
     CAST_THIS(neRigidBody_, rb);
 
     if (!rb.controllers)
@@ -1495,7 +1495,7 @@ neRigidBodyController *neRigidBody::GetNextController() {
 *
 ****************************************************************************/
 
-void neRigidBody::GravityEnable(neBool yes) {
+void neRigidBody::GravityEnable(bool yes) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.GravityEnable(yes);
@@ -1507,7 +1507,7 @@ void neRigidBody::GravityEnable(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neRigidBody::GravityEnable() {
+bool neRigidBody::GravityEnable() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.gravityOn;
@@ -1519,7 +1519,7 @@ neBool neRigidBody::GravityEnable() {
 *
 ****************************************************************************/
 
-void neRigidBody::CollideConnected(neBool yes) {
+void neRigidBody::CollideConnected(bool yes) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.CollideConnected(yes);
@@ -1531,7 +1531,7 @@ void neRigidBody::CollideConnected(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neRigidBody::CollideConnected() {
+bool neRigidBody::CollideConnected() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.CollideConnected();
@@ -1543,7 +1543,7 @@ neBool neRigidBody::CollideConnected() {
 *
 ****************************************************************************/
 
-void neRigidBody::CollideDirectlyConnected(neBool yes) {
+void neRigidBody::CollideDirectlyConnected(bool yes) {
     CAST_THIS(neRigidBody_, rb);
 
     rb.isCollideDirectlyConnected = yes;
@@ -1555,7 +1555,7 @@ void neRigidBody::CollideDirectlyConnected(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neRigidBody::CollideDirectlyConnected() {
+bool neRigidBody::CollideDirectlyConnected() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.isCollideDirectlyConnected;
@@ -1581,7 +1581,7 @@ neGeometry *neRigidBody::AddGeometry() {
 *
 ****************************************************************************/
 
-neBool neRigidBody::RemoveGeometry(neGeometry *g) {
+bool neRigidBody::RemoveGeometry(neGeometry *g) {
     CAST_THIS(neRigidBody_, rb);
 
     if (!rb.col.convex)
@@ -1658,7 +1658,7 @@ neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
 *
 ****************************************************************************/
 
-void neRigidBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius) {
+void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius) {
     CAST_THIS(neRigidBody_, rb);
 
     if (yes) {
@@ -1688,7 +1688,7 @@ void neRigidBody::UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 b
 *
 ****************************************************************************/
 
-neBool neRigidBody::UseCustomCollisionDetection() {
+bool neRigidBody::UseCustomCollisionDetection() {
     CAST_THIS(neRigidBody_, rb);
 
     return rb.isCustomCD;
@@ -1714,7 +1714,7 @@ neSensor *neRigidBody::AddSensor() {
 *
 ****************************************************************************/
 
-neBool neRigidBody::RemoveSensor(neSensor *s) {
+bool neRigidBody::RemoveSensor(neSensor *s) {
     CAST_THIS(neRigidBody_, rb);
 
     if (!rb.sensors)
@@ -1768,7 +1768,7 @@ neSensor *neRigidBody::GetNextSensor() {
 *
 ****************************************************************************/
 
-void neRigidBody::Active(neBool yes, neRigidBody *hint) {
+void neRigidBody::Active(bool yes, neRigidBody *hint) {
     CAST_THIS(neRigidBodyBase, ab);
 
     ab.Active(yes, (neRigidBodyBase *) hint);
@@ -1780,7 +1780,7 @@ void neRigidBody::Active(neBool yes, neRigidBody *hint) {
 *
 ****************************************************************************/
 
-void neRigidBody::Active(neBool yes, neAnimatedBody *hint) {
+void neRigidBody::Active(bool yes, neAnimatedBody *hint) {
     CAST_THIS(neRigidBodyBase, ab);
 
     ab.Active(yes, (neRigidBodyBase *) hint);
@@ -1792,13 +1792,13 @@ void neRigidBody::Active(neBool yes, neAnimatedBody *hint) {
 *
 ****************************************************************************/
 
-neBool neRigidBody::Active() {
+bool neRigidBody::Active() {
     CAST_THIS(neRigidBodyBase, ab);
 
     return ab.isActive;
 }
 
-neBool neRigidBody::IsIdle() {
+bool neRigidBody::IsIdle() {
     CAST_THIS(neRigidBody_, rb);
 
     return (rb.status == neRigidBody_::NE_RBSTATUS_IDLE);
@@ -2575,7 +2575,7 @@ f32 neJoint::GetJointLength() {
 *
 ****************************************************************************/
 
-void neJoint::Enable(neBool yes) {
+void neJoint::Enable(bool yes) {
     CAST_THIS(_neConstraint, c);
 
     c.Enable(yes);
@@ -2587,7 +2587,7 @@ void neJoint::Enable(neBool yes) {
 *
 ****************************************************************************/
 
-neBool neJoint::Enable() {
+bool neJoint::Enable() {
     CAST_THIS(_neConstraint, c);
 
     return c.enable;
@@ -2599,7 +2599,7 @@ neBool neJoint::Enable() {
 *
 ****************************************************************************/
 /*
-void neJoint::InfiniteMassB(neBool yes)
+void neJoint::InfiniteMassB(bool yes)
 {
 	CAST_THIS(_neConstraint, c);
 
@@ -2735,7 +2735,7 @@ void neJoint::SetLowerLimit(f32 lowerLimit) {
 *
 ****************************************************************************/
 
-neBool neJoint::EnableLimit() {
+bool neJoint::EnableLimit() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[0].enableLimit;
@@ -2747,7 +2747,7 @@ neBool neJoint::EnableLimit() {
 *
 ****************************************************************************/
 
-void neJoint::EnableLimit(neBool yes) {
+void neJoint::EnableLimit(bool yes) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[0].enableLimit = yes;
@@ -2807,7 +2807,7 @@ void neJoint::SetLowerLimit2(f32 lowerLimit) {
 *
 ****************************************************************************/
 
-neBool neJoint::EnableLimit2() {
+bool neJoint::EnableLimit2() {
     CAST_THIS(_neConstraint, c);
 
     return c.limitStates[1].enableLimit;
@@ -2819,7 +2819,7 @@ neBool neJoint::EnableLimit2() {
 *
 ****************************************************************************/
 
-neBool neJoint::EnableMotor() {
+bool neJoint::EnableMotor() {
     CAST_THIS(_neConstraint, c);
 
     return c.motors[0].enable;
@@ -2831,7 +2831,7 @@ neBool neJoint::EnableMotor() {
 *
 ****************************************************************************/
 
-void neJoint::EnableMotor(neBool yes) {
+void neJoint::EnableMotor(bool yes) {
     CAST_THIS(_neConstraint, c);
 
     c.motors[0].enable = yes;
@@ -2875,7 +2875,7 @@ void neJoint::GetMotor(MotorType &motorType, f32 &desireValue, f32 &maxForce) {
 *
 ****************************************************************************/
 
-neBool neJoint::EnableMotor2() {
+bool neJoint::EnableMotor2() {
     CAST_THIS(_neConstraint, c);
 
     return c.motors[1].enable;
@@ -2887,7 +2887,7 @@ neBool neJoint::EnableMotor2() {
 *
 ****************************************************************************/
 
-void neJoint::EnableMotor2(neBool yes) {
+void neJoint::EnableMotor2(bool yes) {
     CAST_THIS(_neConstraint, c);
 
     c.motors[1].enable = yes;
@@ -2931,7 +2931,7 @@ void neJoint::GetMotor2(MotorType &motorType, f32 &desireValue, f32 &maxForce) {
 *
 ****************************************************************************/
 
-void neJoint::EnableLimit2(neBool yes) {
+void neJoint::EnableLimit2(bool yes) {
     CAST_THIS(_neConstraint, c);
 
     c.limitStates[1].enableLimit = yes;
@@ -2956,7 +2956,7 @@ neJointController *neJoint::AddController(neJointControllerCallback *controller,
 *
 ****************************************************************************/
 
-neBool neJoint::RemoveController(neJointController *jController) {
+bool neJoint::RemoveController(neJointController *jController) {
     CAST_THIS(_neConstraint, c);
 
     if (!c.controllers)
@@ -3010,7 +3010,7 @@ neJointController *neJoint::GetNextController() {
 *
 ****************************************************************************/
 /*
-neBool neJoint::SetBSPoints(const neV3 & pointA, const neV3 & pointB)
+bool neJoint::SetBSPoints(const neV3 & pointA, const neV3 & pointB)
 {
 	CAST_THIS(_neConstraint, c);
 
@@ -3030,7 +3030,7 @@ neBool neJoint::SetBSPoints(const neV3 & pointA, const neV3 & pointB)
 *
 ****************************************************************************/
 /*
-neBool neJoint::SetHingePoints(const neV3 & pointA1, const neV3 & pointA2,
+bool neJoint::SetHingePoints(const neV3 & pointA1, const neV3 & pointA2,
 						const neV3 & pointB1, const neV3 & pointB2)
 {
 	CAST_THIS(_neConstraint, c);
@@ -3552,9 +3552,9 @@ neV3 neCylinderInertiaTensor(f32 diameter, f32 height, f32 mass) {
 }
 
 /*
-	neBool IsEnableLimit();
+	bool IsEnableLimit();
 
-	void EnableLimit(neBool yes);
+	void EnableLimit(bool yes);
 
 	f32 GetUpperLimit();
 

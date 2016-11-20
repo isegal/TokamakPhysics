@@ -51,7 +51,6 @@ using f32 = float;
 using f64 = double;
 using neByte = uint8_t;
 using neErr = s32;
-using neBool = s32;
 
 #if _MSC_VER
 typedef signed   __int64    s64;

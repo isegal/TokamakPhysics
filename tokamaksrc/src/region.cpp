@@ -490,7 +490,7 @@ void neCoordList::Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord)
 
         CCoordListEntryItem *cur = startSearch;
 
-        neBool done = false;
+        bool done = false;
 
         do {
             if (lentryItem->thing.value < cur->thing.value) {
@@ -547,7 +547,7 @@ void neCoordList::Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord)
 
             CCoordListEntryItem *cur;
 
-            neBool searchUp;
+            bool searchUp;
 
             if (i == 0) {
                 entryItem = lentryItem;
@@ -567,7 +567,7 @@ void neCoordList::Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord)
             }
 
             if (searchUp) {
-                neBool done = false;
+                bool done = false;
 
                 do {
                     if (entryItem->thing.value < cur->thing.value) {
@@ -590,7 +590,7 @@ void neCoordList::Add(neRigidBodyBase *bb, neRigidBodyBase *hint, s32 hintCoord)
                     }
                 } while (!done);
             } else {
-                neBool done = false;
+                bool done = false;
 
                 do {
                     if (entryItem->thing.value >= cur->thing.value) {

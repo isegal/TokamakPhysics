@@ -379,7 +379,7 @@ NEINLINE neQ &neQ::Set(f32 angle, const neV3 &axis) {
     return (*this);
 }
 
-NEINLINE neBool neQ::IsFinite() {
+NEINLINE bool neQ::IsFinite() {
     return (neFinite(X) &&
             neFinite(Y) &&
             neFinite(Z) &&

@@ -38,7 +38,7 @@ f32 CONSTRAINT_CONVERGE_FACTOR_LIMIT = 0.5f;
 
 NEINLINE void
 ApplyCollisionImpulseFast(neRigidBody_ *rb, const neV3 &impulse, const neV3 &contactPoint, s32 currentRecord,
-                          neBool immediate = true) {
+                          bool immediate = true) {
     neV3 dv, da;
 
     dv = impulse * rb->oneOnMass;
@@ -285,7 +285,7 @@ f32 neCollisionResult::SolveAngular(f32 pdepth, const neV3 &axis, f32 relAV, neF
 
     f32 scaledCorrection = angularDisplacementNeeded * CONSTRAINT_CONVERGE_FACTOR_LIMIT;
 
-    neBool applyImpulse = false;
+    bool applyImpulse = false;
 
     f32 angularDisplacment;
 
@@ -451,7 +451,7 @@ f32 neCollisionResult::SolveAngular3(f32 pdepth, const neV3 &axis, f32 relAV, ne
     else if (scaledDepth < -0.1f)
         scaledDepth = -0.1f;
 
-    neBool applyImpulse = false;
+    bool applyImpulse = false;
 
 //	f32 angularDisplacment;
 
@@ -947,7 +947,7 @@ f32 neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
 }
 
 void neFixedTimeStepSimulator::CheckIfStationary() {
-    neBool allStationary = true;
+    bool allStationary = true;
     s32 jj;
 
     for (jj = 0; jj < pointerBuffer1.GetUsedCount(); jj++) // in this loop we apply the total impulse from the
@@ -1151,7 +1151,7 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
 *
 ****************************************************************************/
 
-neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, neBool isContact) {
+neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, bool isContact) {
     neV3 pI, pII, impulse;
 
     pI.Set(0.0f, 0.0f, -cresult.initRelVel[2] / cresult.k[2][2]);
@@ -1324,7 +1324,7 @@ f32 neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
     neV3 bimpulse;
 
     if (impulseType == IMPULSE_NORMAL) {
-        neBool doBreakCheck = (impulseType == IMPULSE_NORMAL && breakageCallback);
+        bool doBreakCheck = (impulseType == IMPULSE_NORMAL && breakageCallback);
 
         if (doBreakCheck) {
             if (!ba) // meaning either ca and bb
@@ -1520,7 +1520,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(f32 epsilon, s32 iteration
         it = iteration;
 
         for (s32 i = 0; i < it; i++) {
-            neBool doCheckSleep = false;
+            bool doCheckSleep = false;
 
             if (pp == 1 && i == checkSleep) {
                 doCheckSleep = true;

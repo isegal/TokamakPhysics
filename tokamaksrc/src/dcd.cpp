@@ -83,7 +83,7 @@ static neV3 _boxVertexPos0[BOX_NUM_VERTS] = {{-1, -1, -1, 0},
                                              {1,  1,  1,  0}};
 static neV3 _boxVertexPosP[BOX_NUM_VERTS];
 static neV3 _boxVertexPosQ[BOX_NUM_VERTS];
-static neBool _visited[100];
+static bool _visited[100];
 
 DCDFace BoxFaces[BOX_NUM_FACES] =
         {
@@ -277,7 +277,7 @@ public:
         return true;
     }
 
-    neBool IsEmpty() {
+    bool IsEmpty() {
         return tos == 0;
     }
 
@@ -302,7 +302,7 @@ public:
 class DCDObj {
 public:
     //TConvex * convex;
-    neBool isBox;
+    bool isBox;
 
     DCDMesh mesh;
 
@@ -421,7 +421,7 @@ private:
 
         neByte neighbourEdge;
 
-        neBool moving;
+        bool moving;
 
         do {
             moving = false;
@@ -538,7 +538,7 @@ public:
         dMax = -1.0e6f;
     }
 
-    neBool TestFace(s32 face0Index, neBool &assigned) {
+    bool TestFace(s32 face0Index, bool &assigned) {
         assigned = false;
 
         _visited[face0Index] = true;
@@ -580,11 +580,11 @@ public:
         return true;
     }
 
-    neBool SearchFV(s32 initialFace, neBool &assigned);
+    bool SearchFV(s32 initialFace, bool &assigned);
 
-    neBool SearchEE(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, neBool &assigned);
+    bool SearchEE(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, bool &assigned);
 
-    neBool SearchEETri(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, neBool &assigned);
+    bool SearchEETri(s32 flag /*0 or 1*/, s32 aIndex, s32 bIndex, bool &assigned);
 
     DCDObj objA;
 
@@ -603,7 +603,7 @@ public:
     f32 dMax;
 };
 
-neBool SearchResult::SearchFV(s32 initialFace, neBool &assigned) {
+bool SearchResult::SearchFV(s32 initialFace, bool &assigned) {
     for (s32 i = 0; i < objA.mesh.numFaces; i++) {
         _visited[i] = false;
 
@@ -618,7 +618,7 @@ neBool SearchResult::SearchFV(s32 initialFace, neBool &assigned) {
 
     //ASSERT(assigned);
 
-    neBool found = true;
+    bool found = true;
 
     s32 currentFace = initialFace;
 
@@ -631,7 +631,7 @@ neBool SearchResult::SearchFV(s32 initialFace, neBool &assigned) {
             if (_visited[i])
                 continue;
 
-            neBool _assigned;
+            bool _assigned;
 
             if (!TestFace(i, _assigned))
                 return false;
@@ -664,7 +664,7 @@ f32 Determinant(const neV3 &a, const neV3 &b, const neV3 &c) {
     return ret;
 }
 
-neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned) {
+bool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, bool &assigned) {
     assigned = false;
 
     gEdgeStack.Init();
@@ -847,7 +847,7 @@ neBool SearchResult::SearchEE(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned
     return true;
 }
 
-neBool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, neBool &assigned) {
+bool SearchResult::SearchEETri(s32 flag, s32 aIndex, s32 bIndex, bool &assigned) {
     assigned = false;
 
     gEdgeStack.Init();
@@ -1077,13 +1077,13 @@ bool TestDCD(neCollisionResult &result, TConvex &convexA, neT3 &transA, TConvex 
 
     SearchResult srFV(convexA, &transA, convexB, &transB, aVertArray, bVertArray);
 
-    neBool showDebug = 0;
+    bool showDebug = 0;
 
-    neBool showDebug2 = (srFV.objA.mesh.numVerts > 8 && srFV.objB.mesh.numVerts > 8);
+    bool showDebug2 = (srFV.objA.mesh.numVerts > 8 && srFV.objB.mesh.numVerts > 8);
 
-    neBool assigned;
+    bool assigned;
 
-    neBool res = srFV.SearchFV(0, assigned);
+    bool res = srFV.SearchFV(0, assigned);
 
     if (!res) {
         if (showDebug) { TOKAMAK_OUTPUT_2("%d, %d \n", _num_face_test, _num_edge_test); }
@@ -1232,9 +1232,9 @@ bool TestDCDTri(ConvexTestResult &res, TConvex &convexA, neT3 &transA, const neV
 
     SearchResult srBoxFaceTriVert(convexA, &transA, dummyB, &transB, aVertArray, bVertArray);
 
-    neBool assigned;
+    bool assigned;
 
-    neBool r = srBoxFaceTriVert.SearchFV(0, assigned);
+    bool r = srBoxFaceTriVert.SearchFV(0, assigned);
 
     if (!r) { return false; }
 
@@ -1255,7 +1255,7 @@ bool TestDCDTri(ConvexTestResult &res, TConvex &convexA, neT3 &transA, const neV
 	BigC = bPoint - aPoint;
 	BigCLength = BigC.Length();
 */
-    neBool assigned2;
+    bool assigned2;
 
     if (!(r = srBoxVertTriFace.TestFace(1, assigned2)))
         return false;
@@ -1269,7 +1269,7 @@ bool TestDCDTri(ConvexTestResult &res, TConvex &convexA, neT3 &transA, const neV
 	BigCLength = BigC.Length();
 */
 
-    neBool need2Swap = false;
+    bool need2Swap = false;
 
     SearchResult srBoxTriEE(convexA, &transA, dummyB, &transB, aVertArray, bVertArray);
 
@@ -1378,7 +1378,7 @@ void Convex2TerrainTest(neCollisionResult &result, TConvex &convexA, neT3 &trans
 
     s32 terrainMatID = 0;
 
-    neBool found = false;
+    bool found = false;
 #if 0
     for (s32 j = 0/*triangleCount-1*/; j < triangleCount; j++)
     //int j = 12;

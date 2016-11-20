@@ -48,11 +48,11 @@ neRadian neATan(f32 T);
 
 neRadian neATan2(f32 y, f32 x);
 
-neBool neRealsEqual(f32 s1, f32 s2);
+bool neRealsEqual(f32 s1, f32 s2);
 
-neBool neIsConsiderZero(f32 f);
+bool neIsConsiderZero(f32 f);
 
-neBool neIsFinite(f32);
+bool neIsFinite(f32);
 
 //template< class ta >                     NEINLINE ta      neAbs     ( const ta&  A )                               { return ( A < 0 ) ? -A : A;   }
 
@@ -61,7 +61,7 @@ NEINLINE f32 neAbs(f32 f) {
 }
 
 template<class ta, class tb, class tc>
-NEINLINE neBool neInRange(const ta &X, const tb &Min, const tc &Max) { return (Min <= X) && (X <= Max); }
+NEINLINE bool neInRange(const ta &X, const tb &Min, const tc &Max) { return (Min <= X) && (X <= Max); }
 
 template<class ta, class tb, class tc>
 NEINLINE ta neRange(const ta &X, const tb &Min, const tc &Max) {
@@ -93,6 +93,6 @@ NEINLINE f32 neMin(const f32 &A, const s32 &B) { return (A < B) ? A : B; }
 
 NEINLINE f32 neMax(const f32 &A, const s32 &B) { return (A > B) ? A : B; }
 
-NEINLINE neBool neIsFinite(f32 n) { return neFinite((double) n); }
+NEINLINE bool neIsFinite(f32 n) { return neFinite((double) n); }
 
 #endif

@@ -320,7 +320,7 @@ MeasureSphereAndTriVert(const neV3 &center, f32 radius, ConvexTestResult &result
     }
 }
 
-neBool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri) {
+bool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri) {
     //check sphere and triangle plane
     result.depth = 1.e5f;
     result.valid = false;

@@ -399,7 +399,7 @@ NEINLINE neV3 neV3::Project(const neV3 &v) const {
     return (v * dot);
 }
 
-NEINLINE neBool neV3::GetIntersectPlane(neV3 &normal, neV3 &pointOnPlane, neV3 &point1, neV3 &point2) {
+NEINLINE bool neV3::GetIntersectPlane(neV3 &normal, neV3 &pointOnPlane, neV3 &point1, neV3 &point2) {
     neV3 diff = point2 - point1;
 
     f32 d2 = normal.Dot(diff);

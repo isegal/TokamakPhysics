@@ -167,7 +167,7 @@ public:
         return ret;
     }
 
-    neBool IsValid();
+    bool IsValid();
 
     neV3 VelocityAtPoint(const neV3 &pt);
 
@@ -175,9 +175,9 @@ public:
 
     NEINLINE neV3 GetAngularVelocity();
 
-    void CollideConnected(neBool yes);
+    void CollideConnected(bool yes);
 
-    neBool CollideConnected();
+    bool CollideConnected();
 
     neSensor_ *AddSensor();
 
@@ -193,7 +193,7 @@ public:
 
     TConvex *GetNextGeometry();
 
-    void Active(neBool yes, neRigidBodyBase *hint);
+    void Active(bool yes, neRigidBodyBase *hint);
 
     NEINLINE neCollisionBody_ *AsCollisionBody() {
         if (btype != NE_OBJECT_COLISION)
@@ -221,7 +221,7 @@ public:
 
     void RemoveConstraintHeader();
 
-    NEINLINE neBool IsInRegion() {
+    NEINLINE bool IsInRegion() {
         return (regionHandle != nullptr);
     }
 
@@ -248,11 +248,11 @@ public:
     //bool isAnimated;
     neObjectType btype;
 
-    neBool isActive;
+    bool isActive;
 
-    neBool isCollideConnected;
+    bool isCollideConnected;
 
-    neBool isCollideDirectlyConnected;
+    bool isCollideDirectlyConnected;
 
     neSensor_ *sensors;
 
@@ -262,7 +262,7 @@ public:
 
     neT3 obb;
 
-    neBool isCustomCD;
+    bool isCustomCD;
 
     neV3 minBound;
     neV3 maxBound;
@@ -350,7 +350,7 @@ PLACEMENT_MAGIC
 public:
     neT3 b2w;
 
-    neBool moved;
+    bool moved;
 };
 
 class neStackInfo;
@@ -404,7 +404,7 @@ public:
         restOnHandle.Remove();
     }
 
-    neBool IsValid() {
+    bool IsValid() {
         return rtype != REST_ON_NOT_VALID;
     }
 
@@ -428,9 +428,9 @@ public:
         return otherBody->AsCollisionBody();
     }
 
-    neBool CanConsiderOtherBodyIdle();
+    bool CanConsiderOtherBodyIdle();
 
-    neBool CheckOtherBody(neFixedTimeStepSimulator *sim);
+    bool CheckOtherBody(neFixedTimeStepSimulator *sim);
 
     void SetInvalid();
 
@@ -503,7 +503,7 @@ public:
     neV3 force;
     neV3 torque;
     s32 status;
-    neBool gravityOn;
+    bool gravityOn;
     neV3 gforce;
     neV3 cforce;
     neV3 ctorque;
@@ -525,17 +525,17 @@ public:
     // constraints
     neStackInfo *stackInfo;
 
-    neBool isShifted;
+    bool isShifted;
 
-    neBool isShifted2;
+    bool isShifted2;
 
     neController *controllers;
 
     neControllerItem *controllerCursor;
 
-    neBool needRecalc;
+    bool needRecalc;
 
-    neBool isAddedToSolver;
+    bool isAddedToSolver;
 
     neRBExtra *rbExtra;
 
@@ -559,7 +559,7 @@ public:
 
     s32 lastTransCount;
 
-    neBool needSolveContactDynamic;
+    bool needSolveContactDynamic;
 
     neV3 totalDV;
 
@@ -588,7 +588,7 @@ public:
 
     //////////////////////////////////////////////////
 
-    NEINLINE neBool IsParticle() {
+    NEINLINE bool IsParticle() {
         return (subType == NE_RIGID_PARTICLE);
     }
 
@@ -637,7 +637,7 @@ public:
 
     void SetAngMom(const neV3 &am);
 
-    void GravityEnable(neBool yes);
+    void GravityEnable(bool yes);
 
     void CheckForIdle();
 
@@ -651,11 +651,11 @@ public:
 
     void WakeUp();
 
-    neBool AddStackInfo(neRestRecord &rc);
+    bool AddStackInfo(neRestRecord &rc);
 
     void FreeStackInfo();
 
-    neBool NewStackInfo(neRestRecord &rc);
+    bool NewStackInfo(neRestRecord &rc);
 
     void MigrateNewHeader(neStackHeader *newHeader, neStackHeader *curHeader);
 
@@ -663,19 +663,19 @@ public:
 
     void RemoveStackInfo();
 
-    neBool NewStackInfoTerminator(neStackHeader *header);
+    bool NewStackInfoTerminator(neStackHeader *header);
 
-    s32 AddContactImpulseRecord(neBool withConstraint);
+    s32 AddContactImpulseRecord(bool withConstraint);
 
-    neBool IsRestPointStillValid();
+    bool IsRestPointStillValid();
 
     void AddRestContact(neRestRecord &rc);
 
-    neBool CheckContactValidity();
+    s32 CheckContactValidity();
 
     void ResolveRestingPenetration();
 
-    neBool IsConstraintNeighbour(neRigidBodyBase *otherBody);
+    bool IsConstraintNeighbour(neRigidBodyBase *otherBody);
 
     neController *AddController(neRigidBodyControllerCallback *rbc, s32 period);
 
@@ -695,7 +695,7 @@ public:
 
     s32 CheckRestHull();
 
-    neBool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
+    bool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
 
     neV3 GetCorrectRotation(neRigidBody_ *otherBody, f32 massOther, neV3 &pointThis, neV3 &pointOther);
 
@@ -705,7 +705,7 @@ public:
 
     void CorrectPenetrationDrift();
 
-    void CorrectPenetrationDrift2(s32 index, neBool slide, s32 flag);
+    void CorrectPenetrationDrift2(s32 index, bool slide, s32 flag);
 
     f32 TestImpulse(neV3 &dir, neV3 &pt, f32 &linear, f32 &angular);
 
@@ -717,15 +717,15 @@ public:
 
     void CorrectPenetrationTranslation();
 
-    void CorrectPenetrationRotation2(s32 index, neBool slide);
+    void CorrectPenetrationRotation2(s32 index, bool slide);
 
-    void CorrectPenetrationTranslation2(s32 index, neBool slide);
+    void CorrectPenetrationTranslation2(s32 index, bool slide);
 
-    neBool CheckStillIdle();
+    bool CheckStillIdle();
 
-    neBool CheckHighEnergy();
+    bool CheckHighEnergy();
 
-    neBool TestWakeUpImpulse(const neV3 &impulse);
+    bool TestWakeUpImpulse(const neV3 &impulse);
 
     void MidPointIntegration(const neV3 &totalTorque, f32 tStep);
 
@@ -741,11 +741,11 @@ public:
 
     void ConstraintDoSleepCheck();
 
-    neBool CheckStationary();
+    bool CheckStationary();
 
     void SyncOldState();
 
-    neBool AllRestRecordInvalid();
+    bool AllRestRecordInvalid();
 
 protected:
 

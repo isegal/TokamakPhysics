@@ -340,7 +340,7 @@ neController *neRigidBody_::GetNextController() {
 *
 ****************************************************************************/
 
-void neRigidBody_::GravityEnable(neBool yes)
+void neRigidBody_::GravityEnable(bool yes)
 {
     gravityOn = yes;
 }
@@ -778,14 +778,14 @@ void neRigidBody_::ZeroMotion() {
 *
 ****************************************************************************/
 
-neBool neRigidBody_::ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype) {
+bool neRigidBody_::ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype) {
     neV3 dv, da, newAM;
 
     dv = impulse * oneOnMass;
 
     da = contactPoint.Cross(impulse);
 
-    neBool immediate = true;
+    bool immediate = true;
 
     if (itype == IMPULSE_CONTACT)// && sim->solverStage == 1) // only if contact and resolve penetration stage
     {
@@ -905,7 +905,7 @@ void neRigidBody_::AddRestContact(neRestRecord & rc) {
     GetRestRecord(i).Set(this, rc);
 }
 
-neBool neRigidBody_::IsConstraintNeighbour(neRigidBodyBase *otherBody) {
+bool neRigidBody_::IsConstraintNeighbour(neRigidBodyBase *otherBody) {
     neConstraintHandle *chandle = constraintCollection.GetHead();
 
     while (chandle) {
@@ -1014,7 +1014,7 @@ void neRigidBody_::ConstraintDoSleepCheck()
 }
 */
 
-neBool neRestRecord::CanConsiderOtherBodyIdle() {
+bool neRestRecord::CanConsiderOtherBodyIdle() {
     if (rtype == REST_ON_WORLD)
         return true;
 
@@ -1032,7 +1032,7 @@ neBool neRestRecord::CanConsiderOtherBodyIdle() {
     return (!cb->moved);
 }
 
-neBool neRestRecord::CheckOtherBody(neFixedTimeStepSimulator *sim) {
+bool neRestRecord::CheckOtherBody(neFixedTimeStepSimulator *sim) {
     ASSERT(otherBody);
 
     if (otherBody != sim->GetTerrainBody() &&

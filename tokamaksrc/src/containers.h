@@ -430,7 +430,7 @@ public:
         return (initFixedSize != 1);
     }
 
-    NEINLINE neBool CheckBelongAndInUse(T *t) {
+    NEINLINE bool CheckBelongAndInUse(T *t) {
         listItem *item = (listItem *) t;
 
         if (item < data)
@@ -807,7 +807,7 @@ public:
 	{
 		return (t - buffer);
 	}
-	NEINLINE neBool IsInUse(T * t)
+	NEINLINE bool IsInUse(T * t)
 	{
 		s32 i = GetID(t);
 
@@ -1011,7 +1011,7 @@ public:
 
         itemType *curItem = tailItem;
 
-        neBool done = false;
+        bool done = false;
 
         while (curItem) {
             T *curT = (T *) curItem;
@@ -1044,7 +1044,7 @@ public:
 
         itemType *cItem;
 
-        neBool done = false;
+        bool done = false;
 
         if (uItem == tailItem) // move up
         {

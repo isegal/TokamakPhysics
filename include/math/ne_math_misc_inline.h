@@ -64,7 +64,7 @@ NEINLINE neRadian neATan2(f32 y, f32 x) {
 
 //=========================================================================
 
-NEINLINE neBool neRealsEqual(f32 s1, f32 s2) {
+NEINLINE bool neRealsEqual(f32 s1, f32 s2) {
     if ((2.0f * neAbs(s1 - s2) / (s1 + s2)) < NE_ZERO) {
         return true;
     }
@@ -74,6 +74,6 @@ NEINLINE neBool neRealsEqual(f32 s1, f32 s2) {
 
 //=========================================================================
 
-NEINLINE neBool neIsConsiderZero(f32 f) {
+NEINLINE bool neIsConsiderZero(f32 f) {
     return (neAbs(f) < NE_ZERO);
 }

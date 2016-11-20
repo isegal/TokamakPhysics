@@ -336,7 +336,7 @@ public:
     s32 materialIdA;
     s32 materialIdB;
     f32 depth; //+ve
-    neBool penetrate;
+    bool penetrate;
 
     neRigidBodyBase *bodyA;
     neRigidBodyBase *bodyB;
@@ -355,15 +355,15 @@ public:
 
     neImpulseType impulseType;
 
-    neBool flag;
+    bool flag;
 
     void UpdateConstraintRelativeSpeed();
 
     void StartStage2();
 
-    void PrepareForSolver(neBool aIdle = false, neBool bIdle = false);
+    void PrepareForSolver(bool aIdle = false, bool bIdle = false);
 
-    void CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, neBool isWorld);
+    void CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, bool isWorld);
 
     void CalcCollisionMatrix2(neRigidBody_ *ba, neRigidBody_ *bb);
 
@@ -399,7 +399,7 @@ public:
         return relativeSpeed;
     };
 
-    neBool CheckIdle();
+    bool CheckIdle();
 
     void Swap() {
         collisionFrame[2] *= -1.0f;

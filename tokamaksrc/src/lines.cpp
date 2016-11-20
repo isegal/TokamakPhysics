@@ -123,7 +123,7 @@ void CollisionTestSensor(TConvex *obbA, neSensor_ *sensorsA, neT3 &transA, neCol
     }
 }
 
-NEINLINE neBool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const neV3 &edge) {
+NEINLINE bool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const neV3 &edge) {
     neV3 cp1 = edge.Cross(p1 - a);
 
     neV3 cp2 = edge.Cross(p2 - a);
@@ -135,7 +135,7 @@ NEINLINE neBool SameSide(const neV3 &p1, const neV3 &p2, const neV3 &a, const ne
 
 /*
  *	
-		neBool found = false;
+		bool found = false;
 
 		f32 dist, ratio, factor, depth;
 

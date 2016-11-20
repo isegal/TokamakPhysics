@@ -281,7 +281,7 @@ s32 pop = 0;
 
 neStackHeader * hell[256];
 */
-neBool neStackHeader::CheckStackDisconnected() {
+bool neStackHeader::CheckStackDisconnected() {
 //	OutputDebugString("start\n");
     //neSimpleArray<neStackInfo*, 1000> stackInfoBuffer;
 
@@ -518,7 +518,7 @@ void neStackHeader::AddToSolverNoConstraintHeader() {
 
 #endif
 
-void neStackInfo::AddToSolver(neBool addCHeader) {
+void neStackInfo::AddToSolver(bool addCHeader) {
     isResolved = true;
 
     ASSERT (!isTerminator);
@@ -592,7 +592,7 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
 
         return nullptr;
     }
-    neBool anotherHeaderFound = false;
+    bool anotherHeaderFound = false;
 
     neStackHeader *anotherHeader = nullptr;
 

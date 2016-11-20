@@ -314,7 +314,7 @@ bool neFixedTimeStepSimulator::GetMaterial(s32 index, f32 &friction, f32 &restit
 *
 ****************************************************************************/
 
-neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBody(neBool isParticle) {
+neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBody(bool isParticle) {
     neRigidBody_ *ret;
 
     if (!isParticle) {
@@ -377,7 +377,7 @@ neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *conve
 
     s32 ccount = 0;
 
-    neBool found = false;
+    bool found = false;
 
     while ((con = originalBody->GetNextGeometry())) {
         if (con == convex) {
@@ -389,7 +389,7 @@ neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *conve
     if (ccount == 1 || !found) {
         return nullptr;
     }
-    neBool isParticle = false;
+    bool isParticle = false;
 
     if (convex->breakInfo.flag == neGeometry::NE_BREAK_ALL_PARTICLE ||
         convex->breakInfo.flag == neGeometry::NE_BREAK_NORMAL_PARTICLE ||
@@ -1019,7 +1019,7 @@ void neFixedTimeStepSimulator::CheckCollision() {
         if (collisionflag == neCollisionTable::RESPONSE_IGNORE)
             continue;
 
-        neBool isCustomeCD = false;
+        bool isCustomeCD = false;
 
         result.penetrate = false;
 
@@ -1116,7 +1116,7 @@ void neFixedTimeStepSimulator::CheckCollision() {
                     }
                 }
             } else {
-                neBool doCollision = false;
+                bool doCollision = false;
 
                 if (ra->GetConstraintHeader() &&
                     (ra->GetConstraintHeader() == rb->GetConstraintHeader())) {
@@ -1190,13 +1190,13 @@ void neFixedTimeStepSimulator::CheckCollision() {
 //			perf.UpdateCD();
 
         if (result.penetrate) {
-            neBool bothAnimated = false;
+            bool bothAnimated = false;
 
             if (ra && ra->status == neRigidBody_::NE_RBSTATUS_ANIMATED &&
                 rb && rb->status == neRigidBody_::NE_RBSTATUS_ANIMATED) {
                 bothAnimated = true;
             }
-            neBool response = true;
+            bool response = true;
 
             if (!result.collisionFrame[2].IsFinite() || result.collisionFrame[2].IsConsiderZero()) {
                 response = false;
@@ -1468,7 +1468,7 @@ void neFixedTimeStepSimulator::SolveConstrain()
 
 		neBodyHandle * bodyHandle = header->bodies.GetHead();
 
-		neBool allIdle = true;
+		bool allIdle = true;
 
 		while (bodyHandle)
 		{
@@ -1519,7 +1519,7 @@ void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRig
 
     neRestRecord rc;
 
-    neBool isConnected = false;
+    bool isConnected = false;
 
     if (ba) {
         isConnected = ba->IsConstraintNeighbour(bodyB);
@@ -1708,7 +1708,7 @@ void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
 }
 
 
-neBool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
+bool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
                                                neV3 &impulse) {
     f32 impulseMag;
 

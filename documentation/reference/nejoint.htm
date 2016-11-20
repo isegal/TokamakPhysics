@@ -100,20 +100,20 @@ void</font> <font COLOR="#880000"><a name="SetJointLength">SetJointLength</a></f
   have length as well as position and orientation.</p>
 <p><i><a href="#neJoint">&lt;back to top&gt;</a></i></p>
 <hr>
-<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Enable">Enable</a></font>(<font COLOR="#0000ff">neBool</font>
+<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Enable">Enable</a></font>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>);<font COLOR="#0000ff"><br>
-neBool</font>  <font COLOR="#880000">Enable</font>();</p>
+bool</font>  <font COLOR="#880000">Enable</font>();</p>
 <p>Enable or disable the joint. The second function returns true if the joint is
 enabled.</p>
 <p><i><a href="#neJoint">&lt;back to top&gt;</a></i></p>
 <hr>
 <p><font COLOR="#0000ff">
-void</font> <font COLOR="#880000"><a name="EnableLimit">EnableLimit</a></font>(<font COLOR="#0000ff">neBool</font>
+void</font> <font COLOR="#880000"><a name="EnableLimit">EnableLimit</a></font>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>);<font COLOR="#0000ff"><br>
-neBool</font>  <font COLOR="#880000">EnableLimit</font>();<br>
-<font color="#0000FF">void</font> <font color="#880000">EnableLimit2</font>(<font color="#0000FF">neBool</font>
+bool</font>  <font COLOR="#880000">EnableLimit</font>();<br>
+<font color="#0000FF">void</font> <font color="#880000">EnableLimit2</font>(<font color="#0000FF">bool</font>
 yes);<br>
-<font color="#0000FF">neBool</font> <font color="#880000">EnableLimit2</font>();</p>
+<font color="#0000FF">bool</font> <font color="#880000">EnableLimit2</font>();</p>
 <p>Enable or disable the joint limit. The second function returns true if the 
   joint limit is enabled. The last two functions relate to the second limit for 
   the joint. Note: currently, only ball and socket joints have a second limit, 
@@ -160,7 +160,7 @@ s32</font> <font COLOR="#880000">GetIteration</font>();</p>
 <hr>
 <p><font COLOR="#0000ff">neJointController</font> * <font COLOR="#880000"><a name="AddController">AddController</a></font>(<font COLOR="#0000ff">neJointControllerCallback</font>
 * <font COLOR="#808080">controller</font>, <font COLOR="#0000ff">s32</font> <font COLOR="#808080">period</font>);<font COLOR="#0000ff"><br>
-neBool</font> <font COLOR="#880000">RemoveController</font>(<font COLOR="#0000ff">neJointController</font>
+bool</font> <font COLOR="#880000">RemoveController</font>(<font COLOR="#0000ff">neJointController</font>
 * <font COLOR="#808080">rbController</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateController</font>();<font COLOR="#0000ff"><br>
 neJointController</font> * <font COLOR="#880000">GetNextController</font>();</p>

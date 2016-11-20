@@ -253,7 +253,7 @@ void FindMinMaxBound(neTriangleTree *tree, neSimpleArray<s32> &triIndex, neV3 &m
     }
 }
 
-neBool
+bool
 IntersectAABBTriangle(neTriangleTree *tree, const neV3 &minBound, const neV3 &maxBound, const neTriangle &triangle) {
     neCollision box;
     neCollision tri;
@@ -762,7 +762,7 @@ neTreeNode &neTriangleTree::GetNode(s32 nodeIndex) {
 *
 ****************************************************************************/
 
-neBool neTriangleTree::BuildTree(neV3 *_vertices, s32 _vertexCount, neTriangle *tris, s32 triCount,
+bool neTriangleTree::BuildTree(neV3 *_vertices, s32 _vertexCount, neTriangle *tris, s32 triCount,
                                  neAllocatorAbstract *_alloc) {
     if (!_vertices || _vertexCount <= 0)
         return false;

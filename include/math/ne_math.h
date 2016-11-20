@@ -115,7 +115,7 @@ public:
 
     NEINLINE f32 GetDistanceFromLineAndProject(neV3 &result, const neV3 &startPoint, const neV3 &dir);
 
-    NEINLINE neBool GetIntersectPlane(neV3 &normal, neV3 &pointOnPlane, neV3 &point1, neV3 &point2);
+    NEINLINE bool GetIntersectPlane(neV3 &normal, neV3 &pointOnPlane, neV3 &point1, neV3 &point2);
 
     NEINLINE void SetMin(const neV3 &V1, const neV3 &V2);
 
@@ -231,7 +231,7 @@ struct neM3 {
 
     NEINLINE void SetIdentity(void);
 
-    NEINLINE neBool SetInvert(const neM3 &rhs);
+    NEINLINE bool SetInvert(const neM3 &rhs);
 
     NEINLINE neM3 &SetTranspose(neM3 &M);
 
@@ -247,11 +247,11 @@ struct neM3 {
 
     NEINLINE neM3 &SkewSymmetric(const neV3 &V);
 
-    NEINLINE neBool IsIdentity() const;
+    NEINLINE bool IsIdentity() const;
 
-    NEINLINE neBool IsOrthogonalNormal() const;
+    NEINLINE bool IsOrthogonalNormal() const;
 
-    NEINLINE neBool IsFinite() const;
+    NEINLINE bool IsFinite() const;
 
     NEINLINE neM3 &operator+=(const neM3 &add);
 
@@ -364,7 +364,7 @@ struct neQ {
 
     NEINLINE neQ &Invert(void);
 
-    NEINLINE neBool IsFinite();
+    NEINLINE bool IsFinite();
 
     NEINLINE neQ &operator*=(const neQ &Q);
 
@@ -412,7 +412,7 @@ public:
 
     NEINLINE neV3 operator*(const neV3 &v);
 
-    NEINLINE neBool IsFinite();
+    NEINLINE bool IsFinite();
 
 public:
     NEINLINE void MakeD3DCompatibleMatrix() {

@@ -29,7 +29,7 @@ public:
 
     void Resolve();
 
-    void AddToSolver(neBool addCheader);
+    void AddToSolver(bool addCheader);
 
     neStackHeader *CheckAcceptNewHeader(neStackHeader *newHeader);
 
@@ -39,9 +39,9 @@ public:
 
     void CheckHeader(neStackHeader *sh);
 
-    neBool isResolved;
-    neBool isTerminator;
-    neBool isBroken;
+    bool isResolved;
+    bool isTerminator;
+    bool isBroken;
     neStackHeader *stackHeader;
     neRigidBody_ *body;
     s32 startTime;
@@ -61,10 +61,10 @@ public:
     neStackInfo *head;
     neStackInfo *tail;
     s32 infoCount;
-    neBool isHeaderX;
-    neBool isAllIdle;
+    bool isHeaderX;
+    bool isAllIdle;
     static s32 golbalTime;
-    neBool dynamicSolved;
+    bool dynamicSolved;
 
     void Null() {
         head = nullptr;
@@ -158,7 +158,7 @@ public:
         add->stackHeader = nullptr;
     }
 
-    neBool Check(neStackInfo *st) {
+    bool Check(neStackInfo *st) {
         s32 c = 0;
 
         neStackInfoItem *item = (neStackInfoItem *) head;
@@ -180,7 +180,7 @@ public:
         return false;
     }
 
-    neBool CheckStackDisconnected();
+    bool CheckStackDisconnected();
 
     neRigidBody_ *GetBottomStackBody() {
         return nullptr;
@@ -233,7 +233,7 @@ public:
 
     void ChangeHeader(neStackHeader *newHeader);
 
-    void AddToSolver(/*neBool withConstraint*/);
+    void AddToSolver(/*bool withConstraint*/);
 
     void AddToSolverNoConstraintHeader();
 

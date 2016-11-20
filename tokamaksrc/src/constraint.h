@@ -59,7 +59,7 @@ using neConstraintHandle = neCollection<_neConstraint>::itemType;
 struct neLimitState {
     s32 limitType;
 
-    neBool applyLimitImpulse;
+    bool applyLimitImpulse;
 
     neV3 limitAxis;
 
@@ -67,9 +67,9 @@ struct neLimitState {
 
     neV3 limitNormalB;
 
-    neBool lowerLimitOn; // false means upper limit
+    bool lowerLimitOn; // false means upper limit
 
-    neBool enableLimit;
+    bool enableLimit;
 
     f32 limitAngularPenetration;
 
@@ -103,7 +103,7 @@ struct neLimitState {
 };
 
 struct neMotor {
-    neBool enable;
+    bool enable;
 
     neJoint::MotorType motorType;
 
@@ -164,9 +164,9 @@ public:
 	f32 clength[2];
 	f32 clengthSq[2];
 */
-    neBool enable;
+    bool enable;
 
-    neBool infiniteMassB;
+    bool infiniteMassB;
 
     f32 accuracy;
 
@@ -180,7 +180,7 @@ public:
 
     f32 jointDampingFactor;
 
-    neBool alreadySetup;
+    bool alreadySetup;
     /*
 
       apply limit
@@ -192,7 +192,7 @@ public:
 
     neJoint::ConstraintType type;
 
-    void Enable(neBool yes);
+    void Enable(bool yes);
 
     void GeneratePointsFromFrame();
 
@@ -208,7 +208,7 @@ public:
 
 //	f32 ApplyConstraintImpulse(neFixedTimeStepSimulator & sim);
 
-    void InfiniteMassB(neBool yes);
+    void InfiniteMassB(bool yes);
 
     void AddToRigidBody();
 
@@ -260,7 +260,7 @@ public:
     _neConstraint *head;
     _neConstraint *tail;
 
-    neBool solved;
+    bool solved;
 
     s32 flag;
 
@@ -307,11 +307,11 @@ public:
     }
     //void Purge(neFixedTimeStepSimulator * sim);
 
-    void TraverseApplyConstraint(neBool autoSleep);
+    void TraverseApplyConstraint(bool autoSleep);
 
-    neBool StationaryCheck();
+    bool StationaryCheck();
 
-    void BecomeIdle(neBool checkResting = false);
+    void BecomeIdle(bool checkResting = false);
 
     void WakeUp();
 

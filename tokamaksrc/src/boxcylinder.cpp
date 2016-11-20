@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace) {
+bool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace) {
     neV3 diff = trans->pos - transB.pos;
 
     neV3 dir = trans->rot[whichFace];
@@ -93,7 +93,7 @@ neBool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB,
     return true;
 }
 
-neBool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichEdge) {
+bool BoxTestParam::CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichEdge) {
     neV3 diff = trans->pos - transB.pos;
 
     neV3 dir = trans->rot[whichEdge].Cross(transB.rot[1]);

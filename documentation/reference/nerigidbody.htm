@@ -143,7 +143,7 @@ u32</font> <font COLOR="#880000">GetUserData</font>();</p>
 <p><font color="#0000FF">s32</font> <font COLOR="#880000"><a name="GetGeometryCount">GetGeometryCount</a></font>();<font COLOR="#0000ff"><br>
 neGeometry</font> * <font COLOR="#880000">AddGeometry</font>();<br>
 <font color="#0000FF">
-neBool</font> <font COLOR="#880000">RemoveGeometry</font>(<font COLOR="#0000ff">neGeometry</font>
+bool</font> <font COLOR="#880000">RemoveGeometry</font>(<font COLOR="#0000ff">neGeometry</font>
 * <font COLOR="#808080">g</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateGeometry</font>();<font COLOR="#0000ff"><br>
 neGeometry</font> * <font COLOR="#880000">GetNextGeometry</font>();</p>
@@ -165,7 +165,7 @@ the newly created rigid body.</p>
 <hr>
 <p><font COLOR="#0000ff">neSensor</font> * <font COLOR="#880000"><a name="AddSensor">AddSensor</a></font>();<br>
 <font color="#0000FF">
-neBool</font> <font COLOR="#880000">RemoveSensor</font>(<font COLOR="#0000ff">neSensor</font>
+bool</font> <font COLOR="#880000">RemoveSensor</font>(<font COLOR="#0000ff">neSensor</font>
 * <font COLOR="#808080">s</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateSensor</font>();<font COLOR="#0000ff"><br>
 neSensor</font> * <font COLOR="#880000">GetNextSensor</font>();</p>
@@ -176,7 +176,7 @@ body. See <font color="#880000">neSensor</font>.</p>
 <p><font COLOR="#0000ff">neRigidBodyController</font> * <font COLOR="#880000"><a name="AddController">AddController</a></font>(<font COLOR="#0000ff">neRigidBodyControllerCallback</font>
 * <font COLOR="#808080">controller</font>, <font color="#0000FF"> s32</font> <font COLOR="#808080">period</font>);<br>
 <font color="#0000FF">
-neBool</font> <font COLOR="#880000">RemoveController</font>(<font COLOR="#0000ff">neRigidBodyController</font>
+bool</font> <font COLOR="#880000">RemoveController</font>(<font COLOR="#0000ff">neRigidBodyController</font>
 * <font COLOR="#808080">rbController</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateController</font>();<font COLOR="#0000ff"><br>
 neRigidBodyController</font> * <font COLOR="#880000">GetNextController</font>();</p>
@@ -268,31 +268,31 @@ neV3</font> &amp; <font COLOR="#808080">twist</font>);</p>
 <p><a href="#neRigidBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
 <p><font COLOR="#0000ff">
-void </font><a name="GravityEnable"><font COLOR="#880000">GravityEnable</font></a>(<font COLOR="#0000ff">neBool</font>
+void </font><a name="GravityEnable"><font COLOR="#880000">GravityEnable</font></a>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>);<br>
-<font color="#0000FF">neBool</font>  <font color="#880000">GravityEnable</font>();</p>
+<font color="#0000FF">bool</font>  <font color="#880000">GravityEnable</font>();</p>
 <p>Enable or disable gravity for the rigid body. If gravity is enabled, the rigid 
   body will have a force equal to</p>
 <p>&nbsp;&nbsp;&nbsp; gravity x mass</p>
 <p>automatically applied to it by the simulator.</p>
 <p><a href="#neRigidBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
-<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="CollideConnected">CollideConnected</a></font>(<font color="#0000FF">neBool</font>
+<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="CollideConnected">CollideConnected</a></font>(<font color="#0000FF">bool</font>
 <font COLOR="#808080">yes</font>);<br>
 <font color="#0000FF">
-neBool</font>  <font COLOR="#880000">CollideConnected</font>();</p>
+bool</font>  <font COLOR="#880000">CollideConnected</font>();</p>
 <p>Define whether or not a rigid body will collide with another body connected 
   to it via joints (<font color="#880000">neJoint</font>). The behaviour defined 
   by this function overrides the behaviour defined by the <font color="#880000">neCollisionTable</font>.</p>
 <p><a href="#neRigidBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
-<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Active">Active</a></font>(<font color="#0000FF">neBool</font> <font COLOR="#808080">yes</font>,
+<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Active">Active</a></font>(<font color="#0000FF">bool</font> <font COLOR="#808080">yes</font>,
 <font COLOR="#0000ff">neRigidBody</font> * <font COLOR="#808080">hint</font> = <font COLOR="#a000a0">NULL</font>);<font COLOR="#0000ff"><br>
-void</font> <font COLOR="#880000">Active</font>(<font color="#0000FF">neBool</font> <font COLOR="#808080">yes</font>,
+void</font> <font COLOR="#880000">Active</font>(<font color="#0000FF">bool</font> <font COLOR="#808080">yes</font>,
 <font COLOR="#0000ff">neAnimatedBody</font> * <font COLOR="#808080">hint</font>
 = <font COLOR="#a000a0">NULL</font>);<br>
 <font color="#0000FF">
-neBool</font>  <font COLOR="#880000">Active</font>();</p>
+bool</font>  <font COLOR="#880000">Active</font>();</p>
 
 <p>Activate or deactivate the rigid body. When a rigid body is deactivated, the 
   simulator will not update its dynamic state, will not call its controllers, 

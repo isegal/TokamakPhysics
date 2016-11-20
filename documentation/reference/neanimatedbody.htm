@@ -104,7 +104,7 @@ neT3</font> <font COLOR="#880000">GetTransform</font>();</p>
 <hr>
 <p><font COLOR="#0000ff">s32</font> <font COLOR="#880000"><a name="GetGeometryCount">GetGeometryCount</a></font>();<font COLOR="#0000ff"><br>
 neGeometry</font> * <font COLOR="#880000">AddGeometry</font>();<font COLOR="#0000ff"><br>
-neBool</font> <font COLOR="#880000">RemoveGeometry</font>(<font COLOR="#0000ff">neGeometry</font>
+bool</font> <font COLOR="#880000">RemoveGeometry</font>(<font COLOR="#0000ff">neGeometry</font>
 * <font COLOR="#808080">g</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateGeometry</font>();<font COLOR="#0000ff"><br>
 neGeometry</font> * <font COLOR="#880000">GetNextGeometry</font>();</p>
@@ -125,7 +125,7 @@ the newly created rigid body.</p>
 <p><a href="#class neAnimatedBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
 <p><font COLOR="#0000ff">neSensor</font> * <font COLOR="#880000"><a name="AddSensor">AddSensor</a></font>();<font COLOR="#0000ff"><br>
-neBool</font> <font COLOR="#880000">RemoveSensor</font>(<font COLOR="#0000ff">neSensor</font>
+bool</font> <font COLOR="#880000">RemoveSensor</font>(<font COLOR="#0000ff">neSensor</font>
 * <font COLOR="#808080">s</font>);<font COLOR="#0000ff"><br>
 void</font> <font COLOR="#880000">BeginIterateSensor</font>();<font COLOR="#0000ff"><br>
 neSensor</font> * <font COLOR="#880000">GetNextSensor</font>();</p>
@@ -139,21 +139,21 @@ neSensor</font> * <font COLOR="#880000">GetNextSensor</font>();</p>
   the internal bounding information.</p>
 <p><a href="#class neAnimatedBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
-<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="CollideConnected">CollideConnected</a></font>(<font COLOR="#0000ff">neBool</font>
+<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="CollideConnected">CollideConnected</a></font>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>);<font COLOR="#0000ff"><br>
-neBool</font> <font COLOR="#880000">CollideConnected</font>();</p>
+bool</font> <font COLOR="#880000">CollideConnected</font>();</p>
 <p>Define whether or not an animated&nbsp; body will collide with another body 
   connected to it via joints (<font color="#880000">neJoint</font>). The behaviour 
   defined by this function overrides the behaviour defined by the <font color="#880000">neCollisionTable</font>.</p>
 <p><a href="#class neAnimatedBody"><i>&lt;back to top&gt;</i></a></p>
 <hr>
-<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Active">Active</a></font>(<font COLOR="#0000ff">neBool</font>
+<p><font COLOR="#0000ff">void</font> <font COLOR="#880000"><a name="Active">Active</a></font>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>, <font COLOR="#0000ff">neRigidBody</font> * <font COLOR="#808080">hint</font>
 = <font COLOR="#a000a0">NULL</font>);<font COLOR="#0000ff"><br>
-void</font> <font COLOR="#880000">Active</font>(<font COLOR="#0000ff">neBool</font>
+void</font> <font COLOR="#880000">Active</font>(<font COLOR="#0000ff">bool</font>
 <font COLOR="#808080">yes</font>, <font COLOR="#0000ff">neAnimatedBody</font> * <font COLOR="#808080">hint</font>
 = <font COLOR="#a000a0">NULL</font>);<font COLOR="#0000ff"><br>
-neBool</font> <font COLOR="#880000">Active</font>();</p>
+bool</font> <font COLOR="#880000">Active</font>();</p>
 
 <p>Activate or deactivate the animated body. When an animated body is deactivated, 
   the simulator will not perform a collision test on the animated body.</p>

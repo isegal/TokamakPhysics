@@ -111,7 +111,7 @@ NEINLINE IceMaths::Matrix4x4 & neT3::AssignIceMatrix(IceMaths::Matrix4x4 & mat) 
     return mat;
 }
 
-neBool neT3::IsFinite()
+bool neT3::IsFinite()
 {
     return ((*this).rot.IsFinite() && (*this).pos.IsFinite());
 }

@@ -79,8 +79,8 @@ struct JointData
 	f32 xAxisAngle;
 	f32 lowerLimit;
 	f32 upperLimit;
-	neBool enableLimit;
-	neBool enableTwistLimit;
+	bool enableLimit;
+	bool enableTwistLimit;
 	f32 twistLimit;
 };
 

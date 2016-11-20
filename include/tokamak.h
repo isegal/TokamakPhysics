@@ -197,28 +197,28 @@ public:
 
     void SetBoxSize(const neV3 &boxSize);
 
-    neBool GetBoxSize(neV3 &boxSize); // return false if geometry is not a box
+    bool GetBoxSize(neV3 &boxSize); // return false if geometry is not a box
 
     /*
         Sphere
     */
     void SetSphereDiameter(f32 diameter);
 
-    neBool GetSphereDiameter(f32 &diameter); // return false if geometry is not a sphere
+    bool GetSphereDiameter(f32 &diameter); // return false if geometry is not a sphere
 
     /*
         Cylinder
     */
     void SetCylinder(f32 diameter, f32 height);
 
-    neBool GetCylinder(f32 &diameter, f32 &height); // return false if geometry is not a cylinder
+    bool GetCylinder(f32 &diameter, f32 &height); // return false if geometry is not a cylinder
 
     /*
         Convex
     */
     void SetConvexMesh(neByte *convexData);
 
-    neBool GetConvexMesh(neByte *&convexData);
+    bool GetConvexMesh(neByte *&convexData);
 
     /*
         Breakage functions
@@ -381,7 +381,7 @@ public:
 
     neGeometry *AddGeometry();
 
-    neBool RemoveGeometry(neGeometry *g);
+    bool RemoveGeometry(neGeometry *g);
 
     void BeginIterateGeometry();
 
@@ -391,36 +391,36 @@ public:
 
     neSensor *AddSensor();
 
-    neBool RemoveSensor(neSensor *s);
+    bool RemoveSensor(neSensor *s);
 
     void BeginIterateSensor();
 
     neSensor *GetNextSensor();
 
-    void UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius);
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius);
 
-    neBool UseCustomCollisionDetection();
+    bool UseCustomCollisionDetection();
 
 //functions
     void UpdateBoundingInfo();
 
     // collide with any body which connected to this body indirectly
 
-    void CollideConnected(neBool yes);
+    void CollideConnected(bool yes);
 
-    neBool CollideConnected();
+    bool CollideConnected();
 
     // collide with any body which connected to this body directly
 
-    void CollideDirectlyConnected(neBool yes);
+    void CollideDirectlyConnected(bool yes);
 
-    neBool CollideDirectlyConnected();
+    bool CollideDirectlyConnected();
 
-    void Active(neBool yes, neRigidBody *hint = nullptr);
+    void Active(bool yes, neRigidBody *hint = nullptr);
 
-    void Active(neBool yes, neAnimatedBody *hint = nullptr);
+    void Active(bool yes, neAnimatedBody *hint = nullptr);
 
-    neBool Active();
+    bool Active();
 };
 
 /****************************************************************************
@@ -488,7 +488,7 @@ public:
 
     neGeometry *AddGeometry();
 
-    neBool RemoveGeometry(neGeometry *g);
+    bool RemoveGeometry(neGeometry *g);
 
     void BeginIterateGeometry();
 
@@ -496,13 +496,13 @@ public:
 
     neRigidBody *BreakGeometry(neGeometry *g);
 
-    void UseCustomCollisionDetection(neBool yes, const neT3 *obb, f32 boundingRadius);
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, f32 boundingRadius);
 
-    neBool UseCustomCollisionDetection();
+    bool UseCustomCollisionDetection();
 
     neSensor *AddSensor();
 
-    neBool RemoveSensor(neSensor *s);
+    bool RemoveSensor(neSensor *s);
 
     void BeginIterateSensor();
 
@@ -510,7 +510,7 @@ public:
 
     neRigidBodyController *AddController(neRigidBodyControllerCallback *controller, s32 period);
 
-    neBool RemoveController(neRigidBodyController *rbController);
+    bool RemoveController(neRigidBodyController *rbController);
 
     void BeginIterateController();
 
@@ -565,29 +565,29 @@ public:
 
     void ApplyTwist(const neV3 &twist);
 
-    void GravityEnable(neBool yes);
+    void GravityEnable(bool yes);
 
-    neBool GravityEnable();
+    bool GravityEnable();
 
     // collide with any body which connected to this body indirectly
 
-    void CollideConnected(neBool yes);
+    void CollideConnected(bool yes);
 
-    neBool CollideConnected();
+    bool CollideConnected();
 
     // collide with any body which connected to this body directly
 
-    void CollideDirectlyConnected(neBool yes);
+    void CollideDirectlyConnected(bool yes);
 
-    neBool CollideDirectlyConnected();
+    bool CollideDirectlyConnected();
 
-    void Active(neBool yes, neRigidBody *hint = nullptr);
+    void Active(bool yes, neRigidBody *hint = nullptr);
 
-    void Active(neBool yes, neAnimatedBody *hint = nullptr);
+    void Active(bool yes, neAnimatedBody *hint = nullptr);
 
-    neBool Active();
+    bool Active();
 
-    neBool IsIdle();
+    bool IsIdle();
 };
 
 /****************************************************************************
@@ -635,9 +635,9 @@ public:
 
     neAnimatedBody *GetAnimatedBodyB();
 
-    void Enable(neBool yes);
+    void Enable(bool yes);
 
-    neBool Enable();
+    bool Enable();
 
     void SetDampingFactor(f32 damp);
 
@@ -654,9 +654,9 @@ public:
     /*
         Constraint primary limit functions
     */
-    neBool EnableLimit();
+    bool EnableLimit();
 
-    void EnableLimit(neBool yes);
+    void EnableLimit(bool yes);
 
     f32 GetUpperLimit();
 
@@ -670,9 +670,9 @@ public:
         Constraint secondary limit functions (only apply to some Constraint types)
     */
 
-    neBool EnableLimit2();
+    bool EnableLimit2();
 
-    void EnableLimit2(neBool yes);
+    void EnableLimit2(bool yes);
 
     f32 GetUpperLimit2();
 
@@ -699,7 +699,7 @@ public:
 
     neJointController *AddController(neJointControllerCallback *controller, s32 period);
 
-    neBool RemoveController(neJointController *rbController);
+    bool RemoveController(neJointController *rbController);
 
     void BeginIterateController();
 
@@ -713,17 +713,17 @@ public:
         NE_MOTOR_POSITION, //not implemented
     };
 
-    neBool EnableMotor();
+    bool EnableMotor();
 
-    void EnableMotor(neBool yes);
+    void EnableMotor(bool yes);
 
     void SetMotor(MotorType motorType, f32 desireValue, f32 maxForce);
 
     void GetMotor(MotorType &motorType, f32 &desireValue, f32 &maxForce);
 
-    neBool EnableMotor2();
+    bool EnableMotor2();
 
-    void EnableMotor2(neBool yes);
+    void EnableMotor2(bool yes);
 
     void SetMotor2(MotorType motorType, f32 desireValue, f32 maxForce);
 
@@ -945,9 +945,9 @@ struct neCustomCDInfo {
     s32 materialIdB;
 };
 
-using neCustomCDRB2RBCallback = neBool (neRigidBody *, neRigidBody *, neCustomCDInfo &);
+using neCustomCDRB2RBCallback = bool (neRigidBody *, neRigidBody *, neCustomCDInfo &);
 
-using neCustomCDRB2ABCallback = neBool (neRigidBody *, neAnimatedBody *, neCustomCDInfo &);
+using neCustomCDRB2ABCallback = bool (neRigidBody *, neAnimatedBody *, neCustomCDInfo &);
 
 class TOKAMAK_API neSimulator {
 NE_INTERFACE(neSimulator)

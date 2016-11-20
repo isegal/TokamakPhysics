@@ -110,7 +110,7 @@ void Cylinder2TerrainTest(neCollisionResult &result, TConvex &cylinderA, neT3 &t
     }
 }
 
-neBool CylinderTriTest_PlaneEnd(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, TriangleParam &tri) {
+bool CylinderTriTest_PlaneEnd(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, TriangleParam &tri) {
     f32 dist = trans.pos.Dot(tri.normal) - tri.d;
 
     neV3 dir;
@@ -174,7 +174,7 @@ neBool CylinderTriTest_PlaneEnd(TConvex &cylinder, neT3 &trans, ConvexTestResult
     return true;
 }
 
-neBool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, neV3 &point1, neV3 &point2) {
+bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, neV3 &point1, neV3 &point2) {
     ConvexTestResult cr;
 
     cr.edgeA[0] = trans.pos + trans.rot[1] * cylinder.CylinderHalfHeight();
@@ -308,7 +308,7 @@ neBool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &re
     return true;
 }
 
-neBool CylinderTriTest(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, TriangleParam &tri) {
+bool CylinderTriTest(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, TriangleParam &tri) {
     // test plane of triangle and rim of cylinder
     result.valid = false;
     result.depth = 1.0e6f;
@@ -329,7 +329,7 @@ neBool CylinderTriTest(TConvex &cylinder, neT3 &trans, ConvexTestResult &result,
 }
 
 void TestCylinderVertEdge(neCollisionResult &result, neV3 &edgeA1, neV3 &edgeA2, neV3 &vertB,
-                          TConvex &cA, TConvex &cB, neT3 &transA, neT3 &transB, neBool flip) {
+                          TConvex &cA, TConvex &cB, neT3 &transA, neT3 &transB, bool flip) {
     neV3 project;
 
     f32 dist = vertB.GetDistanceFromLine2(project, edgeA1, edgeA2);
@@ -397,7 +397,7 @@ void Cylinder2CylinderTest(neCollisionResult &result, TConvex &cA, neT3 &transA,
 
     f32 len = dir.Length();
 
-    neBool isParallel = neIsConsiderZero(len);
+    bool isParallel = neIsConsiderZero(len);
 
     s32 doVertCheck = 0;
 

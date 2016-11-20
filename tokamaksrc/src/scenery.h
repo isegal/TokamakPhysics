@@ -115,7 +115,7 @@ public:
 
     ~neTriangleTree();
 
-    neBool BuildTree(neV3 *vertices, s32 vertexCount, neTriangle *tris, s32 triCount, neAllocatorAbstract *_alloc);
+    bool BuildTree(neV3 *vertices, s32 vertexCount, neTriangle *tris, s32 triCount, neAllocatorAbstract *_alloc);
 
     void FreeTree();
 

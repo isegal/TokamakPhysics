@@ -47,9 +47,9 @@ struct ConvexTestResult {
     bool isEdgeEdge;
     bool needTransform;
 
-    neBool ComputerEdgeContactPoint(ConvexTestResult &res);
+    bool ComputerEdgeContactPoint(ConvexTestResult &res);
 
-    neBool ComputerEdgeContactPoint2(f32 &au, f32 &bu);
+    bool ComputerEdgeContactPoint2(f32 &au, f32 &bu);
 
     void Reverse() {
         neSwap(contactA, contactB);
@@ -76,7 +76,7 @@ public:
 
     bool MeasureVertexFacePeneration(ConvexTestResult &result, BoxTestParam &otherBox, s32 whichFace);
 
-    neBool MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam &otherBox, s32 dim1, s32 dim2);
+    bool MeasureEdgePeneration(ConvexTestResult &result, BoxTestParam &otherBox, s32 dim1, s32 dim2);
 
     bool TriTest(ConvexTestResult &result, TriangleParam &tri);
 
@@ -90,24 +90,24 @@ public:
 
     //cylinder functions
 
-    //neBool CylinderEndVertexTest(ConvexTestResult & res, TConvex & cylinder);
+    //bool CylinderEndVertexTest(ConvexTestResult & res, TConvex & cylinder);
 
-    //neBool CylinderRimFaceTest(ConvexTestResult & res, TConvex & cylinder, s32 whichFace);
+    //bool CylinderRimFaceTest(ConvexTestResult & res, TConvex & cylinder, s32 whichFace);
 
-    neBool CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace);
+    bool CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace);
 
-    //neBool CylinderEdgeTest(ConvexTestResult & res, TConvex & cylinder, s32 whichEdge);
+    //bool CylinderEdgeTest(ConvexTestResult & res, TConvex & cylinder, s32 whichEdge);
 
-    neBool CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinder, neT3 &transB, s32 whichEdge);
+    bool CylinderEdgeTest(ConvexTestResult &res, TConvex &cylinder, neT3 &transB, s32 whichEdge);
 
-    neBool LineTest(ConvexTestResult &res, neV3 &point1, neV3 &point2);
+    bool LineTest(ConvexTestResult &res, neV3 &point1, neV3 &point2);
 };
 
 void ChooseAxis(neV3 &x, neV3 &y, const neV3 &normal);
 
-neBool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri);
+bool SphereTriTest(const neV3 &center, f32 radius, ConvexTestResult &result, TriangleParam &tri);
 
-neBool CylinderTriTest(TConvex &sphere, neT3 &trans, ConvexTestResult &result, TriangleParam &tri);
+bool CylinderTriTest(TConvex &sphere, neT3 &trans, ConvexTestResult &result, TriangleParam &tri);
 
-neBool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, neV3 &point1, neV3 &point2);
+bool CylinderTriTest_Line(TConvex &cylinder, neT3 &trans, ConvexTestResult &result, neV3 &point1, neV3 &point2);
 

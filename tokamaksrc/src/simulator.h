@@ -332,7 +332,7 @@ public:
 
     void Initialise(const neV3 &gravity);
 
-    neRigidBody_ *CreateRigidBody(neBool isParticle = false);
+    neRigidBody_ *CreateRigidBody(bool isParticle = false);
 
     neRigidBody_ *CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody);
 
@@ -388,7 +388,7 @@ public:
 
     void GetMemoryAllocated(s32 &memoryAllocated);
 
-    neBool CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint, neV3 &impulse);
+    bool CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint, neV3 &impulse);
 
     void ResetTotalForce();
 
@@ -414,7 +414,7 @@ public:
 
     void SetGravity(const neV3 &g);
 
-    neV3 CalcNormalImpulse(neCollisionResult &cresult, neBool isContact);
+    neV3 CalcNormalImpulse(neCollisionResult &cresult, bool isContact);
 
     void ResetStackHeaderFlag();
 
