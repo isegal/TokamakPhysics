@@ -15,12 +15,8 @@
 #include "containers.h"
 #include "collision.h"
 #include "collision2.h"
-#include "constraint.h"
-#include "rigidbody.h"
 #include "scenery.h"
 
-#include <assert.h>
-#include <stdio.h>
 
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
 

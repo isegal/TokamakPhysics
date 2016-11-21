@@ -14,7 +14,6 @@
 #pragma inline_recursion( on )
 #pragma inline_depth( 250 )
 
-#include "stdio.h"
 
 /*
 #ifdef _WIN32
@@ -23,15 +22,9 @@
 */
 
 #include "tokamak.h"
-#include "containers.h"
 #include "collision.h"
 #include "constraint.h"
 #include "rigidbody.h"
-#include "scenery.h"
-#include "scenery.h"
-#include "simulator.h"
-#include "stack.h"
-#include "message.h"
 
 
 /****************************************************************************

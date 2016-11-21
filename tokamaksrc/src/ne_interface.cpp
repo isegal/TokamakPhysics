@@ -11,8 +11,6 @@
  *                                                                       *
  *************************************************************************/
 
-#include <utility>
-
 #include "math/ne_type.h"
 #include "math/ne_debug.h"
 #include "tokamak.h"
@@ -27,10 +25,6 @@
 #endif
 
 #include "simulator.h"
-#include "stack.h"
-#include "message.h"
-
-#include "stdio.h"
 
 #define CAST_THIS(a, b) a& b = reinterpret_cast<a&>(*this);
 

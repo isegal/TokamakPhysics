@@ -20,12 +20,9 @@
 #include "rigidbody.h"
 #include "scenery.h"
 #include "simulator.h"
-#include "stack.h"
-#include "scenery.h"
 #include "message.h"
 
 //#include <assert.h>
-#include <stdio.h>
 
 #ifdef _WIN32
 #include <windows.h>

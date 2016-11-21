@@ -25,8 +25,6 @@
 #endif
 */
 #include "simulator.h"
-#include "stack.h"
-#include "scenery.h"
 
 /*
 #include <algorithm>

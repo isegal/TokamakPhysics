@@ -21,7 +21,6 @@
  *                                                                       *
  *************************************************************************/
 
-#include "stdio.h"
 /*
 #ifdef _WIN32
 #include <windows.h>
@@ -35,9 +34,7 @@
 #include "rigidbody.h"
 #include "scenery.h"
 #include "simulator.h"
-#include "stack.h"
 #include "dcd.h"
-#include "message.h"
 
 s32 currentMicroStep = 0;
 

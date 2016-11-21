@@ -13,6 +13,7 @@
 
 #ifndef COLLISION_H
 #define COLLISION_H
+#include "containers.h"
 
 typedef enum {
     IMPULSE_IGNORE,

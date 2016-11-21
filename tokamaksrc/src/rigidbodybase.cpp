@@ -28,9 +28,7 @@
 #include "constraint.h"
 #include "rigidbody.h"
 #include "scenery.h"
-#include "scenery.h"
 #include "simulator.h"
-#include "stack.h"
 #include "message.h"
 
 /****************************************************************************

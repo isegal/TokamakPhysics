@@ -15,13 +15,7 @@
 #include "containers.h"
 #include "collision.h"
 #include "collision2.h"
-#include "constraint.h"
-#include "rigidbody.h"
 #include "scenery.h"
-#include "scenery.h"
-#include "simulator.h"
-#include "stack.h"
-#include "message.h"
 #include "dcd.h"
 
 const s32 BOX_NUM_FACES = 6;

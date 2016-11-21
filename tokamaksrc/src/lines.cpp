@@ -23,10 +23,6 @@
 #include "constraint.h"
 #include "rigidbody.h"
 #include "scenery.h"
-#include "scenery.h"
-#include "simulator.h"
-#include "stack.h"
-#include "message.h"
 
 void CollisionTestSensor(TConvex *obbA, neSensor_ *sensorsA, neT3 &transA, neCollision &colB, neT3 &transB,
                          neRigidBodyBase *body) {

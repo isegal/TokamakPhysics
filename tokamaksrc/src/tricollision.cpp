@@ -15,11 +15,7 @@
 #include "containers.h"
 #include "collision.h"
 #include "collision2.h"
-#include "dcd.h"
 #include "scenery.h"
-
-#include <assert.h>
-#include <stdio.h>
 
 extern s32 currentMicroStep;
 

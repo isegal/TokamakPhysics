@@ -12,15 +12,8 @@
  *************************************************************************/
 
 #include "tokamak.h"
-#include "containers.h"
 #include "collision.h"
 #include "collision2.h"
-#include "constraint.h"
-#include "rigidbody.h"
-#include "scenery.h"
-
-#include <assert.h>
-#include <stdio.h>
 
 bool BoxTestParam::CylinderFaceTest(ConvexTestResult &res, TConvex &cylinderB, neT3 &transB, s32 whichFace) {
     neV3 diff = trans->pos - transB.pos;

@@ -19,7 +19,6 @@
 #include "constraint.h"
 #include "rigidbody.h"
 #include "scenery.h"
-#include "scenery.h"
 /*
 #ifdef _WIN32
 #include <windows.h>

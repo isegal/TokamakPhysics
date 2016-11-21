@@ -15,12 +15,8 @@
 #include "containers.h"
 #include "collision.h"
 #include "collision2.h"
-#include "constraint.h"
-#include "rigidbody.h"
 #include "scenery.h"
 
-#include <assert.h>
-#include <stdio.h>
 
 #define INSIDE_BOX_BOUNDARY(_dir) (flag2[_dir] < 0.0f)
 

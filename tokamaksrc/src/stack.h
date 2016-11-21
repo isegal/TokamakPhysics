@@ -17,6 +17,7 @@
 #define NE_MAX_REST_ON 3
 
 class neStackHeader;
+class neRigidBody_;
 
 class neStackInfo {
 public:

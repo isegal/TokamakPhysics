@@ -20,7 +20,6 @@
 #include "rigidbody.h"
 #include "scenery.h"
 #include "simulator.h"
-#include "stack.h"
 #include "message.h"
 
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
