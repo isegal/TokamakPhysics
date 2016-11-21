@@ -14,7 +14,7 @@
 #pragma inline_recursion( on )
 #pragma inline_depth( 250 )
 
-#include "stdio.h"
+#include <cstdio>
 
 /*
 #ifdef _WIN32

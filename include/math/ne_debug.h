@@ -19,7 +19,7 @@
 #include <stdio.h>
 #endif
 
-#include <assert.h>
+#include <cassert>
 
 #ifdef VERIFY
 #undef VERIFY

@@ -11,7 +11,7 @@
  *                                                                       *
  *************************************************************************/
 
-#include "stdio.h"
+#include <cstdio>
 
 #include "tokamak.h"
 #include "containers.h"

@@ -15,7 +15,7 @@
 #define NE_TYPE_H
 
 #include <cstdint>
-#include <stdarg.h>
+#include <cstdarg>
 //#include <tchar.h>
 //#include <strsafe.h>
 ///////////////////////////////////////////////////////////////////////////

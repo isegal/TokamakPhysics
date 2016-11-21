@@ -27,8 +27,8 @@
 #include "simulator.h"
 #include "stack.h"
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 /****************************************************************************
 *

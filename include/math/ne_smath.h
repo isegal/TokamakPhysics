@@ -15,7 +15,7 @@
 #define NE_SMATH_H
 
 #include "ne_type.h"
-#include <math.h>
+#include <cmath>
 
 #define NE_PI    (3.141592653589793238462643f)
 

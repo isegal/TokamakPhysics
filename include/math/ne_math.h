@@ -20,8 +20,8 @@
 
 #endif //USE_OPCODE
 
-#include <math.h>
-#include <float.h>
+#include <cmath>
+#include <cfloat>
 #include "ne_debug.h"
 #include "ne_smath.h"
 #include "ne_type.h"
