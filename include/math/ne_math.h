@@ -57,11 +57,11 @@ public:
 		//__m128 m;
 	};
 */
-    NEINLINE neV3 &SetZero(void);
+    NEINLINE neV3 &SetZero();
 
-    NEINLINE neV3 &SetOne(void);
+    NEINLINE neV3 &SetOne();
 
-    NEINLINE neV3 &SetHalf(void);
+    NEINLINE neV3 &SetHalf();
 
     NEINLINE neV3 &Set(neReal value);
 
@@ -87,9 +87,9 @@ public:
 
     NEINLINE neReal W() const;
 
-    NEINLINE void Normalize(void);
+    NEINLINE void Normalize();
 
-    NEINLINE neReal Length(void) const;
+    NEINLINE neReal Length() const;
 
     NEINLINE neReal Dot(const neV3 &V) const;
 
@@ -101,9 +101,9 @@ public:
 
     NEINLINE void RotateZ(neRadian Rz);
 
-    NEINLINE neRadian GetPitch(void) const;
+    NEINLINE neRadian GetPitch() const;
 
-    NEINLINE neRadian GetYaw(void) const;
+    NEINLINE neRadian GetYaw() const;
 
     NEINLINE void SetBoxTensor(neReal width, neReal height, neReal depth, neReal mass);
 
@@ -173,7 +173,7 @@ struct neV4 {
     neReal X, Y, Z, W;
 
     // functions
-    NEINLINE neV4(void);
+    NEINLINE neV4();
 
     NEINLINE neV4(neReal x, neReal y, neReal z, neReal w);
 
@@ -181,7 +181,7 @@ struct neV4 {
 
     NEINLINE neV4(const neV4 &V);
 
-    NEINLINE void SetZero(void);
+    NEINLINE void SetZero();
 
     NEINLINE void Set(neReal x, neReal y, neReal z, neReal w);
 
@@ -195,9 +195,9 @@ struct neV4 {
 
     NEINLINE neV4 &operator-=(const neV4 &V);
 
-    NEINLINE neV4 &Normalize(void);
+    NEINLINE neV4 &Normalize();
 
-    NEINLINE neReal Length(void) const;
+    NEINLINE neReal Length() const;
 
     NEINLINE neReal Dot(const neV4 &V) const;
 
@@ -227,9 +227,9 @@ struct neM3 {
 
     NEINLINE neV3 operator[](s32 I) const;
 
-    NEINLINE void SetZero(void);
+    NEINLINE void SetZero();
 
-    NEINLINE void SetIdentity(void);
+    NEINLINE void SetIdentity();
 
     NEINLINE bool SetInvert(const neM3 &rhs);
 
@@ -289,13 +289,13 @@ struct neM4 {
 
     NEINLINE void Set(int row, int col, neReal val) { M[col][row] = val; }
 
-    NEINLINE void SetZero(void);
+    NEINLINE void SetZero();
 
-    NEINLINE void SetIdentity(void);
+    NEINLINE void SetIdentity();
 
-    NEINLINE neV3 GetScale(void) const;
+    NEINLINE neV3 GetScale() const;
 
-    NEINLINE neV3 GetTranslation(void) const;
+    NEINLINE neV3 GetTranslation() const;
 
     NEINLINE void SetTranslation(const neV3 &V);
 
@@ -338,15 +338,15 @@ struct neQ {
     neReal X, Y, Z, W;
 
     // functions
-    NEINLINE neQ(void);
+    NEINLINE neQ();
 
     NEINLINE neQ(neReal X, neReal Y, neReal Z, neReal W);
 
     NEINLINE neQ(const neM4 &M);
 
-    NEINLINE void Zero(void);
+    NEINLINE void Zero();
 
-    NEINLINE void Identity(void);
+    NEINLINE void Identity();
 
     NEINLINE void SetupFromMatrix(const neM4 &Matrix);
 
@@ -354,15 +354,15 @@ struct neQ {
 
     NEINLINE void GetAxisAngle(neV3 &Axis, neRadian &Angle) const;
 
-    NEINLINE neM4 BuildMatrix(void) const;
+    NEINLINE neM4 BuildMatrix() const;
 
-    NEINLINE neM3 BuildMatrix3(void) const;
+    NEINLINE neM3 BuildMatrix3() const;
 
-    NEINLINE neQ &Normalize(void);
+    NEINLINE neQ &Normalize();
 
     NEINLINE neReal Dot(const neQ &Q) const;
 
-    NEINLINE neQ &Invert(void);
+    NEINLINE neQ &Invert();
 
     NEINLINE bool IsFinite();
 

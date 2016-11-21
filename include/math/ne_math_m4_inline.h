@@ -40,7 +40,7 @@ neM4::Set(float row00, float row01, float row02, float row03, float row10, float
 
 //=========================================================================
 
-NEINLINE void neM4::SetZero(void) {
+NEINLINE void neM4::SetZero() {
     M[0][0] = M[1][0] = M[2][0] = M[3][0] = 0;
     M[0][1] = M[1][2] = M[2][1] = M[3][1] = 0;
     M[0][2] = M[1][3] = M[2][3] = M[3][2] = 0;
@@ -57,7 +57,7 @@ NEINLINE neReal &neM4::operator[](s32 I) {
 
 //=========================================================================
 
-NEINLINE void neM4::SetIdentity(void) {
+NEINLINE void neM4::SetIdentity() {
     M[0][1] = M[1][0] = M[2][0] = M[3][0] = 0;
     M[0][2] = M[1][2] = M[2][1] = M[3][1] = 0;
     M[0][3] = M[1][3] = M[2][3] = M[3][2] = 0;
@@ -66,7 +66,7 @@ NEINLINE void neM4::SetIdentity(void) {
 
 //=========================================================================
 
-NEINLINE neV3 neM4::GetScale(void) const {
+NEINLINE neV3 neM4::GetScale() const {
     neV3 tmp;
     return tmp.Set(M[0][0], M[1][1], M[2][2]);
 }
@@ -95,7 +95,7 @@ NEINLINE neM4 &neM4::operator*=(const neM4 &M) {
 
 //=========================================================================
 
-NEINLINE neV3 neM4::GetTranslation(void) const {
+NEINLINE neV3 neM4::GetTranslation() const {
     neV3 tmp;
     return tmp.Set(M[3][0], M[3][1], M[3][2]);
 }

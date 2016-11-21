@@ -81,7 +81,7 @@ NEINLINE void neV3::Get(neReal val[3]) {
 
 //=========================================================================
 
-NEINLINE neReal neV3::Length(void) const {
+NEINLINE neReal neV3::Length() const {
     neReal dot = this->Dot(*this);
 
     if (neIsConsiderZero(dot))
@@ -92,7 +92,7 @@ NEINLINE neReal neV3::Length(void) const {
 
 //=========================================================================
 
-NEINLINE void neV3::Normalize(void) {
+NEINLINE void neV3::Normalize() {
     neReal l = Length();
 
     if (l == 0.0f) {
@@ -140,18 +140,18 @@ NEINLINE void neV3::RotateZ(neRadian Rz) {
 
 //=========================================================================
 
-NEINLINE neV3 &neV3::SetZero(void) {
+NEINLINE neV3 &neV3::SetZero() {
     this->v[0] = this->v[1] = this->v[2] = 0.0f;
 
     return (*this);
 }
 
-NEINLINE neV3 &neV3::SetOne(void) {
+NEINLINE neV3 &neV3::SetOne() {
     this->v[0] = this->v[1] = this->v[2] = 1.0f;
     return (*this);
 }
 
-NEINLINE neV3 &neV3::SetHalf(void) {
+NEINLINE neV3 &neV3::SetHalf() {
     this->v[0] = this->v[1] = this->v[2] = 0.5f;
     return (*this);
 }
@@ -213,13 +213,13 @@ NEINLINE neV3 &neV3::operator*=(neReal S) {
 
 //=========================================================================
 
-NEINLINE neRadian neV3::GetPitch(void) const {
+NEINLINE neRadian neV3::GetPitch() const {
     return (neReal) -atan2(Y(), (neReal) sqrt(X() * X() + Z() * Z()));
 }
 
 //=========================================================================
 
-NEINLINE neRadian neV3::GetYaw(void) const {
+NEINLINE neRadian neV3::GetYaw() const {
     return (neReal) atan2(X(), Z());
 }
 

@@ -17,7 +17,7 @@
 
 //=========================================================================
 
-NEINLINE neV4::neV4(void) {}
+NEINLINE neV4::neV4() {}
 
 //=========================================================================
 
@@ -45,20 +45,20 @@ NEINLINE neV4::neV4(const neV3 &V, neReal w) {
 
 //=========================================================================
 
-NEINLINE neReal neV4::Length(void) const {
+NEINLINE neReal neV4::Length() const {
     return (neReal) sqrt(this->Dot(*this));
 }
 
 //=========================================================================
 
-NEINLINE neV4 &neV4::Normalize(void) {
+NEINLINE neV4 &neV4::Normalize() {
     *this *= 1 / Length();
     return *this;
 }
 
 //=========================================================================
 
-NEINLINE void neV4::SetZero(void) {
+NEINLINE void neV4::SetZero() {
     X = Y = Z = W = 0;
 }
 

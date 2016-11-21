@@ -17,7 +17,7 @@
 
 //=========================================================================
 
-NEINLINE neQ::neQ(void) {
+NEINLINE neQ::neQ() {
     Identity();
 }
 
@@ -38,20 +38,20 @@ NEINLINE neQ::neQ(const neM4 &M) {
 
 //==========================================================================
 
-NEINLINE void neQ::Zero(void) {
+NEINLINE void neQ::Zero() {
     X = Y = Z = W = 0;
 }
 
 //==========================================================================
 
-NEINLINE void neQ::Identity(void) {
+NEINLINE void neQ::Identity() {
     X = Y = Z = 0;
     W = 1;
 }
 
 //==========================================================================
 
-NEINLINE neQ &neQ::Invert(void) {
+NEINLINE neQ &neQ::Invert() {
     // This can be done also be negating (X,Y,Z) stead of W
     W = -W;
     return *this;
@@ -59,7 +59,7 @@ NEINLINE neQ &neQ::Invert(void) {
 
 //=========================================================================
 
-NEINLINE neM4 neQ::BuildMatrix(void) const {
+NEINLINE neM4 neQ::BuildMatrix() const {
     neM4 M;
 
     const neReal tx = 2.0f * X;
@@ -92,7 +92,7 @@ NEINLINE neM4 neQ::BuildMatrix(void) const {
     return M;
 }
 
-NEINLINE neM3 neQ::BuildMatrix3(void) const {
+NEINLINE neM3 neQ::BuildMatrix3() const {
     neM3 M;
 
     const neReal tx = 2.0f * X;
@@ -203,7 +203,7 @@ NEINLINE neReal neQ::Dot(const neQ &Q) const {
 
 //=========================================================================
 
-NEINLINE neQ &neQ::Normalize(void) {
+NEINLINE neQ &neQ::Normalize() {
     neReal t;
     neReal norm = Dot(*this);
 

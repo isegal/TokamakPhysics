@@ -25,7 +25,7 @@ NEINLINE neV3 neM3::operator[](s32 I) const {
     return M[I];
 }
 
-NEINLINE void neM3::SetZero(void) {
+NEINLINE void neM3::SetZero() {
     M[0][0] = 0.0f;
     M[1][0] = 0.0f;
     M[2][0] = 0.0f;
@@ -37,7 +37,7 @@ NEINLINE void neM3::SetZero(void) {
     M[2][2] = 0.0f;
 }
 
-NEINLINE void neM3::SetIdentity(void) {
+NEINLINE void neM3::SetIdentity() {
     M[0][1] = M[1][0] = M[2][0] = 0.0f;
     M[0][2] = M[1][2] = M[2][1] = 0.0f;
     M[0][0] = M[1][1] = M[2][2] = 1.0f;
