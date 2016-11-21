@@ -906,11 +906,11 @@ bool neAnimatedBody::Active() {
 *
 ****************************************************************************/
 
-neReal neRigidBody::GetMass() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.mass;
-}
+//neReal neRigidBody::GetMass() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.mass;
+//}
 
 /****************************************************************************
 *
@@ -918,31 +918,15 @@ neReal neRigidBody::GetMass() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetMass(neReal mass) {
-    CAST_THIS(neRigidBody_, rb);
-
-    ASSERT(neIsFinite(mass));
-
-    rb.mass = mass;
-
-    rb.oneOnMass = 1.0f / mass;
-}
-
-/****************************************************************************
-*
-*	neRigidBody::SetInertiaTensor
-*
-****************************************************************************/
-
-void neRigidBody::SetInertiaTensor(const neM3 &tensor) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.Ibody = tensor;
-
-    rb.IbodyInv.SetInvert(tensor);
-
-    //ASSERT(tensor.Invert(rb.IbodyInv));
-}
+//void neRigidBody::SetMass(neReal mass) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    ASSERT(neIsFinite(mass));
+//
+//    rb.mass = mass;
+//
+//    rb.oneOnMass = 1.0f / mass;
+//}
 
 /****************************************************************************
 *
@@ -950,21 +934,37 @@ void neRigidBody::SetInertiaTensor(const neM3 &tensor) {
 *
 ****************************************************************************/
 
-void neRigidBody::SetInertiaTensor(const neV3 &tensor) {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::SetInertiaTensor(const neM3 &tensor) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.Ibody = tensor;
+//
+//    rb.IbodyInv.SetInvert(tensor);
+//
+//    //ASSERT(tensor.Invert(rb.IbodyInv));
+//}
 
-    neM3 i;
+/****************************************************************************
+*
+*	neRigidBody::SetInertiaTensor
+*
+****************************************************************************/
 
-    i.SetIdentity();
-
-    i[0][0] = tensor[0];
-    i[1][1] = tensor[1];
-    i[2][2] = tensor[2];
-
-    rb.Ibody = i;
-
-    rb.IbodyInv.SetInvert(rb.Ibody);
-}
+//void neRigidBody::SetInertiaTensor(const neV3 &tensor) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neM3 i;
+//
+//    i.SetIdentity();
+//
+//    i[0][0] = tensor[0];
+//    i[1][1] = tensor[1];
+//    i[2][2] = tensor[2];
+//
+//    rb.Ibody = i;
+//
+//    rb.IbodyInv.SetInvert(rb.Ibody);
+//}
 
 /****************************************************************************
 *
@@ -972,11 +972,11 @@ void neRigidBody::SetInertiaTensor(const neV3 &tensor) {
 *
 ****************************************************************************/
 
-void neRigidBody::SetCollisionID(s32 cid) {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.cid = cid;
-}
+//void neRigidBody::SetCollisionID(s32 cid) {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    rb.cid = cid;
+//}
 
 /****************************************************************************
 *
@@ -984,11 +984,11 @@ void neRigidBody::SetCollisionID(s32 cid) {
 *
 ****************************************************************************/
 
-s32 neRigidBody::GetCollisionID() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    return rb.cid;
-}
+//s32 neRigidBody::GetCollisionID() {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    return rb.cid;
+//}
 
 /****************************************************************************
 *
@@ -996,11 +996,11 @@ s32 neRigidBody::GetCollisionID() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetUserData(void * cookies) {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.cookies = cookies;
-}
+//void neRigidBody::SetUserData(void * cookies) {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    rb.cookies = cookies;
+//}
 
 /****************************************************************************
 *
@@ -1008,11 +1008,11 @@ void neRigidBody::SetUserData(void * cookies) {
 *
 ****************************************************************************/
 
-void * neRigidBody::GetUserData() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    return rb.cookies;
-}
+//void * neRigidBody::GetUserData() {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    return rb.cookies;
+//}
 
 /****************************************************************************
 *
@@ -1020,47 +1020,47 @@ void * neRigidBody::GetUserData() {
 *
 ****************************************************************************/
 
-s32 neRigidBody::GetGeometryCount() {
-    CAST_THIS(neRigidBodyBase, rb);
+//s32 neRigidBody::GetGeometryCount() {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    return rb.col.convexCount;
+//}
 
-    return rb.col.convexCount;
-}
+//void neRigidBody::SetLinearDamping(neReal damp) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.linearDamp = neAbs(damp);
+//}
 
-void neRigidBody::SetLinearDamping(neReal damp) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.linearDamp = neAbs(damp);
-}
-
-neReal neRigidBody::GetLinearDamping() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.linearDamp;
-}
-
-void neRigidBody::SetAngularDamping(neReal damp) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.angularDamp = neAbs(damp);
-}
-
-neReal neRigidBody::GetAngularDamping() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.angularDamp;
-}
-
-void neRigidBody::SetSleepingParameter(neReal sleepingParam) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.sleepingParam = sleepingParam;
-}
-
-neReal neRigidBody::GetSleepingParameter() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.sleepingParam;
-}
+//neReal neRigidBody::GetLinearDamping() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.linearDamp;
+//}
+//
+//void neRigidBody::SetAngularDamping(neReal damp) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.angularDamp = neAbs(damp);
+//}
+//
+//neReal neRigidBody::GetAngularDamping() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.angularDamp;
+//}
+//
+//void neRigidBody::SetSleepingParameter(neReal sleepingParam) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.sleepingParam = sleepingParam;
+//}
+//
+//neReal neRigidBody::GetSleepingParameter() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.sleepingParam;
+//}
 
 
 /****************************************************************************
@@ -1093,11 +1093,11 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 *
 ****************************************************************************/
 
-neV3 neRigidBody::GetPos() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.GetPos();
-}
+//neV3 neRigidBody::GetPos() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.GetPos();
+//}
 
 /****************************************************************************
 *
@@ -1105,13 +1105,13 @@ neV3 neRigidBody::GetPos() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetPos(const neV3 &p) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.SetPos(p);
-
-    rb.WakeUp();
-}
+//void neRigidBody::SetPos(const neV3 &p) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.SetPos(p);
+//
+//    rb.WakeUp();
+//}
 
 /****************************************************************************
 *
@@ -1119,11 +1119,11 @@ void neRigidBody::SetPos(const neV3 &p) {
 *
 ****************************************************************************/
 
-neM3 neRigidBody::GetRotationM3() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.State().rot();
-}
+//neM3 neRigidBody::GetRotationM3() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.State().rot();
+//}
 
 /****************************************************************************
 *
@@ -1131,29 +1131,11 @@ neM3 neRigidBody::GetRotationM3() {
 *
 ****************************************************************************/
 
-neQ neRigidBody::GetRotationQ() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.State().q;
-}
-
-/****************************************************************************
-*
-*	neRigidBody::SetRotation
-*
-****************************************************************************/
-
-void neRigidBody::SetRotation(const neM3 &m) {
-    ASSERT(m.IsOrthogonalNormal());
-
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.State().rot() = m;
-
-    rb.State().q.SetupFromMatrix3(m);
-
-    rb.WakeUp();
-}
+//neQ neRigidBody::GetRotationQ() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.State().q;
+//}
 
 /****************************************************************************
 *
@@ -1161,15 +1143,33 @@ void neRigidBody::SetRotation(const neM3 &m) {
 *
 ****************************************************************************/
 
-void neRigidBody::SetRotation(const neQ &q) {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::SetRotation(const neM3 &m) {
+//    ASSERT(m.IsOrthogonalNormal());
+//
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.State().rot() = m;
+//
+//    rb.State().q.SetupFromMatrix3(m);
+//
+//    rb.WakeUp();
+//}
 
-    rb.State().q = q;
+/****************************************************************************
+*
+*	neRigidBody::SetRotation
+*
+****************************************************************************/
 
-    rb.State().rot() = q.BuildMatrix3();
-
-    rb.WakeUp();
-}
+//void neRigidBody::SetRotation(const neQ &q) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.State().q = q;
+//
+//    rb.State().rot() = q.BuildMatrix3();
+//
+//    rb.WakeUp();
+//}
 
 /****************************************************************************
 *
@@ -1177,15 +1177,15 @@ void neRigidBody::SetRotation(const neQ &q) {
 *
 ****************************************************************************/
 
-neT3 neRigidBody::GetTransform() {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.State().b2w.rot[0].v[3] = 0.0f;
-    rb.State().b2w.rot[1].v[3] = 0.0f;
-    rb.State().b2w.rot[2].v[3] = 0.0f;
-    rb.State().b2w.pos.v[3] = 1.0f;
-    return rb.State().b2w;
-}
+//neT3 neRigidBody::GetTransform() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.State().b2w.rot[0].v[3] = 0.0f;
+//    rb.State().b2w.rot[1].v[3] = 0.0f;
+//    rb.State().b2w.rot[2].v[3] = 0.0f;
+//    rb.State().b2w.pos.v[3] = 1.0f;
+//    return rb.State().b2w;
+//}
 
 /****************************************************************************
 *
@@ -1193,11 +1193,11 @@ neT3 neRigidBody::GetTransform() {
 *
 ****************************************************************************/
 
-neV3 neRigidBody::GetVelocity() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.Derive().linearVel;
-}
+//neV3 neRigidBody::GetVelocity() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.Derive().linearVel;
+//}
 
 /****************************************************************************
 *
@@ -1205,13 +1205,13 @@ neV3 neRigidBody::GetVelocity() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetVelocity(const neV3 &v) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.Derive().linearVel = v;
-
-    rb.WakeUpAllJoint();
-}
+//void neRigidBody::SetVelocity(const neV3 &v) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.Derive().linearVel = v;
+//
+//    rb.WakeUpAllJoint();
+//}
 
 /****************************************************************************
 *
@@ -1219,11 +1219,11 @@ void neRigidBody::SetVelocity(const neV3 &v) {
 *
 ****************************************************************************/
 
-neV3 neRigidBody::GetAngularVelocity() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.Derive().angularVel;
-}
+//neV3 neRigidBody::GetAngularVelocity() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.Derive().angularVel;
+//}
 
 /****************************************************************************
 *
@@ -1232,11 +1232,11 @@ neV3 neRigidBody::GetAngularVelocity() {
 ****************************************************************************/
 
 
-neV3 neRigidBody::GetAngularMomentum() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.State().angularMom;
-}
+//neV3 neRigidBody::GetAngularMomentum() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.State().angularMom;
+//}
 
 /****************************************************************************
 *
@@ -1244,13 +1244,13 @@ neV3 neRigidBody::GetAngularMomentum() {
 *
 ****************************************************************************/
 
-void neRigidBody::SetAngularMomentum(const neV3 &am) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.SetAngMom(am);
-
-    rb.WakeUpAllJoint();
-}
+//void neRigidBody::SetAngularMomentum(const neV3 &am) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.SetAngMom(am);
+//
+//    rb.WakeUpAllJoint();
+//}
 
 /****************************************************************************
 *
@@ -1258,11 +1258,11 @@ void neRigidBody::SetAngularMomentum(const neV3 &am) {
 *
 ****************************************************************************/
 
-neV3 neRigidBody::GetVelocityAtPoint(const neV3 &pt) {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.VelocityAtPoint(pt);
-}
+//neV3 neRigidBody::GetVelocityAtPoint(const neV3 &pt) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.VelocityAtPoint(pt);
+//}
 
 /****************************************************************************
 *
@@ -1270,11 +1270,11 @@ neV3 neRigidBody::GetVelocityAtPoint(const neV3 &pt) {
 *
 ****************************************************************************/
 
-void neRigidBody::UpdateBoundingInfo() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.RecalcBB();
-}
+//void neRigidBody::UpdateBoundingInfo() {
+//    CAST_THIS(neRigidBodyBase, rb);
+//
+//    rb.RecalcBB();
+//}
 
 /****************************************************************************
 *
@@ -1282,35 +1282,11 @@ void neRigidBody::UpdateBoundingInfo() {
 *
 ****************************************************************************/
 
-void neRigidBody::UpdateInertiaTensor() {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.RecalcInertiaTensor();
-}
-
-/****************************************************************************
-*
-*	neRigidBody::SetForce
-*
-****************************************************************************/
-
-void neRigidBody::SetForce(const neV3 &force, const neV3 &pos) {
-    CAST_THIS(neRigidBody_, rb);
-
-    if (force.IsConsiderZero()) {
-        rb.force = force;
-
-        rb.torque = ((pos - rb.GetPos()).Cross(force));
-
-        return;
-    }
-
-    rb.force = force;
-
-    rb.torque = ((pos - rb.GetPos()).Cross(force));
-
-    rb.WakeUp();
-}
+//void neRigidBody::UpdateInertiaTensor() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.RecalcInertiaTensor();
+//}
 
 /****************************************************************************
 *
@@ -1318,18 +1294,42 @@ void neRigidBody::SetForce(const neV3 &force, const neV3 &pos) {
 *
 ****************************************************************************/
 
-void neRigidBody::SetTorque(const neV3 &torque) {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::SetForce(const neV3 &force, const neV3 &pos) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (force.IsConsiderZero()) {
+//        rb.force = force;
+//
+//        rb.torque = ((pos - rb.GetPos()).Cross(force));
+//
+//        return;
+//    }
+//
+//    rb.force = force;
+//
+//    rb.torque = ((pos - rb.GetPos()).Cross(force));
+//
+//    rb.WakeUp();
+//}
 
-    if (torque.IsConsiderZero()) {
-        rb.torque = torque;
+/****************************************************************************
+*
+*	neRigidBody::SetForce
+*
+****************************************************************************/
 
-        return;
-    }
-    rb.torque = torque;
-
-    rb.WakeUp();
-}
+//void neRigidBody::SetTorque(const neV3 &torque) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (torque.IsConsiderZero()) {
+//        rb.torque = torque;
+//
+//        return;
+//    }
+//    rb.torque = torque;
+//
+//    rb.WakeUp();
+//}
 
 /****************************************************************************
 *
@@ -1337,30 +1337,30 @@ void neRigidBody::SetTorque(const neV3 &torque) {
 *
 ****************************************************************************/
 
-void neRigidBody::SetForce(const neV3 &force) {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::SetForce(const neV3 &force) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (force.IsConsiderZero()) {
+//        rb.force = force;
+//
+//        return;
+//    }
+//    rb.force = force;
+//
+//    rb.WakeUp();
+//}
 
-    if (force.IsConsiderZero()) {
-        rb.force = force;
-
-        return;
-    }
-    rb.force = force;
-
-    rb.WakeUp();
-}
-
-neV3 neRigidBody::GetForce() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.force;
-}
-
-neV3 neRigidBody::GetTorque() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.torque;
-}
+//neV3 neRigidBody::GetForce() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.force;
+//}
+//
+//neV3 neRigidBody::GetTorque() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.torque;
+//}
 
 /****************************************************************************
 *
@@ -1368,16 +1368,16 @@ neV3 neRigidBody::GetTorque() {
 *
 ****************************************************************************/
 
-void neRigidBody::ApplyImpulse(const neV3 &impulse) {
-    CAST_THIS(neRigidBody_, rb);
-
-    neV3 dv = impulse * rb.oneOnMass;
-
-    rb.Derive().linearVel += dv;
-
-    //rb.WakeUp();
-    rb.WakeUpAllJoint();
-}
+//void neRigidBody::ApplyImpulse(const neV3 &impulse) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neV3 dv = impulse * rb.oneOnMass;
+//
+//    rb.Derive().linearVel += dv;
+//
+//    //rb.WakeUp();
+//    rb.WakeUpAllJoint();
+//}
 
 /****************************************************************************
 *
@@ -1385,21 +1385,21 @@ void neRigidBody::ApplyImpulse(const neV3 &impulse) {
 *
 ****************************************************************************/
 
-void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
-    CAST_THIS(neRigidBody_, rb);
-
-    neV3 dv = impulse * rb.oneOnMass;
-
-    neV3 da = (pos - rb.GetPos()).Cross(impulse);
-
-    rb.Derive().linearVel += dv;
-
-    neV3 newAM = rb.State().angularMom + da;
-
-    rb.SetAngMom(newAM);
-
-    rb.WakeUp();
-}
+//void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neV3 dv = impulse * rb.oneOnMass;
+//
+//    neV3 da = (pos - rb.GetPos()).Cross(impulse);
+//
+//    rb.Derive().linearVel += dv;
+//
+//    neV3 newAM = rb.State().angularMom + da;
+//
+//    rb.SetAngMom(newAM);
+//
+//    rb.WakeUp();
+//}
 
 /****************************************************************************
 *
@@ -1407,15 +1407,15 @@ void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
 *
 ****************************************************************************/
 
-void neRigidBody::ApplyTwist(const neV3 &twist) {
-    CAST_THIS(neRigidBody_, rb);
-
-    neV3 newAM = twist;
-
-    rb.SetAngMom(newAM);
-
-    rb.WakeUp();
-}
+//void neRigidBody::ApplyTwist(const neV3 &twist) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neV3 newAM = twist;
+//
+//    rb.SetAngMom(newAM);
+//
+//    rb.WakeUp();
+//}
 
 /****************************************************************************
 *
@@ -1423,11 +1423,11 @@ void neRigidBody::ApplyTwist(const neV3 &twist) {
 *
 ****************************************************************************/
 
-neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback *controller, s32 period) {
-    CAST_THIS(neRigidBody_, rb);
-
-    return (neRigidBodyController *) rb.AddController(controller, period);
-}
+//neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback *controller, s32 period) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return (neRigidBodyController *) rb.AddController(controller, period);
+//}
 
 /****************************************************************************
 *
@@ -1435,29 +1435,29 @@ neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback 
 *
 ****************************************************************************/
 
-bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
-    CAST_THIS(neRigidBody_, rb);
-
-    if (!rb.controllers)
-        return false;
-
-    neControllerItem *ci = (neControllerItem *) rb.controllers;
-
-    while (ci) {
-        neController *con = reinterpret_cast<neController *>(ci);
-
-        ci = ci->next;
-
-        if (con == reinterpret_cast<neController *>(rbController)) {
-            //reinterpret_cast<neControllerItem *>(con)->Remove();
-
-            rb.sim->controllerHeap.Dealloc(con, 1);
-
-            return true;
-        }
-    }
-    return false;
-}
+//bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (!rb.controllers)
+//        return false;
+//
+//    neControllerItem *ci = (neControllerItem *) rb.controllers;
+//
+//    while (ci) {
+//        neController *con = reinterpret_cast<neController *>(ci);
+//
+//        ci = ci->next;
+//
+//        if (con == reinterpret_cast<neController *>(rbController)) {
+//            //reinterpret_cast<neControllerItem *>(con)->Remove();
+//
+//            rb.sim->controllerHeap.Dealloc(con, 1);
+//
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 /****************************************************************************
 *
@@ -1465,11 +1465,11 @@ bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
 *
 ****************************************************************************/
 
-void neRigidBody::BeginIterateController() {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.BeginIterateController();
-}
+//void neRigidBody::BeginIterateController() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.BeginIterateController();
+//}
 
 /****************************************************************************
 *
@@ -1477,23 +1477,11 @@ void neRigidBody::BeginIterateController() {
 *
 ****************************************************************************/
 
-neRigidBodyController *neRigidBody::GetNextController() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return (neRigidBodyController *) rb.GetNextController();
-}
-
-/****************************************************************************
-*
-*	neRigidBody::GravityEnable
-*
-****************************************************************************/
-
-void neRigidBody::GravityEnable(bool yes) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.GravityEnable(yes);
-}
+//neRigidBodyController *neRigidBody::GetNextController() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return (neRigidBodyController *) rb.GetNextController();
+//}
 
 /****************************************************************************
 *
@@ -1501,11 +1489,23 @@ void neRigidBody::GravityEnable(bool yes) {
 *
 ****************************************************************************/
 
-bool neRigidBody::GravityEnable() {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::GravityEnable(bool yes) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.GravityEnable(yes);
+//}
 
-    return rb.gravityOn;
-}
+/****************************************************************************
+*
+*	neRigidBody::GravityEnable
+*
+****************************************************************************/
+
+//bool neRigidBody::GravityEnable() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.gravityOn;
+//}
 
 /****************************************************************************
 *
@@ -1513,11 +1513,11 @@ bool neRigidBody::GravityEnable() {
 *
 ****************************************************************************/
 
-void neRigidBody::CollideConnected(bool yes) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.CollideConnected(yes);
-}
+//void neRigidBody::CollideConnected(bool yes) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.CollideConnected(yes);
+//}
 
 /****************************************************************************
 *
@@ -1525,11 +1525,11 @@ void neRigidBody::CollideConnected(bool yes) {
 *
 ****************************************************************************/
 
-bool neRigidBody::CollideConnected() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.CollideConnected();
-}
+//bool neRigidBody::CollideConnected() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.CollideConnected();
+//}
 
 /****************************************************************************
 *
@@ -1537,11 +1537,11 @@ bool neRigidBody::CollideConnected() {
 *
 ****************************************************************************/
 
-void neRigidBody::CollideDirectlyConnected(bool yes) {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.isCollideDirectlyConnected = yes;
-}
+//void neRigidBody::CollideDirectlyConnected(bool yes) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.isCollideDirectlyConnected = yes;
+//}
 
 /****************************************************************************
 *
@@ -1549,11 +1549,11 @@ void neRigidBody::CollideDirectlyConnected(bool yes) {
 *
 ****************************************************************************/
 
-bool neRigidBody::CollideDirectlyConnected() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return rb.isCollideDirectlyConnected;
-}
+//bool neRigidBody::CollideDirectlyConnected() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.isCollideDirectlyConnected;
+//}
 
 /****************************************************************************
 *
@@ -1561,13 +1561,13 @@ bool neRigidBody::CollideDirectlyConnected() {
 *
 ****************************************************************************/
 
-neGeometry *neRigidBody::AddGeometry() {
-    CAST_THIS(neRigidBody_, rb);
-
-    TConvex *g = rb.AddGeometry();
-
-    return reinterpret_cast<neGeometry *>(g);
-}
+//neGeometry *neRigidBody::AddGeometry() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    TConvex *g = rb.AddGeometry();
+//
+//    return reinterpret_cast<neGeometry *>(g);
+//}
 
 /****************************************************************************
 *
@@ -1575,38 +1575,38 @@ neGeometry *neRigidBody::AddGeometry() {
 *
 ****************************************************************************/
 
-bool neRigidBody::RemoveGeometry(neGeometry *g) {
-    CAST_THIS(neRigidBody_, rb);
-
-    if (!rb.col.convex)
-        return false;
-
-    TConvexItem *gi = (TConvexItem *) rb.col.convex;
-
-    while (gi) {
-        TConvex *convex = reinterpret_cast<TConvex *>(gi);
-
-        gi = gi->next;
-
-        if (convex == reinterpret_cast<TConvex *>(g)) {
-            if (rb.col.convex == convex) {
-                rb.col.convex = (TConvex *) gi;
-            }
-            rb.sim->geometryHeap.Dealloc(convex, 1);
-
-            rb.col.convexCount--;
-
-            if (rb.col.convexCount == 0) {
-                rb.col.convex = nullptr;
-
-                if (rb.IsInRegion() && !rb.isCustomCD)
-                    rb.sim->region.RemoveBody(&rb);
-            }
-            return true;
-        }
-    }
-    return false;
-}
+//bool neRigidBody::RemoveGeometry(neGeometry *g) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (!rb.col.convex)
+//        return false;
+//
+//    TConvexItem *gi = (TConvexItem *) rb.col.convex;
+//
+//    while (gi) {
+//        TConvex *convex = reinterpret_cast<TConvex *>(gi);
+//
+//        gi = gi->next;
+//
+//        if (convex == reinterpret_cast<TConvex *>(g)) {
+//            if (rb.col.convex == convex) {
+//                rb.col.convex = (TConvex *) gi;
+//            }
+//            rb.sim->geometryHeap.Dealloc(convex, 1);
+//
+//            rb.col.convexCount--;
+//
+//            if (rb.col.convexCount == 0) {
+//                rb.col.convex = nullptr;
+//
+//                if (rb.IsInRegion() && !rb.isCustomCD)
+//                    rb.sim->region.RemoveBody(&rb);
+//            }
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 /****************************************************************************
 *
@@ -1614,11 +1614,11 @@ bool neRigidBody::RemoveGeometry(neGeometry *g) {
 *
 ****************************************************************************/
 
-void neRigidBody::BeginIterateGeometry() {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.BeginIterateGeometry();
-}
+//void neRigidBody::BeginIterateGeometry() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.BeginIterateGeometry();
+//}
 
 /****************************************************************************
 *
@@ -1626,11 +1626,11 @@ void neRigidBody::BeginIterateGeometry() {
 *
 ****************************************************************************/
 
-neGeometry *neRigidBody::GetNextGeometry() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return reinterpret_cast<neGeometry *>(rb.GetNextGeometry());
-}
+//neGeometry *neRigidBody::GetNextGeometry() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return reinterpret_cast<neGeometry *>(rb.GetNextGeometry());
+//}
 
 /****************************************************************************
 *
@@ -1638,43 +1638,13 @@ neGeometry *neRigidBody::GetNextGeometry() {
 *
 ****************************************************************************/
 
-neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
-    CAST_THIS(neRigidBody_, rb);
-
-    neRigidBody_ *newBody = rb.sim->CreateRigidBodyFromConvex((TConvex *) g, &rb);
-
-    return (neRigidBody *) newBody;
-}
-
-/****************************************************************************
-*
-*	neRigidBody::UseCustomCollisionDetection
-*
-****************************************************************************/
-
-void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
-    CAST_THIS(neRigidBody_, rb);
-
-    if (yes) {
-        rb.obb = *obb;
-
-        rb.col.boundingRadius = boundingRadius;
-
-        rb.isCustomCD = yes;
-
-        if (rb.isActive && !rb.IsInRegion()) {
-            rb.sim->region.AddBody(&rb, nullptr);
-        }
-    } else {
-        rb.isCustomCD = yes;
-
-        this->UpdateBoundingInfo();
-
-        if (rb.IsInRegion() && GetGeometryCount() == 0) {
-            rb.sim->region.RemoveBody(&rb);
-        }
-    }
-}
+//neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neRigidBody_ *newBody = rb.sim->CreateRigidBodyFromConvex((TConvex *) g, &rb);
+//
+//    return (neRigidBody *) newBody;
+//}
 
 /****************************************************************************
 *
@@ -1682,11 +1652,41 @@ void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal 
 *
 ****************************************************************************/
 
-bool neRigidBody::UseCustomCollisionDetection() {
-    CAST_THIS(neRigidBody_, rb);
+//void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (yes) {
+//        rb.obb = *obb;
+//
+//        rb.col.boundingRadius = boundingRadius;
+//
+//        rb.isCustomCD = yes;
+//
+//        if (rb.isActive && !rb.IsInRegion()) {
+//            rb.sim->region.AddBody(&rb, nullptr);
+//        }
+//    } else {
+//        rb.isCustomCD = yes;
+//
+//        this->UpdateBoundingInfo();
+//
+//        if (rb.IsInRegion() && GetGeometryCount() == 0) {
+//            rb.sim->region.RemoveBody(&rb);
+//        }
+//    }
+//}
 
-    return rb.isCustomCD;
-}
+/****************************************************************************
+*
+*	neRigidBody::UseCustomCollisionDetection
+*
+****************************************************************************/
+
+//bool neRigidBody::UseCustomCollisionDetection() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return rb.isCustomCD;
+//}
 
 /****************************************************************************
 *
@@ -1694,13 +1694,13 @@ bool neRigidBody::UseCustomCollisionDetection() {
 *
 ****************************************************************************/
 
-neSensor *neRigidBody::AddSensor() {
-    CAST_THIS(neRigidBody_, rb);
-
-    neSensor_ *s = rb.AddSensor();
-
-    return reinterpret_cast<neSensor *>(s);
-}
+//neSensor *neRigidBody::AddSensor() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    neSensor_ *s = rb.AddSensor();
+//
+//    return reinterpret_cast<neSensor *>(s);
+//}
 
 /****************************************************************************
 *
@@ -1708,29 +1708,29 @@ neSensor *neRigidBody::AddSensor() {
 *
 ****************************************************************************/
 
-bool neRigidBody::RemoveSensor(neSensor *s) {
-    CAST_THIS(neRigidBody_, rb);
-
-    if (!rb.sensors)
-        return false;
-
-    neSensorItem *si = (neSensorItem *) rb.sensors;
-
-    while (si) {
-        neSensor_ *sensor = reinterpret_cast<neSensor_ *>(si);
-
-        si = si->next;
-
-        if (sensor == reinterpret_cast<neSensor_ *>(s)) {
-            //reinterpret_cast<neSensorItem *>(s)->Remove();
-
-            rb.sim->sensorHeap.Dealloc(sensor, 1);
-
-            return true;
-        }
-    }
-    return false;
-}
+//bool neRigidBody::RemoveSensor(neSensor *s) {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    if (!rb.sensors)
+//        return false;
+//
+//    neSensorItem *si = (neSensorItem *) rb.sensors;
+//
+//    while (si) {
+//        neSensor_ *sensor = reinterpret_cast<neSensor_ *>(si);
+//
+//        si = si->next;
+//
+//        if (sensor == reinterpret_cast<neSensor_ *>(s)) {
+//            //reinterpret_cast<neSensorItem *>(s)->Remove();
+//
+//            rb.sim->sensorHeap.Dealloc(sensor, 1);
+//
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 /****************************************************************************
 *
@@ -1738,11 +1738,11 @@ bool neRigidBody::RemoveSensor(neSensor *s) {
 *
 ****************************************************************************/
 
-void neRigidBody::BeginIterateSensor() {
-    CAST_THIS(neRigidBody_, rb);
-
-    rb.BeginIterateSensor();
-}
+//void neRigidBody::BeginIterateSensor() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    rb.BeginIterateSensor();
+//}
 
 /****************************************************************************
 *
@@ -1750,23 +1750,11 @@ void neRigidBody::BeginIterateSensor() {
 *
 ****************************************************************************/
 
-neSensor *neRigidBody::GetNextSensor() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return reinterpret_cast<neSensor *>(rb.GetNextSensor());
-}
-
-/****************************************************************************
-*
-*	neRigidBody::Active
-*
-****************************************************************************/
-
-void neRigidBody::Active(bool yes, neRigidBody *hint) {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    ab.Active(yes, (neRigidBodyBase *) hint);
-}
+//neSensor *neRigidBody::GetNextSensor() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return reinterpret_cast<neSensor *>(rb.GetNextSensor());
+//}
 
 /****************************************************************************
 *
@@ -1774,11 +1762,23 @@ void neRigidBody::Active(bool yes, neRigidBody *hint) {
 *
 ****************************************************************************/
 
-void neRigidBody::Active(bool yes, neAnimatedBody *hint) {
-    CAST_THIS(neRigidBodyBase, ab);
+//void neRigidBody::Active(bool yes, neRigidBody *hint) {
+//    CAST_THIS(neRigidBodyBase, ab);
+//
+//    ab.Active(yes, (neRigidBodyBase *) hint);
+//}
 
-    ab.Active(yes, (neRigidBodyBase *) hint);
-}
+/****************************************************************************
+*
+*	neRigidBody::Active
+*
+****************************************************************************/
+
+//void neRigidBody::Active(bool yes, neAnimatedBody *hint) {
+//    CAST_THIS(neRigidBodyBase, ab);
+//
+//    ab.Active(yes, (neRigidBodyBase *) hint);
+//}
 
 /****************************************************************************
 *
@@ -1786,17 +1786,17 @@ void neRigidBody::Active(bool yes, neAnimatedBody *hint) {
 *
 ****************************************************************************/
 
-bool neRigidBody::Active() {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    return ab.isActive;
-}
-
-bool neRigidBody::IsIdle() {
-    CAST_THIS(neRigidBody_, rb);
-
-    return (rb.status == neRigidBody_::NE_RBSTATUS_IDLE);
-}
+//bool neRigidBody::Active() {
+//    CAST_THIS(neRigidBodyBase, ab);
+//
+//    return ab.isActive;
+//}
+//
+//bool neRigidBody::IsIdle() {
+//    CAST_THIS(neRigidBody_, rb);
+//
+//    return (rb.status == neRigidBody_::NE_RBSTATUS_IDLE);
+//}
 
 /****************************************************************************
 *

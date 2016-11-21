@@ -769,6 +769,10 @@ public:
 
     bool AllRestRecordInvalid();
 
+    NEINLINE neQ GetRotationQ() {
+        return State().q;
+    }
+
 protected:
 
     void AdvanceDynamic(neReal tStep);

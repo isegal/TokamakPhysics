@@ -830,10 +830,10 @@ void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, ne
     }
 }
 
-void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody &)>& rbCallback) {
+void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody_ &)>& rbCallback) {
     neRigidBody_ *rb = activeRB.GetHead();
     while (rb) {
-        if(!rbCallback(*(reinterpret_cast<neRigidBody*>(rb)))) {
+        if (!rbCallback(*rb)) {
             break;
         }
         rb = activeRB.GetNext(rb);
