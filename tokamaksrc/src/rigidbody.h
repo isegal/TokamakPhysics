@@ -612,6 +612,28 @@ public:
         return rbExtra->angVelRecords[index];
     }
 
+    NEINLINE void SetMass(neReal newMass) {
+        mass = newMass;
+        oneOnMass = 1.0f / newMass;
+    }
+
+    NEINLINE neReal GetMass() const {
+        return mass;
+    }
+
+    NEINLINE void SetVelocity(const neV3 &v) {
+        Derive().linearVel = v;
+        WakeUpAllJoint();
+    }
+
+    NEINLINE neV3 GetVelocity() {
+        return Derive().linearVel;
+    }
+
+    NEINLINE bool Active() const {
+        return isActive;
+    }
+
 public:
     neRigidBody_();
 
