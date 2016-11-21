@@ -15,18 +15,18 @@
 #include "math/ne_debug.h"
 #include "tokamak.h"
 #include "containers.h"
-#include "scenery.h"
 #include "collision.h"
 #include "constraint.h"
 #include "rigidbody.h"
+#include "scenery.h"
 #include "scenery.h"
 /*
 #ifdef _WIN32
 #include <windows.h>
 #endif
 */
-#include "stack.h"
 #include "simulator.h"
+#include "stack.h"
 
 /********************************************************/
 /* AABB-triangle overlap test code                      */

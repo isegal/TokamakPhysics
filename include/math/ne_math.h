@@ -22,9 +22,9 @@
 
 #include <math.h>
 #include <float.h>
-#include "ne_type.h"
 #include "ne_debug.h"
 #include "ne_smath.h"
+#include "ne_type.h"
 //#include <xmmintrin.h>
 /****************************************************************************
 *
@@ -444,12 +444,12 @@ public:
 ///////////////////////////////////////////////////////////////////////////
 
 #include "ne_math_misc_inline.h"
-#include "ne_math_v3_inline.h"
-#include "ne_math_v4_inline.h"
-#include "ne_math_m4_inline.h"
 #include "ne_math_m3_inline.h"
+#include "ne_math_m4_inline.h"
 #include "ne_math_q_inline.h"
 #include "ne_math_t3_inline.h"
+#include "ne_math_v3_inline.h"
+#include "ne_math_v4_inline.h"
 
 ///////////////////////////////////////////////////////////////////////////
 // END

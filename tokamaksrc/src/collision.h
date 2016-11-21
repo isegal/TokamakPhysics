@@ -29,9 +29,11 @@ typedef enum {
     IMPULSE_RELATIVE_LINEAR_VELOCITY,
 } neImpulseType;
 
+class neSimulator;
 class neRigidBodyBase;
 
 class neRigidBody_;
+class neTriangle_;
 
 ///////////////////////////////////////////////////////////////////
 //

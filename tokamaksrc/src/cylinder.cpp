@@ -13,11 +13,11 @@
 
 #include "tokamak.h"
 #include "containers.h"
-#include "scenery.h"
 #include "collision.h"
 #include "collision2.h"
 #include "constraint.h"
 #include "rigidbody.h"
+#include "scenery.h"
 
 #include <assert.h>
 #include <stdio.h>

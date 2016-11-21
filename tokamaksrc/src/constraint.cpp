@@ -15,13 +15,12 @@
 
 #include "tokamak.h"
 #include "containers.h"
-#include "scenery.h"
 #include "collision.h"
 #include "constraint.h"
 #include "rigidbody.h"
 #include "scenery.h"
-#include "stack.h"
 #include "simulator.h"
+#include "stack.h"
 #include "message.h"
 
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
