@@ -35,7 +35,7 @@ s32 neStackHeader::golbalTime = 0;
 void neRestRecord::Update() {
     worldThisBody = body->State().b2w * bodyPoint;
 
-    neRigidBody_ *rb = otherBody->AsRigidBody();
+    neRigidBody *rb = otherBody->AsRigidBody();
 
     neCollisionBody_ *cb = otherBody->AsCollisionBody();
 
@@ -69,7 +69,7 @@ void neStackInfo::Resolve() {
 
     for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
         if (body->GetRestRecord(i).IsValid()) {
-            neRigidBody_ *rb = body->GetRestRecord(i).GetOtherRigidBody();
+            neRigidBody *rb = body->GetRestRecord(i).GetOtherRigidBody();
 
             if (rb && rb->stackInfo) {
                 if (!rb->stackInfo->isResolved)
@@ -83,14 +83,14 @@ void neStackInfo::Resolve() {
 void neStackInfo::CheckHeader(neStackHeader *sh) {
     ASSERT(stackHeader == sh);
 
-    neRigidBody_ *b = body->AsRigidBody();
+    neRigidBody *b = body->AsRigidBody();
 
     if (!b)
         return;
 
     for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
         if (b->GetRestRecord(i).GetOtherRigidBody()) {
-            neRigidBody_ *otherBody = b->GetRestRecord(i).GetOtherRigidBody();
+            neRigidBody *otherBody = b->GetRestRecord(i).GetOtherRigidBody();
 
             if (otherBody) {
                 ASSERT(otherBody->stackInfo);
@@ -128,7 +128,7 @@ void neStackInfo::Break()
     {
         if (body->GetRestRecord(i).otherBody)
         {
-            neRigidBody_* b = (neRigidBody_*)body->GetRestRecord(i).otherBody;
+            neRigidBody* b = (neRigidBody*)body->GetRestRecord(i).otherBody;
 
             if (b)
             {
@@ -312,11 +312,11 @@ bool neStackHeader::CheckStackDisconnected() {
         if (sinfo->isBroken)
             continue;
 
-        neRigidBody_ *rb = sinfo->body;
+        neRigidBody *rb = sinfo->body;
 
         for (s32 j = 0; j < NE_RB_MAX_RESTON_RECORDS; j++) {
             if (rb->GetRestRecord(j).IsValid()) {
-                neRigidBody_ *otherbody = rb->GetRestRecord(j).GetOtherRigidBody();
+                neRigidBody *otherbody = rb->GetRestRecord(j).GetOtherRigidBody();
 
                 if (otherbody) {
                     if (otherbody->stackInfo->stackHeader) {
@@ -353,7 +353,7 @@ bool neStackHeader::CheckStackDisconnected() {
         neStackInfo *sinfo = (neStackInfo *) stackInfoBuffer[i];
 
         if (!sinfo->stackHeader) {
-            neRigidBody_ *rb = sinfo->body;
+            neRigidBody *rb = sinfo->body;
 
             sim->stackInfoHeap.Dealloc(sinfo, 1);
 
@@ -529,7 +529,7 @@ void neStackInfo::AddToSolver(bool addCHeader) {
         if (!body->GetRestRecord(i).IsValid()) {
             continue;
         }
-        neRigidBody_ *rb = body->GetRestRecord(i).GetOtherRigidBody();
+        neRigidBody *rb = body->GetRestRecord(i).GetOtherRigidBody();
 
         if (!rb || !rb->stackInfo) {
             continue;
@@ -594,12 +594,12 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
 
     neStackHeader *anotherHeader = nullptr;
 
-    neRigidBody_ *foundBody;
+    neRigidBody *foundBody;
 
     s32 i;
 
     for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
-        neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
+        neRigidBody *otherBody = (neRigidBody *) body->GetRestRecord(i).GetOtherRigidBody();
 
         if (!otherBody)
             continue;
@@ -624,7 +624,7 @@ neStackHeader *neStackInfo::CheckAcceptNewHeader(neStackHeader *newHeader) {
         anotherHeader->Add(this);
 
         for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
-            neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
+            neRigidBody *otherBody = (neRigidBody *) body->GetRestRecord(i).GetOtherRigidBody();
 
             if (!otherBody)
                 continue;
@@ -671,7 +671,7 @@ void neStackInfo::ForceAcceptNewHeader(neStackHeader *newHeader) {
     newHeader->Add(this);
 
     for (s32 i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
-        neRigidBody_ *otherBody = (neRigidBody_ *) body->GetRestRecord(i).GetOtherRigidBody();
+        neRigidBody *otherBody = (neRigidBody *) body->GetRestRecord(i).GetOtherRigidBody();
 
         if (!otherBody)
             continue;

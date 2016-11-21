@@ -36,7 +36,7 @@
 
 #define NE_INTERFACE(n) protected: n(){}; n& operator = (const n & e){return (*this);}
 
-class TOKAMAK_API neRigidBody;
+// class TOKAMAK_API neRigidBody;
 
 typedef enum {
     NE_TERRAIN = 0,
@@ -152,7 +152,7 @@ public:
 *	Desc:
 *
 ****************************************************************************/
-
+class TOKAMAK_API neRigidBody;
 class TOKAMAK_API neGeometry;
 
 using neBreakageCallback = void (neByte *, neBodyType, neGeometry *, neRigidBody *);
@@ -303,7 +303,7 @@ public:
 *
 ****************************************************************************/
 
-class TOKAMAK_API neRigidBody;
+// class TOKAMAK_API neRigidBody;
 
 class TOKAMAK_API neAnimatedBody;
 

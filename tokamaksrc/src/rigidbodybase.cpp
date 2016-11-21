@@ -118,9 +118,9 @@ neV3 neRigidBodyBase::VelocityAtPoint(const neV3 & pt)
 	}
 	else
 	{
-		ret = ((neRigidBody_*)this)->Derive().linearVel;
+		ret = ((neRigidBody*)this)->Derive().linearVel;
 
-		ret += ((neRigidBody_*)this)->Derive().angularVel.Cross(pt);
+		ret += ((neRigidBody*)this)->Derive().angularVel.Cross(pt);
 
 		return ret;
 	}
@@ -329,7 +329,7 @@ bool neRigidBodyBase::IsValid() {
     if (btype == NE_OBJECT_COLISION) {
         return ((neList<neCollisionBody_>::itemType *) this)->state;// sim->abHeap.IsInUse((neCollisionBody_*)this);
     } else {
-        return ((neList<neRigidBody_>::itemType *) this)->state;//sim->rbHeap.IsInUse((neRigidBody_*)this);
+        return ((neList<neRigidBody>::itemType *) this)->state;//sim->rbHeap.IsInUse((neRigidBody*)this);
     }
 }
 
@@ -341,7 +341,7 @@ neT3 &neRigidBodyBase::GetB2W() {
     }
 }
 
-void neRigidBody_::DrawCPointLine() {
+void neRigidBody::DrawCPointLine() {
     return;
 
 #if 0
@@ -401,13 +401,13 @@ void neRigidBodyBase::Active(bool
             sim->inactiveCB.Add((neCollisionBody_ *) this);
         } else {
             if (AsRigidBody()->IsParticle()) {
-                sim->activeRP.Remove((neRigidBody_ *) this);
+                sim->activeRP.Remove((neRigidBody *) this);
 
-                sim->inactiveRP.Add((neRigidBody_ *) this);
+                sim->inactiveRP.Add((neRigidBody *) this);
             } else {
-                sim->activeRB.Remove((neRigidBody_ *) this);
+                sim->activeRB.Remove((neRigidBody *) this);
 
-                sim->inactiveRB.Add((neRigidBody_ *) this);
+                sim->inactiveRB.Add((neRigidBody *) this);
             }
         }
 //remove from region
@@ -424,13 +424,13 @@ void neRigidBodyBase::Active(bool
             sim->activeCB.Add((neCollisionBody_ *) this);
         } else {
             if (AsRigidBody()->IsParticle()) {
-                sim->inactiveRP.Remove((neRigidBody_ *) this);
+                sim->inactiveRP.Remove((neRigidBody *) this);
 
-                sim->activeRP.Add((neRigidBody_ *) this);
+                sim->activeRP.Add((neRigidBody *) this);
             } else {
-                sim->inactiveRB.Remove((neRigidBody_ *) this);
+                sim->inactiveRB.Remove((neRigidBody *) this);
 
-                sim->activeRB.Add((neRigidBody_ *) this);
+                sim->activeRB.Add((neRigidBody *) this);
             }
         }
 //insert into the region

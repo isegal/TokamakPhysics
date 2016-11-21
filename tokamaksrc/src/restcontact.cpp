@@ -73,7 +73,7 @@ bool TestZeroInTriangle(const neV3 &_p1, const neV3 &_p2, const neV3 &_p3) {
     return false;
 }
 
-void neRigidBody_::CheckForIdle() {
+void neRigidBody::CheckForIdle() {
     CheckForIdleNonJoint();
 /*
 	if (CheckStationary())
@@ -96,7 +96,7 @@ void neRigidBody_::CheckForIdle() {
 
 #pragma optimize( "", off )
 
-void neRigidBody_::CheckForIdleNonJoint() {
+void neRigidBody::CheckForIdleNonJoint() {
     //return;
 
     neReal e = Derive().linearVel.Dot(Derive().linearVel);
@@ -167,7 +167,7 @@ void neRigidBody_::CheckForIdleNonJoint() {
 
 #pragma optimize( "", on )
 
-void neRigidBody_::CheckForIdleJoint() {
+void neRigidBody::CheckForIdleJoint() {
     neReal e = Derive().linearVel.Length();
 
     neReal f = col.boundingRadius * Derive().angularVel.Length();
@@ -203,7 +203,7 @@ void neRigidBody_::CheckForIdleJoint() {
     }
 }
 
-s32 neRigidBody_::CheckRestHull() {
+s32 neRigidBody::CheckRestHull() {
     if (totalForce.IsConsiderZero())
         return 3;
 
@@ -307,7 +307,7 @@ s32 neRigidBody_::CheckRestHull() {
     }
 }
 
-bool neRigidBody_::CheckStillIdle() {
+bool neRigidBody::CheckStillIdle() {
     if (!CheckHighEnergy()) {
         if (subType == NE_RIGID_PARTICLE || CheckRestHull()) {
             ZeroMotion();
@@ -327,7 +327,7 @@ bool neRigidBody_::CheckStillIdle() {
     }
 }
 
-s32 neRigidBody_::CheckContactValidity() {
+s32 neRigidBody::CheckContactValidity() {
     if (!stackInfo)
         return 0;
 
@@ -337,7 +337,7 @@ s32 neRigidBody_::CheckContactValidity() {
 
     bool allIdle = false;
 
-    if (status == neRigidBody_::NE_RBSTATUS_IDLE && !isShifted) {
+    if (status == neRigidBody::NE_RBSTATUS_IDLE && !isShifted) {
         allIdle = true;
 
         for (i = 0; i < NE_RB_MAX_RESTON_RECORDS; i++) {
@@ -393,7 +393,7 @@ s32 neRigidBody_::CheckContactValidity() {
     return validCount;
 }
 
-s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
+s32 neRigidBody::AddContactImpulseRecord(bool withConstraint) {
     s32 i = 0;
     static neV3 world1[NE_RB_MAX_RESTON_RECORDS];
     static neV3 world2[NE_RB_MAX_RESTON_RECORDS];
@@ -687,7 +687,7 @@ s32 neRigidBody_::AddContactImpulseRecord(bool withConstraint) {
             actualValidCount;
 }
 
-void neRigidBody_::AddContactConstraint() {
+void neRigidBody::AddContactConstraint() {
     if (stackInfo->stackHeader == &sim->stackHeaderX) {
         if (needSolveContactDynamic) {
             needSolveContactDynamic = false;
@@ -708,7 +708,7 @@ void neRigidBody_::AddContactConstraint() {
     }
 }
 
-bool neRigidBody_::CheckHighEnergy() {
+bool neRigidBody::CheckHighEnergy() {
     neReal e;
 
     neReal m;
@@ -734,7 +734,7 @@ bool neRigidBody_::CheckHighEnergy() {
     return true;
 }
 
-bool neRigidBody_::CheckStationary() {
+bool neRigidBody::CheckStationary() {
 //	return false;
 
     const s32 oldCounterMax = 60;
@@ -816,11 +816,11 @@ bool neRigidBody_::CheckStationary() {
 *
 ****************************************************************************/
 
-bool neRigidBody_::AddStackInfo(neRestRecord & rc) {
+bool neRigidBody::AddStackInfo(neRestRecord & rc) {
     if (!stackInfo)
         return NewStackInfo(rc);
 
-    neRigidBody_ *rb = (neRigidBody_ *) rc.GetOtherBody();
+    neRigidBody *rb = (neRigidBody *) rc.GetOtherBody();
 
     ASSERT(stackInfo->stackHeader);
 
@@ -891,7 +891,7 @@ bool neRigidBody_::AddStackInfo(neRestRecord & rc) {
     return true;
 }
 
-void neRigidBody_::ResetRestOnRecords() {
+void neRigidBody::ResetRestOnRecords() {
 /*	for (s32 i = 0; i < NE_MAX_REST_ON; i++)
 	{
 		GetRestRecord(i).Init();
@@ -899,7 +899,7 @@ void neRigidBody_::ResetRestOnRecords() {
 */
 }
 
-void neRigidBody_::FreeStackInfo() {
+void neRigidBody::FreeStackInfo() {
     ASSERT(stackInfo);
 
     sim->stackInfoHeap.Dealloc(stackInfo, 1);
@@ -907,7 +907,7 @@ void neRigidBody_::FreeStackInfo() {
     stackInfo = nullptr;
 }
 
-bool neRigidBody_::NewStackInfo(neRestRecord & rc) {
+bool neRigidBody::NewStackInfo(neRestRecord & rc) {
     ASSERT(stackInfo == NULL);
 
     stackInfo = sim->stackInfoHeap.Alloc(1);
@@ -939,7 +939,7 @@ bool neRigidBody_::NewStackInfo(neRestRecord & rc) {
         return true;
     }
 
-    neRigidBody_ *rb = (neRigidBody_ *) rc.GetOtherBody();
+    neRigidBody *rb = (neRigidBody *) rc.GetOtherBody();
 
     if (!rb->stackInfo) {
         sim->NewStackHeader(stackInfo);
@@ -977,7 +977,7 @@ bool neRigidBody_::NewStackInfo(neRestRecord & rc) {
     return true;
 }
 
-bool neRigidBody_::NewStackInfoTerminator(neStackHeader *header) {
+bool neRigidBody::NewStackInfoTerminator(neStackHeader *header) {
     ASSERT(stackInfo == NULL);
 
     stackInfo = sim->stackInfoHeap.Alloc(1);
@@ -1010,7 +1010,7 @@ bool neRigidBody_::NewStackInfoTerminator(neStackHeader *header) {
     return true;
 }
 
-void neRigidBody_::MigrateNewHeader(neStackHeader *newHeader, neStackHeader *curHeader) {
+void neRigidBody::MigrateNewHeader(neStackHeader *newHeader, neStackHeader *curHeader) {
     ASSERT(stackInfo);
     ASSERT(stackInfo->stackHeader != newHeader);
 
@@ -1028,7 +1028,7 @@ void neRigidBody_::MigrateNewHeader(neStackHeader *newHeader, neStackHeader *cur
 
 
         if (GetRestRecord(i).GetOtherBody()) {
-            neRigidBody_ *otherBody = GetRestRecord(i).GetOtherRigidBody();
+            neRigidBody *otherBody = GetRestRecord(i).GetOtherRigidBody();
 
             if (otherBody) {
                 if (!otherBody->stackInfo)
@@ -1044,7 +1044,7 @@ void neRigidBody_::MigrateNewHeader(neStackHeader *newHeader, neStackHeader *cur
     }
 }
 
-bool neRigidBody_::IsRestPointStillValid() {
+bool neRigidBody::IsRestPointStillValid() {
     if (!stackInfo || stackInfo->isTerminator)
         return false;
 
@@ -1099,7 +1099,7 @@ bool neRigidBody_::IsRestPointStillValid() {
     return true;
 }
 /*
-void neRigidBody_::ResolveRestingPenetration()
+void neRigidBody::ResolveRestingPenetration()
 {
 	s32 i;
 
@@ -1138,7 +1138,7 @@ void neRigidBody_::ResolveRestingPenetration()
 */
 #if 1
 
-void neRigidBody_::CorrectRotation(neReal massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag,
+void neRigidBody::CorrectRotation(neReal massOther, neV3 &pointThis, neV3 &pointDest, neV3 &pointDest2, s32 flag,
                                    s32 changeLast) {
     neV3 dir1 = pointThis - GetPos();
 
@@ -1195,7 +1195,7 @@ void neRigidBody_::CorrectRotation(neReal massOther, neV3 &pointThis, neV3 &poin
 
 #else
 
-void neRigidBody_::CorrectRotation(neReal massOther, neV3 & pointThis, neV3 & pointDest, neV3 & pointDest2, s32 flag, s32 changeLast)
+void neRigidBody::CorrectRotation(neReal massOther, neV3 & pointThis, neV3 & pointDest, neV3 & pointDest2, s32 flag, s32 changeLast)
 {
     neV3 p1 = pointThis - GetPos();
 
@@ -1249,7 +1249,7 @@ void neRigidBody_::CorrectRotation(neReal massOther, neV3 & pointThis, neV3 & po
 #endif
 
 
-void neRigidBody_::CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast) {
+void neRigidBody::CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast) {
     neV3 shift = pointDest - pointThis;
 
     if (flag == 1)
@@ -1269,7 +1269,7 @@ void neRigidBody_::CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s
     }
 }
 /*
-void neRigidBody_::CorrectPenetrationRotation()
+void neRigidBody::CorrectPenetrationRotation()
 {
 	if (!stackInfo)
 		return;
@@ -1309,7 +1309,7 @@ void neRigidBody_::CorrectPenetrationRotation()
 	}
 }
 
-void neRigidBody_::CorrectPenetrationTranslation()
+void neRigidBody::CorrectPenetrationTranslation()
 {
 	if (!stackInfo)
 		return;
@@ -1349,7 +1349,7 @@ void neRigidBody_::CorrectPenetrationTranslation()
 	}
 }
 */
-void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
+void neRigidBody::CorrectPenetrationRotation2(s32 index, bool slide)
 {
 /*	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
 
@@ -1408,7 +1408,7 @@ void neRigidBody_::CorrectPenetrationRotation2(s32 index, bool slide)
 */
 }
 
-void neRigidBody_::CorrectPenetrationTranslation2(s32 index, bool slide)
+void neRigidBody::CorrectPenetrationTranslation2(s32 index, bool slide)
 {
 /*
 	neRigidBodyBase * rb = GetRestRecord(index).otherBody;
@@ -1469,7 +1469,7 @@ void neRigidBody_::CorrectPenetrationTranslation2(s32 index, bool slide)
 */
 }
 #if 0
-void neRigidBody_::CorrectPenetrationDrift()
+void neRigidBody::CorrectPenetrationDrift()
 {
     if (!stackInfo)
         return;
@@ -1518,7 +1518,7 @@ void neRigidBody_::CorrectPenetrationDrift()
 //		CorrectPenetrationDrift2(deepestIndex, false);
 }
 
-void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
+void neRigidBody::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 {
     // remember current position
 
@@ -1653,7 +1653,7 @@ void neRigidBody_::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 }
 #endif
 
-neReal neRigidBody_::TestImpulse(neV3 & dir, neV3 & pt, neReal & linear, neReal & angular) {
+neReal neRigidBody::TestImpulse(neV3 & dir, neV3 & pt, neReal & linear, neReal & angular) {
     neV3 point = pt - GetPos();
 
     neV3 dv = dir * oneOnMass;
@@ -1688,13 +1688,13 @@ neReal neRigidBody_::TestImpulse(neV3 & dir, neV3 & pt, neReal & linear, neReal 
     return 0.0f;
 }
 
-void neRigidBody_::ShiftPosition(const neV3 &delta) {
+void neRigidBody::ShiftPosition(const neV3 &delta) {
     neConstraintHeader *header = GetConstraintHeader();
 
     SetPos(GetPos() + delta);
 }
 
-bool neRigidBody_::AllRestRecordInvalid() {
+bool neRigidBody::AllRestRecordInvalid() {
     for (s32 i = 0; i < 3; i++) {
         if (GetRestRecord(i).IsValid())
             return false;

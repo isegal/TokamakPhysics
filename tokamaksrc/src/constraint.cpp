@@ -146,11 +146,11 @@ void _neConstraint::Enable(bool yes) {
     if (alreadySetup) {
         enable = yes;
 
-        if (bodyA->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (bodyA->status == neRigidBody::NE_RBSTATUS_IDLE) {
             bodyA->WakeUp();
         }
         if (bodyB && bodyB->AsRigidBody()) {
-            if (bodyB->AsRigidBody()->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (bodyB->AsRigidBody()->status == neRigidBody::NE_RBSTATUS_IDLE) {
                 bodyB->AsRigidBody()->WakeUp();
             }
         }
@@ -164,11 +164,11 @@ void _neConstraint::Enable(bool yes) {
 
             enable = true;
 
-            if (bodyA->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (bodyA->status == neRigidBody::NE_RBSTATUS_IDLE) {
                 bodyA->WakeUp();
             }
             if (bodyB && bodyB->AsRigidBody()) {
-                if (bodyB->AsRigidBody()->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+                if (bodyB->AsRigidBody()->status == neRigidBody::NE_RBSTATUS_IDLE) {
                     bodyB->AsRigidBody()->WakeUp();
                 }
             }
@@ -181,7 +181,7 @@ void _neConstraint::Enable(bool yes) {
 void _neConstraint::AddToRigidBody() {
     neConstraintHeader *header = nullptr;
 
-    neRigidBody_ *rb = bodyB ? bodyB->AsRigidBody() : nullptr;
+    neRigidBody *rb = bodyB ? bodyB->AsRigidBody() : nullptr;
 
     neCollisionBody_ *cb = bodyB ? bodyB->AsCollisionBody() : nullptr;
 
@@ -435,7 +435,7 @@ void _neConstraint::UpdateController() {
         con->constraint->bodyA->ctorque += con->torqueA;
 
         if (con->constraint->bodyB) {
-            neRigidBody_ *bb = (neRigidBody_ *) con->constraint->bodyB->AsRigidBody();
+            neRigidBody *bb = (neRigidBody *) con->constraint->bodyB->AsRigidBody();
 
             if (bb) {
                 bb->cforce += con->forceB;
@@ -453,7 +453,7 @@ void _neConstraint::UpdateConstraintPoint() {
 
     ASSERT(bodyA);
 
-    neRigidBody_ *rbodyB = nullptr;
+    neRigidBody *rbodyB = nullptr;
 
     neCollisionBody_ *cbodyB = nullptr;
 
@@ -492,7 +492,7 @@ void _neConstraint::UpdateConstraintPoint() {
 ****************************************************************************/
 
 void _neConstraint::FindGreatest() {
-    neRigidBody_ *rbodyB = nullptr;
+    neRigidBody *rbodyB = nullptr;
 
     neCollisionBody_ *cbodyB = nullptr;
 
@@ -586,7 +586,7 @@ void _neConstraint::FindGreatest() {
 /*
 void _neConstraint::SetupLimitCollision()
 {
-	neRigidBody_ * rbodyB = NULL;
+	neRigidBody * rbodyB = NULL;
 	
 	neCollisionBody_ * cbodyB = NULL;
 
@@ -646,7 +646,7 @@ void _neConstraint::DrawCPointLine() {
 neT3 _neConstraint::GetFrameBWorld() {
     neT3 ret;
 
-    neRigidBody_ *rb = nullptr;
+    neRigidBody *rb = nullptr;
 
     if (bodyB) {
         rb = bodyB->AsRigidBody();
@@ -665,7 +665,7 @@ neT3 _neConstraint::GetFrameBWorld() {
 neT3 _neConstraint::GetBodyB2W() {
     neT3 ret;
 
-    neRigidBody_ *rb = nullptr;
+    neRigidBody *rb = nullptr;
 
     if (bodyB) {
         rb = bodyB->AsRigidBody();
@@ -699,7 +699,7 @@ void _neConstraint::CheckLimit() {
 }
 
 void _neConstraint::UpdateCurrentPosition() {
-    neRigidBody_ *rb = nullptr;
+    neRigidBody *rb = nullptr;
 
     if (bodyB && bodyB->AsRigidBody()) {
         rb = bodyB->AsRigidBody();
@@ -981,7 +981,7 @@ void neLimitState::CheckLimitSecondary()
 void neLimitState::CheckLimitPrimary() {
     applyLimitImpulse = false;
 
-//	neRigidBody_ * rb = NULL;
+//	neRigidBody * rb = NULL;
 
 //	if (constr->bodyB && constr->bodyB->AsRigidBody())
 //	{
@@ -1149,7 +1149,7 @@ void neConstraintHeader::AddToSolver(neReal &epsilon, s32 &iteration) {
 void _neConstraint::ApplyDamping() {
     // rel vel between a and b, as if b was hold still
 
-    neRigidBody_ *rb = nullptr;
+    neRigidBody *rb = nullptr;
 
     if (bodyB && bodyB->AsRigidBody()) {
         rb = bodyB->AsRigidBody();
@@ -1220,9 +1220,9 @@ void neConstraintHeader::TraverseApplyConstraint(bool doCheckSleep) {
 
         bodyHandle->thing->AsRigidBody()->needRecalc = false;
 
-        neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+        neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 /*
-		if (!doCheckSleep && rb->status == neRigidBody_::NE_RBSTATUS_IDLE)
+		if (!doCheckSleep && rb->status == neRigidBody::NE_RBSTATUS_IDLE)
 		{
 			bodyHandle = bodyHandle->next;
 
@@ -1235,7 +1235,7 @@ void neConstraintHeader::TraverseApplyConstraint(bool doCheckSleep) {
         if (rb->twistCount > 0) {
             rb->ApplyAngularConstraint();
         }
-/*		if (doCheckSleep && rb->status == neRigidBody_::NE_RBSTATUS_IDLE)
+/*		if (doCheckSleep && rb->status == neRigidBody::NE_RBSTATUS_IDLE)
 		{
 			rb->ConstraintDoSleepCheck();
 		}
@@ -1249,7 +1249,7 @@ bool neConstraintHeader::StationaryCheck() {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {
-        neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+        neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 
         if (!rb) {
             bodyHandle = bodyHandle->next;
@@ -1269,7 +1269,7 @@ void neConstraintHeader::BecomeIdle(bool checkResting) {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {
-        neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+        neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 
         if (!rb) {
             bodyHandle = bodyHandle->next;
@@ -1294,7 +1294,7 @@ void neConstraintHeader::WakeUp() {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {
-        neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+        neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 
         if (!rb) {
             bodyHandle = bodyHandle->next;
@@ -1302,7 +1302,7 @@ void neConstraintHeader::WakeUp() {
             continue;
         }
 
-        rb->status = neRigidBody_::NE_RBSTATUS_NORMAL;
+        rb->status = neRigidBody::NE_RBSTATUS_NORMAL;
 
         bodyHandle = bodyHandle->next;
     }
@@ -1312,7 +1312,7 @@ void neConstraintHeader::RemoveAll() {
     neBodyHandle *bodyHandle = bodies.GetHead();
 
     while (bodyHandle) {
-        neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+        neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 
         ASSERT(rb);
 

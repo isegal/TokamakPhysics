@@ -749,7 +749,7 @@ neGeometry *neAnimatedBody::GetNextGeometry() {
 neRigidBody *neAnimatedBody::BreakGeometry(neGeometry *g) {
     CAST_THIS(neCollisionBody_, ab);
 
-    neRigidBody_ *newBody = ab.sim->CreateRigidBodyFromConvex((TConvex *) g, &ab);
+    neRigidBody *newBody = ab.sim->CreateRigidBodyFromConvex((TConvex *) g, &ab);
 
     return (neRigidBody *) newBody;
 }
@@ -907,7 +907,7 @@ bool neAnimatedBody::Active() {
 ****************************************************************************/
 
 //neReal neRigidBody::GetMass() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.mass;
 //}
@@ -919,7 +919,7 @@ bool neAnimatedBody::Active() {
 ****************************************************************************/
 
 //void neRigidBody::SetMass(neReal mass) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    ASSERT(neIsFinite(mass));
 //
@@ -935,7 +935,7 @@ bool neAnimatedBody::Active() {
 ****************************************************************************/
 
 //void neRigidBody::SetInertiaTensor(const neM3 &tensor) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.Ibody = tensor;
 //
@@ -951,7 +951,7 @@ bool neAnimatedBody::Active() {
 ****************************************************************************/
 
 //void neRigidBody::SetInertiaTensor(const neV3 &tensor) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    neM3 i;
 //
@@ -1027,37 +1027,37 @@ bool neAnimatedBody::Active() {
 //}
 
 //void neRigidBody::SetLinearDamping(neReal damp) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.linearDamp = neAbs(damp);
 //}
 
 //neReal neRigidBody::GetLinearDamping() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.linearDamp;
 //}
 //
 //void neRigidBody::SetAngularDamping(neReal damp) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.angularDamp = neAbs(damp);
 //}
 //
 //neReal neRigidBody::GetAngularDamping() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.angularDamp;
 //}
 //
 //void neRigidBody::SetSleepingParameter(neReal sleepingParam) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.sleepingParam = sleepingParam;
 //}
 //
 //neReal neRigidBody::GetSleepingParameter() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.sleepingParam;
 //}
@@ -1094,7 +1094,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neV3 neRigidBody::GetPos() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.GetPos();
 //}
@@ -1106,7 +1106,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetPos(const neV3 &p) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.SetPos(p);
 //
@@ -1120,7 +1120,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neM3 neRigidBody::GetRotationM3() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.State().rot();
 //}
@@ -1132,7 +1132,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neQ neRigidBody::GetRotationQ() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.State().q;
 //}
@@ -1146,7 +1146,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //void neRigidBody::SetRotation(const neM3 &m) {
 //    ASSERT(m.IsOrthogonalNormal());
 //
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.State().rot() = m;
 //
@@ -1162,7 +1162,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetRotation(const neQ &q) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.State().q = q;
 //
@@ -1178,7 +1178,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neT3 neRigidBody::GetTransform() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.State().b2w.rot[0].v[3] = 0.0f;
 //    rb.State().b2w.rot[1].v[3] = 0.0f;
@@ -1194,7 +1194,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neV3 neRigidBody::GetVelocity() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.Derive().linearVel;
 //}
@@ -1206,7 +1206,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetVelocity(const neV3 &v) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.Derive().linearVel = v;
 //
@@ -1220,7 +1220,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neV3 neRigidBody::GetAngularVelocity() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.Derive().angularVel;
 //}
@@ -1233,7 +1233,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 
 
 //neV3 neRigidBody::GetAngularMomentum() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.State().angularMom;
 //}
@@ -1245,7 +1245,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetAngularMomentum(const neV3 &am) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.SetAngMom(am);
 //
@@ -1259,7 +1259,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neV3 neRigidBody::GetVelocityAtPoint(const neV3 &pt) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.VelocityAtPoint(pt);
 //}
@@ -1283,7 +1283,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::UpdateInertiaTensor() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.RecalcInertiaTensor();
 //}
@@ -1295,7 +1295,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetForce(const neV3 &force, const neV3 &pos) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (force.IsConsiderZero()) {
 //        rb.force = force;
@@ -1319,7 +1319,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetTorque(const neV3 &torque) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (torque.IsConsiderZero()) {
 //        rb.torque = torque;
@@ -1338,7 +1338,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::SetForce(const neV3 &force) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (force.IsConsiderZero()) {
 //        rb.force = force;
@@ -1351,13 +1351,13 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //}
 
 //neV3 neRigidBody::GetForce() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.force;
 //}
 //
 //neV3 neRigidBody::GetTorque() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.torque;
 //}
@@ -1369,7 +1369,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::ApplyImpulse(const neV3 &impulse) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    neV3 dv = impulse * rb.oneOnMass;
 //
@@ -1386,7 +1386,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    neV3 dv = impulse * rb.oneOnMass;
 //
@@ -1408,7 +1408,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::ApplyTwist(const neV3 &twist) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    neV3 newAM = twist;
 //
@@ -1424,7 +1424,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback *controller, s32 period) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return (neRigidBodyController *) rb.AddController(controller, period);
 //}
@@ -1436,7 +1436,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (!rb.controllers)
 //        return false;
@@ -1466,7 +1466,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::BeginIterateController() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.BeginIterateController();
 //}
@@ -1478,7 +1478,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neRigidBodyController *neRigidBody::GetNextController() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return (neRigidBodyController *) rb.GetNextController();
 //}
@@ -1490,7 +1490,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::GravityEnable(bool yes) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.GravityEnable(yes);
 //}
@@ -1502,7 +1502,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::GravityEnable() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.gravityOn;
 //}
@@ -1514,7 +1514,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::CollideConnected(bool yes) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.CollideConnected(yes);
 //}
@@ -1526,7 +1526,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::CollideConnected() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.CollideConnected();
 //}
@@ -1538,7 +1538,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::CollideDirectlyConnected(bool yes) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.isCollideDirectlyConnected = yes;
 //}
@@ -1550,7 +1550,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::CollideDirectlyConnected() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.isCollideDirectlyConnected;
 //}
@@ -1562,7 +1562,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neGeometry *neRigidBody::AddGeometry() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    TConvex *g = rb.AddGeometry();
 //
@@ -1576,7 +1576,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::RemoveGeometry(neGeometry *g) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (!rb.col.convex)
 //        return false;
@@ -1615,7 +1615,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::BeginIterateGeometry() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.BeginIterateGeometry();
 //}
@@ -1627,7 +1627,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neGeometry *neRigidBody::GetNextGeometry() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return reinterpret_cast<neGeometry *>(rb.GetNextGeometry());
 //}
@@ -1639,9 +1639,9 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
-//    neRigidBody_ *newBody = rb.sim->CreateRigidBodyFromConvex((TConvex *) g, &rb);
+//    neRigidBody *newBody = rb.sim->CreateRigidBodyFromConvex((TConvex *) g, &rb);
 //
 //    return (neRigidBody *) newBody;
 //}
@@ -1653,7 +1653,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (yes) {
 //        rb.obb = *obb;
@@ -1683,7 +1683,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::UseCustomCollisionDetection() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return rb.isCustomCD;
 //}
@@ -1695,7 +1695,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neSensor *neRigidBody::AddSensor() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    neSensor_ *s = rb.AddSensor();
 //
@@ -1709,7 +1709,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //bool neRigidBody::RemoveSensor(neSensor *s) {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    if (!rb.sensors)
 //        return false;
@@ -1739,7 +1739,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //void neRigidBody::BeginIterateSensor() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    rb.BeginIterateSensor();
 //}
@@ -1751,7 +1751,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 ****************************************************************************/
 
 //neSensor *neRigidBody::GetNextSensor() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
 //    return reinterpret_cast<neSensor *>(rb.GetNextSensor());
 //}
@@ -1793,9 +1793,9 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //}
 //
 //bool neRigidBody::IsIdle() {
-//    CAST_THIS(neRigidBody_, rb);
+//    CAST_THIS(neRigidBody, rb);
 //
-//    return (rb.status == neRigidBody_::NE_RBSTATUS_IDLE);
+//    return (rb.status == neRigidBody::NE_RBSTATUS_IDLE);
 //}
 
 /****************************************************************************
@@ -1838,7 +1838,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //neRigidBody *neSimulator::CreateRigidBody() {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
-//    neRigidBody_ *ret = sim.CreateRigidBody();
+//    neRigidBody *ret = sim.CreateRigidBody();
 //
 //    return reinterpret_cast<neRigidBody *>(ret);
 //}
@@ -1852,7 +1852,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //neRigidBody *neSimulator::CreateRigidParticle() {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
-//    neRigidBody_ *ret = sim.CreateRigidBody(true);
+//    neRigidBody *ret = sim.CreateRigidBody(true);
 //
 //    return reinterpret_cast<neRigidBody *>(ret);
 //}
@@ -1880,7 +1880,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //void neSimulator::FreeRigidBody(neRigidBody *body) {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
-//    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
+//    sim.Free(reinterpret_cast<neRigidBody *>(body));
 //}
 
 /****************************************************************************
@@ -1892,7 +1892,7 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //void neSimulator::FreeAnimatedBody(neAnimatedBody *body) {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
-//    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
+//    sim.Free(reinterpret_cast<neRigidBody *>(body));
 //}
 
 /****************************************************************************
@@ -2001,9 +2001,9 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //
 //    constr->sim = &sim;
 //
-//    constr->bodyA = (neRigidBody_ *) bodyA;
+//    constr->bodyA = (neRigidBody *) bodyA;
 //
-//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//    neRigidBody *ba = (neRigidBody *) bodyA;
 //
 //    ba->constraintCollection.Add(&constr->bodyAHandle);
 //
@@ -2039,15 +2039,15 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //
 //    constr->sim = &sim;
 //
-//    constr->bodyA = (neRigidBody_ *) bodyA;
+//    constr->bodyA = (neRigidBody *) bodyA;
 //
-//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//    neRigidBody *ba = (neRigidBody *) bodyA;
 //
 //    ba->constraintCollection.Add(&constr->bodyAHandle);
 //
 //    constr->bodyB = (neRigidBodyBase *) bodyB;
 //
-//    neRigidBody_ *bb = (neRigidBody_ *) bodyB;
+//    neRigidBody *bb = (neRigidBody *) bodyB;
 //
 //    bb->constraintCollection.Add(&constr->bodyBHandle);
 //
@@ -2083,9 +2083,9 @@ void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 //
 //    constr->sim = &sim;
 //
-//    constr->bodyA = (neRigidBody_ *) bodyA;
+//    constr->bodyA = (neRigidBody *) bodyA;
 //
-//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//    neRigidBody *ba = (neRigidBody *) bodyA;
 //
 //    ba->constraintCollection.Add(&constr->bodyAHandle);
 //
@@ -2507,7 +2507,7 @@ neT3 neJoint::GetJointFrameB() {
     if (cb) {
         ret = cb->b2w * c.frameB;
     } else {
-        neRigidBody_ *rb = c.bodyB->AsRigidBody();
+        neRigidBody *rb = c.bodyB->AsRigidBody();
 
         ret = rb->State().b2w * c.frameB;
     }
@@ -3356,7 +3356,7 @@ void neJointController::SetControllerForceWithTorqueBodyB(const neV3 &force, con
 
     if (c.constraint->bodyB &&
         !c.constraint->bodyB->AsCollisionBody()) {
-        neRigidBody_ *rb = (neRigidBody_ *) c.constraint->bodyB;
+        neRigidBody *rb = (neRigidBody *) c.constraint->bodyB;
 
         c.torqueB = ((pos - rb->GetPos()).Cross(force));
     }

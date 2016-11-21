@@ -17,7 +17,7 @@
 #define NE_MAX_REST_ON 3
 
 class neStackHeader;
-class neRigidBody_;
+class neRigidBody;
 
 class neStackInfo {
 public:
@@ -44,11 +44,11 @@ public:
     bool isTerminator;
     bool isBroken;
     neStackHeader *stackHeader;
-    neRigidBody_ *body;
+    neRigidBody *body;
     s32 startTime;
     s32 endTime;
 
-    //neRestRecord restRecords[neRigidBody_::NE_RB_MAX_RESTON_RECORDS];
+    //neRestRecord restRecords[neRigidBody::NE_RB_MAX_RESTON_RECORDS];
 };
 
 using neStackInfoHeap = neDLinkList<neStackInfo>;
@@ -183,7 +183,7 @@ public:
 
     bool CheckStackDisconnected();
 
-    neRigidBody_ *GetBottomStackBody() {
+    neRigidBody *GetBottomStackBody() {
         return nullptr;
 /*		if (!head)
 			return NULL;
@@ -194,7 +194,7 @@ public:
 		{
 			neStackInfo * sinfo = (neStackInfo *) item;
 
-			neRigidBody_ * body = sinfo->body;
+			neRigidBody * body = sinfo->body;
 
 			neStackInfo * nextSinfo = NULL;
 

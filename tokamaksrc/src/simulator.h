@@ -48,8 +48,8 @@ public:
 
 class neFastImpulse {
 public:
-    neRigidBody_ *bodyA;
-    neRigidBody_ *bodyB;
+    neRigidBody *bodyA;
+    neRigidBody *bodyB;
     neV3 contactA;
     neV3 contactB;
     neM3 k;
@@ -343,9 +343,9 @@ public:
 
     void Initialise(const neV3 &gravity);
 
-    neRigidBody_ *CreateRigidBody(bool isParticle = false);
+    neRigidBody *CreateRigidBody(bool isParticle = false);
 
-    neRigidBody_ *CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody);
+    neRigidBody *CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody);
 
     neCollisionBody_ *CreateCollisionBody();
 
@@ -357,7 +357,7 @@ public:
 
     void Advance(nePerformanceReport *_perfReport = nullptr);
 
-    void ForeachActiveRB(const std::function<bool(neRigidBody_&)>& rbCallback);
+    void ForeachActiveRB(const std::function<bool(neRigidBody&)>& rbCallback);
 
     bool SetMaterial(s32 index, neReal friction, neReal restitution, neReal density);
 
@@ -366,7 +366,7 @@ public:
     neReal HandleCollision(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB, neCollisionResult &cresult,
                         neImpulseType impulseType, neReal scale = 0.0f);
 
-    void CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult);
+    void CollisionRigidParticle(neRigidBody *ba, neRigidBody *bb, neCollisionResult &cresult);
 
     void SimpleShift(const neCollisionResult &cresult);
 
@@ -535,23 +535,23 @@ public:
 
     size_t maxParticles;
 
-    neDLinkList<neRigidBody_> rigidBodyHeap;
+    neDLinkList<neRigidBody> rigidBodyHeap;
 
     neDLinkList<neCollisionBody_> collisionBodyHeap;
 
-    neDLinkList<neRigidBody_> rigidParticleHeap;
+    neDLinkList<neRigidBody> rigidParticleHeap;
 
-    neList<neRigidBody_> activeRB;
+    neList<neRigidBody> activeRB;
 
-    neList<neRigidBody_> inactiveRB;
+    neList<neRigidBody> inactiveRB;
 
     neList<neCollisionBody_> activeCB;
 
     neList<neCollisionBody_> inactiveCB;
 
-    neList<neRigidBody_> activeRP;
+    neList<neRigidBody> activeRP;
 
-    neList<neRigidBody_> inactiveRP;
+    neList<neRigidBody> inactiveRP;
 
     neList<neCollisionResult> colResults;
 

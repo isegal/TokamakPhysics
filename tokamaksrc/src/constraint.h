@@ -15,7 +15,7 @@ class _neConstraint;
 
 class neRigidBodyBase;
 
-class neRigidBody_;
+class neRigidBody;
 
 class neJointSolver;
 
@@ -147,7 +147,7 @@ public:
 
     neControllerItem *controllerCursor;
 
-    neRigidBody_ *bodyA;
+    neRigidBody *bodyA;
 
     neRigidBodyBase *bodyB;
 
@@ -222,7 +222,7 @@ public:
 
     void FindGreatest();
 
-    neRigidBodyBase *GetNotThisBody(neRigidBody_ *notThis) {
+    neRigidBodyBase *GetNotThisBody(neRigidBody *notThis) {
         if (bodyA == notThis) {
             return bodyB;
         } else {

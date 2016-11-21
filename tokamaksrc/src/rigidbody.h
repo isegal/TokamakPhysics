@@ -22,7 +22,7 @@
 
 class neRigidBodyBase;
 
-class neRigidBody_;
+class neRigidBody;
 
 class neSimulator;
 
@@ -44,7 +44,7 @@ public:
     neRigidBodyControllerCallback *rbc;
     neJointControllerCallback *jc;
     _neConstraint *constraint;
-    neRigidBody_ *rb;
+    neRigidBody *rb;
     neV3 forceA;
     neV3 torqueA;
     neV3 forceB;
@@ -202,11 +202,11 @@ public:
         return (neCollisionBody_ *) this;
     }
 
-    NEINLINE neRigidBody_ *AsRigidBody() {
+    NEINLINE neRigidBody *AsRigidBody() {
         if (btype != NE_OBJECT_RIGID)
             return nullptr;
 
-        return (neRigidBody_ *) this;
+        return (neRigidBody *) this;
     }
 
     neT3 &GetB2W();
@@ -281,7 +281,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////
 //
-//	neRigidBody_
+//	neRigidBodyState
 //
 ///////////////////////////////////////////////////////////////////
 
@@ -388,7 +388,7 @@ private:
     RestOnType rtype;
     neRigidBodyBase *otherBody;
     neRestRecordHandle restOnHandle;
-    neRigidBody_ *body;
+    neRigidBody *body;
     s32 counter;
 
 public:
@@ -414,7 +414,7 @@ public:
         return otherBody;
     }
 
-    neRigidBody_ *GetOtherRigidBody() const {
+    neRigidBody *GetOtherRigidBody() const {
         if (!otherBody)
             return nullptr;
 
@@ -436,7 +436,7 @@ public:
 
     neV3 GetOtherBodyPoint();
 
-    void Set(neRigidBody_ *thisBody, const neRestRecord &rc);
+    void Set(neRigidBody *thisBody, const neRestRecord &rc);
 
     void SetTmp(neRigidBodyBase *otherb, const neV3 &contactA, const neV3 &contactB, const neV3 &normalBody, s32 matA,
                 s32 matB);
@@ -484,7 +484,7 @@ public:
     neV3 lastAVel;
 };
 
-class neRigidBody_ : public neRigidBodyBase {
+class neRigidBody : public neRigidBodyBase {
 PLACEMENT_MAGIC
 
     friend class neSimulator;
@@ -635,9 +635,9 @@ public:
     }
 
 public:
-    neRigidBody_();
+    neRigidBody();
 
-    ~neRigidBody_();
+    ~neRigidBody();
 
     NEINLINE neRigidBodyState &State() {
         return stateBuffer[curState];
@@ -719,7 +719,7 @@ public:
 
     bool ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype);
 
-    neV3 GetCorrectRotation(neRigidBody_ *otherBody, neReal massOther, neV3 &pointThis, neV3 &pointOther);
+    neV3 GetCorrectRotation(neRigidBody *otherBody, neReal massOther, neV3 &pointThis, neV3 &pointOther);
 
     void CorrectPosition(neV3 &pointThis, neV3 &pointDest, s32 flag, s32 changeLast);
 
@@ -779,7 +779,7 @@ protected:
 
     void AdvancePosition(neReal tStep);
 
-    void IsCollideWith(neRigidBody_ &rb);
+    void IsCollideWith(neRigidBody &rb);
 
     void UpdateController();
 };
@@ -804,7 +804,7 @@ NEINLINE neV3 neRigidBodyBase::GetAngularVelocity() {
 
         return v;
     } else {
-        return ((neRigidBody_ *) this)->Derive().angularVel;
+        return ((neRigidBody *) this)->Derive().angularVel;
     }
 }
 
@@ -816,9 +816,9 @@ NEINLINE neV3 neRigidBodyBase::VelocityAtPoint(const neV3 &pt) {
 
         return ret;
     } else {
-        ret = ((neRigidBody_ *) this)->Derive().linearVel;
+        ret = ((neRigidBody *) this)->Derive().linearVel;
 
-        ret += ((neRigidBody_ *) this)->Derive().angularVel.Cross(pt);
+        ret += ((neRigidBody *) this)->Derive().angularVel.Cross(pt);
 
         return ret;
     }
@@ -837,13 +837,13 @@ NEINLINE neV3 neRigidBodyBase::VelocityAtPoint(const neV3 & pt)
 	}
 	else
 	{
-		//ret = ((neRigidBody_*)this)->Derive().linearVel;
+		//ret = ((neRigidBody*)this)->Derive().linearVel;
 
-		ret = (((neRigidBody_*)this)->State().pos() - ((neRigidBody_*)this)->correctionInfo.lastPos);
+		ret = (((neRigidBody*)this)->State().pos() - ((neRigidBody*)this)->correctionInfo.lastPos);
 
 		ret *= (1.0f / sim->currentTimeStep);
 
-		ret += ((neRigidBody_*)this)->Derive().angularVel.Cross(pt);
+		ret += ((neRigidBody*)this)->Derive().angularVel.Cross(pt);
 
 		return ret;
 	}

@@ -63,17 +63,17 @@ bool neCollisionResult::CheckIdle() {
     if (relativeSpeed > theshold)
         return false;
 
-    neRigidBody_ *ba = bodyA->AsRigidBody();
+    neRigidBody *ba = bodyA->AsRigidBody();
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     if (bodyB) {
         bb = bodyB->AsRigidBody();
     }
 
-    if (ba && ba->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+    if (ba && ba->status == neRigidBody::NE_RBSTATUS_IDLE) {
         if (bb) {
-            if (bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (bb->status == neRigidBody::NE_RBSTATUS_IDLE) {
                 return true;
             } else {
                 bodyA = nullptr;
@@ -83,7 +83,7 @@ bool neCollisionResult::CheckIdle() {
         } else {
             return true;
         }
-    } else if (bb && bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+    } else if (bb && bb->status == neRigidBody::NE_RBSTATUS_IDLE) {
         if (ba) {
             bodyB = nullptr;
 
@@ -159,7 +159,7 @@ void neCollisionResult::UpdateConstraintRelativeSpeed() {
     }
 }
 
-void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, bool isWorld) {
+void neCollisionResult::CalcCollisionMatrix(neRigidBody *ba, neRigidBody *bb, bool isWorld) {
     neM3 zero;
 
     zero.SetZero();
@@ -238,7 +238,7 @@ void neCollisionResult::CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, 
     ASSERT(kInv.IsFinite());
 }
 
-void neCollisionResult::CalcCollisionMatrix2(neRigidBody_ *ba, neRigidBody_ *bb) {
+void neCollisionResult::CalcCollisionMatrix2(neRigidBody *ba, neRigidBody *bb) {
     k.SetZero();
 
     if (ba)
@@ -250,7 +250,7 @@ void neCollisionResult::CalcCollisionMatrix2(neRigidBody_ *ba, neRigidBody_ *bb)
     kInv.SetInvert(k);
 }
 
-void neCollisionResult::CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb) {
+void neCollisionResult::CalcCollisionMatrix3(neRigidBody *ba, neRigidBody *bb) {
     neM3 kk;
 
     kk.SetZero();
@@ -272,9 +272,9 @@ void neCollisionResult::CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb)
 }
 
 void neCollisionResult::PrepareForSolver(bool aIdle, bool bIdle) {
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     if (bodyA && bodyA->AsRigidBody() && !aIdle) {
         ba = bodyA->AsRigidBody();

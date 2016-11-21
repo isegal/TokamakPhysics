@@ -180,12 +180,12 @@ void neRegion::Rebuild() {
 
     overlappedPairs.Clear();
 
-    neRigidBody_ *rb = sim->activeRB.GetHead();
+    neRigidBody *rb = sim->activeRB.GetHead();
 
     while (rb) {
-        neRigidBody_ *rbNext = sim->activeRB.GetNext(rb);
+        neRigidBody *rbNext = sim->activeRB.GetNext(rb);
 
-        neRigidBody_ *rbNext_ = rbNext;
+        neRigidBody *rbNext_ = rbNext;
 
         while (rbNext) {
             ResetOverlapStatus(rb, rbNext);
@@ -246,9 +246,9 @@ void neRegion::Update() {
             if (b == bi->body)
                 continue;
 
-            neRigidBody_ *b1 = bi->body->AsRigidBody();
+            neRigidBody *b1 = bi->body->AsRigidBody();
 
-            neRigidBody_ *b2 = b->AsRigidBody();
+            neRigidBody *b2 = b->AsRigidBody();
 
             if ((b1 && b2)) {
                 if (!(b1->IsParticle() && b2->IsParticle()))
@@ -375,9 +375,9 @@ void neRegion::ResetOverlapStatus(neRigidBodyBase *a, neRigidBodyBase *b) {
     if (o->status == sortDimension) {
         o->pairItem = overlappedPairs.Alloc();
 
-        neRigidBody_ *ra = a->AsRigidBody();
+        neRigidBody *ra = a->AsRigidBody();
 
-        neRigidBody_ *rb = b->AsRigidBody();
+        neRigidBody *rb = b->AsRigidBody();
 
         if (ra) {
             if (ra->IsParticle()) {
@@ -667,9 +667,9 @@ void neCoordList::Sort(bool sortOnly) {
                     if (insert->thing.value < cur->thing.value) {
                         // update overlap status
                         if (cur->thing.flag == CCoordListEntry::HighEnd && !sortOnly) {
-                            neRigidBody_ *b1 = cur->thing.bb->AsRigidBody();
+                            neRigidBody *b1 = cur->thing.bb->AsRigidBody();
 
-                            neRigidBody_ *b2 = insert->thing.bb->AsRigidBody();
+                            neRigidBody *b2 = insert->thing.bb->AsRigidBody();
 
                             if (b1 && b2) {
                                 if (!(b1->IsParticle() && b2->IsParticle()))
@@ -715,9 +715,9 @@ void neCoordList::Sort(bool sortOnly) {
                     if (insert->thing.value < cur->thing.value) {
                         // update overlap status
                         if (cur->thing.flag == CCoordListEntry::LowEnd && !sortOnly) {
-                            neRigidBody_ *b1 = cur->thing.bb->AsRigidBody();
+                            neRigidBody *b1 = cur->thing.bb->AsRigidBody();
 
-                            neRigidBody_ *b2 = insert->thing.bb->AsRigidBody();
+                            neRigidBody *b2 = insert->thing.bb->AsRigidBody();
 
                             if (b1 && b2) {
                                 if (!(b1->IsParticle() && b2->IsParticle()))

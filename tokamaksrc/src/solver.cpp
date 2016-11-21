@@ -34,7 +34,7 @@ neReal CONSTRAINT_CONVERGE_FACTOR_CONTACT = .5f;
 neReal CONSTRAINT_CONVERGE_FACTOR_LIMIT = 0.5f;
 
 NEINLINE void
-ApplyCollisionImpulseFast(neRigidBody_ *rb, const neV3 &impulse, const neV3 &contactPoint, s32 currentRecord,
+ApplyCollisionImpulseFast(neRigidBody *rb, const neV3 &impulse, const neV3 &contactPoint, s32 currentRecord,
                           bool immediate = true) {
     neV3 dv, da;
 
@@ -104,7 +104,7 @@ neReal neCollisionResult::SolveConstraint(neSimulator *sim) {
 
         impulse = kInv * deltaU * -1.0f;
     }
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         ApplyCollisionImpulseFast(rb, impulse, contactA, sim->currentRecord);
@@ -148,7 +148,7 @@ neReal neCollisionResult::SolveSlider(neSimulator *sim) {
 
         impulse = impulse - dot * contactBWorld;
     }
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         ApplyCollisionImpulseFast(rb, impulse, contactA, sim->currentRecord);
@@ -183,7 +183,7 @@ neReal neCollisionResult::SolveSliderLimit(neSimulator *sim) {
         return 0.0f;
     }
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         ApplyCollisionImpulseFast(rb, impulse, contactA, sim->currentRecord);
@@ -246,7 +246,7 @@ neReal neCollisionResult::SolveContact(neSimulator *sim) {
 
     impulse = collisionFrame * impulse;
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         ApplyCollisionImpulseFast(rb, impulse, contactA, sim->currentRecord, true);
@@ -342,7 +342,7 @@ neReal neCollisionResult::SolveAngular(neReal pdepth, const neV3 &axis, neReal r
 
     deltaL = kInv * deltaAngVel;
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         rb->SetAngMom(rb->State().angularMom + deltaL);
@@ -385,7 +385,7 @@ neReal neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, ne
         deltaLA = torque * (maxTorque * sim->_currentTimeStep / torqueMag);
     }
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         rb->SetAngMom(rb->State().angularMom + deltaLA);
@@ -511,7 +511,7 @@ neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal 
 
     deltaL = kInv * deltaAngVel;
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
     if (bodyA && (rb = bodyA->AsRigidBody())) {
         neV3 deltaLA = k.TransposeMulV3(deltaL);
@@ -537,9 +537,9 @@ neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal 
 }
 
 neReal neCollisionResult::SolveAngularPrimary(neSimulator *sim) {
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     neReal ava = 0.0f, avb = 0.0f;
 
@@ -558,9 +558,9 @@ neReal neCollisionResult::SolveAngularPrimary(neSimulator *sim) {
 }
 
 neReal neCollisionResult::SolveAngularSecondary(neSimulator *sim) {
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     neReal ava = 0.0f, avb = 0.0f;
 
@@ -599,9 +599,9 @@ neReal neCollisionResult::SolveAngularSecondary(neSimulator *sim) {
 }
 
 neReal neCollisionResult::SolveAngularMotorPrimary(neSimulator *sim) {
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     neReal ava = 0.0f, avb = 0.0f;
 
@@ -624,7 +624,7 @@ neReal neCollisionResult::SolveAngularMotorPrimary(neSimulator *sim) {
 neReal neCollisionResult::SolveRelativeLinear(neSimulator *sim) {
     neReal velA = 0.0f, velB = 0.0f;
 
-    neRigidBody_ *ba, *bb;
+    neRigidBody *ba, *bb;
 
     if (bodyA && (ba = bodyA->AsRigidBody())) {
         velA = ba->Derive().linearVel.Dot(contactABody);
@@ -679,7 +679,7 @@ void neSimulator::SolveContactConstrain() {
 
         sitem = sitem->next;
 
-        if (sinfo->body->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (sinfo->body->status == neRigidBody::NE_RBSTATUS_IDLE) {
             continue;
         }
         if (!sinfo->body->needSolveContactDynamic) {
@@ -691,7 +691,7 @@ void neSimulator::SolveContactConstrain() {
             continue;
         }
 
-        neRigidBody_ *rb = nullptr;
+        neRigidBody *rb = nullptr;
 
 
         for (s32 tt = 0; tt < cresultHeap2.GetUsedCount(); tt++) {
@@ -730,7 +730,7 @@ void neSimulator::SolveContactConstrain() {
 
         neStackInfo *s = sheader->head;
 
-        neRigidBody_ *rb = s->body;
+        neRigidBody *rb = s->body;
 
         if (s->isTerminator) {
             ASSERT(rb->AllRestRecordInvalid());
@@ -797,9 +797,9 @@ neReal neSimulator::SolveLocal(neCollisionResult *cr) {
 
     neV3 velB;
 
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     if (cr->bodyA && cr->bodyA->AsRigidBody()) {
         ba = cr->bodyA->AsRigidBody();
@@ -1001,7 +1001,7 @@ void neSimulator::ResolvePenetration() {
 
 		sitem = sitem->next;
 
-		if (sinfo->body->status != neRigidBody_::NE_RBSTATUS_IDLE || sinfo->body->isShifted)
+		if (sinfo->body->status != neRigidBody::NE_RBSTATUS_IDLE || sinfo->body->isShifted)
 			sinfo->Resolve();
 	}
 */
@@ -1025,7 +1025,7 @@ void neSimulator::ResolvePenetration() {
 
             sitem = sitem->next;
 
-            if (sinfo->body->status != neRigidBody_::NE_RBSTATUS_IDLE || sinfo->body->isShifted) {
+            if (sinfo->body->status != neRigidBody::NE_RBSTATUS_IDLE || sinfo->body->isShifted) {
                 sheader->isAllIdle = false;
 
                 break;
@@ -1055,9 +1055,9 @@ void neSimulator::ResolvePenetration() {
 
     // check if any of the rest contact are still valid
 
-    neRigidBody_ *rb;
+    neRigidBody *rb;
 
-    neList<neRigidBody_> *activeList;
+    neList<neRigidBody> *activeList;
 
     for (s32 j = 0; j < 2; j++) {
         if (j == 0)
@@ -1099,7 +1099,7 @@ void neSimulator::ResolvePenetration() {
 
             if (v <= 1) //no longer resting
             {
-                if (rb->status == neRigidBody_::NE_RBSTATUS_IDLE && rb->_constraintHeader == nullptr) {
+                if (rb->status == neRigidBody::NE_RBSTATUS_IDLE && rb->_constraintHeader == nullptr) {
                     rb->WakeUp();
                 }
             }
@@ -1248,9 +1248,9 @@ neReal neSimulator::HandleCollision(neRigidBodyBase *bodyA,
 
     neV3 velB;
 
-    neRigidBody_ *ba = nullptr;
+    neRigidBody *ba = nullptr;
 
-    neRigidBody_ *bb = nullptr;
+    neRigidBody *bb = nullptr;
 
     if (bodyA && bodyA->AsRigidBody()) {
         ba = bodyA->AsRigidBody();
@@ -1438,10 +1438,10 @@ void neSimulator::SolveAllConstrain() {
 
         s32 allIdle = 0;
         s32 nbody = 0;
-        neRigidBody_ *lastrb = nullptr;
+        neRigidBody *lastrb = nullptr;
 
         while (bodyHandle) {
-            neRigidBody_ *rb = bodyHandle->thing->AsRigidBody();
+            neRigidBody *rb = bodyHandle->thing->AsRigidBody();
 
             if (rb) {
                 rb->maxErrCResult = nullptr;
@@ -1449,7 +1449,7 @@ void neSimulator::SolveAllConstrain() {
                 nbody++;
             }
 
-            if (rb && rb->status != neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (rb && rb->status != neRigidBody::NE_RBSTATUS_IDLE) {
                 allIdle++;
             }
             lastrb = rb;

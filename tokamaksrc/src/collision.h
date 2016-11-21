@@ -33,7 +33,7 @@ typedef enum {
 class neSimulator;
 class neRigidBodyBase;
 
-class neRigidBody_;
+class neRigidBody;
 class neTriangle_;
 
 ///////////////////////////////////////////////////////////////////
@@ -366,11 +366,11 @@ public:
 
     void PrepareForSolver(bool aIdle = false, bool bIdle = false);
 
-    void CalcCollisionMatrix(neRigidBody_ *ba, neRigidBody_ *bb, bool isWorld);
+    void CalcCollisionMatrix(neRigidBody *ba, neRigidBody *bb, bool isWorld);
 
-    void CalcCollisionMatrix2(neRigidBody_ *ba, neRigidBody_ *bb);
+    void CalcCollisionMatrix2(neRigidBody *ba, neRigidBody *bb);
 
-    void CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb);
+    void CalcCollisionMatrix3(neRigidBody *ba, neRigidBody *bb);
 
     neReal SolveContact(neSimulator *sim);
 

@@ -331,8 +331,8 @@ bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution, 
 *
 ****************************************************************************/
 
-neRigidBody_ *neSimulator::CreateRigidBody(bool isParticle) {
-    neRigidBody_ *ret;
+neRigidBody *neSimulator::CreateRigidBody(bool isParticle) {
+    neRigidBody *ret;
 
     if (!isParticle) {
         ret = rigidBodyHeap.Alloc(1);
@@ -347,7 +347,7 @@ neRigidBody_ *neSimulator::CreateRigidBody(bool isParticle) {
 
         //ASSERT(ret);
 
-        new(ret) neRigidBody_;
+        new(ret) neRigidBody;
 
         activeRB.Add(ret);
 
@@ -366,7 +366,7 @@ neRigidBody_ *neSimulator::CreateRigidBody(bool isParticle) {
         }
         //ASSERT(ret);
 
-        new(ret) neRigidBody_;
+        new(ret) neRigidBody;
 
         activeRP.Add(ret);
 
@@ -384,7 +384,7 @@ neRigidBody_ *neSimulator::CreateRigidBody(bool isParticle) {
     return ret;
 }
 
-neRigidBody_ *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody) {
+neRigidBody *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody) {
     //make sure convex belong to this body and
     //this convex is not the only convex on this body
 
@@ -414,7 +414,7 @@ neRigidBody_ *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBod
         isParticle = true;
     }
 
-    neRigidBody_ *newBody = CreateRigidBody(false);
+    neRigidBody *newBody = CreateRigidBody(false);
 
     if (!newBody) {
         return nullptr;
@@ -518,7 +518,7 @@ void neSimulator::Free(neRigidBodyBase *bb) {
             LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
         }
     } else {
-        neRigidBody_ *rb = reinterpret_cast<neRigidBody_ *>(bb);
+        neRigidBody *rb = reinterpret_cast<neRigidBody *>(bb);
 
         rb->Free();
 
@@ -830,8 +830,8 @@ void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, ne
     }
 }
 
-void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody_ &)>& rbCallback) {
-    neRigidBody_ *rb = activeRB.GetHead();
+void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody &)>& rbCallback) {
+    neRigidBody *rb = activeRB.GetHead();
     while (rb) {
         if (!rbCallback(*rb)) {
             break;
@@ -841,7 +841,7 @@ void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody_ &)>& rbC
 }
 
 void neSimulator::ResetTotalForce() {
-    neRigidBody_ *rb = activeRB.GetHead();
+    neRigidBody *rb = activeRB.GetHead();
 
     while (rb) {
         rb->totalForce.SetZero();
@@ -862,7 +862,7 @@ void neSimulator::ResetTotalForce() {
 }
 
 void neSimulator::AdvanceDynamicRigidBodies() {
-    neRigidBody_ *rb = activeRB.GetHead();
+    neRigidBody *rb = activeRB.GetHead();
 
     idleBodyCount = 0;
 
@@ -874,7 +874,7 @@ void neSimulator::AdvanceDynamicRigidBodies() {
 }
 
 void neSimulator::AdvanceDynamicParticles() {
-    neRigidBody_ *rp = activeRP.GetHead();
+    neRigidBody *rp = activeRP.GetHead();
 
     while (rp) {
         rp->AdvanceDynamic(_currentTimeStep);
@@ -884,17 +884,17 @@ void neSimulator::AdvanceDynamicParticles() {
 }
 
 void neSimulator::AdvancePositionRigidBodies() {
-    neRigidBody_ *rb = activeRB.GetHead();
+    neRigidBody *rb = activeRB.GetHead();
 
     while (rb) {
         rb->needSolveContactDynamic = true;
 
-        if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (rb->status != neRigidBody::NE_RBSTATUS_IDLE) {
             if (!rb->_constraintHeader) {
                 rb->CheckForIdle();
             }
 
-            if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
+            if (rb->status != neRigidBody::NE_RBSTATUS_IDLE)
                 rb->AdvancePosition(_currentTimeStep);
         }
 
@@ -903,17 +903,17 @@ void neSimulator::AdvancePositionRigidBodies() {
 }
 
 void neSimulator::AdvancePositionParticles() {
-    neRigidBody_ *rp = activeRP.GetHead();
+    neRigidBody *rp = activeRP.GetHead();
 
     while (rp) {
         rp->needSolveContactDynamic = true;
 
-        if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE) {
+        if (rp->status != neRigidBody::NE_RBSTATUS_IDLE) {
             if (!rp->_constraintHeader) {
                 rp->CheckForIdle();
             }
 
-            if (rp->status != neRigidBody_::NE_RBSTATUS_IDLE)
+            if (rp->status != neRigidBody::NE_RBSTATUS_IDLE)
                 rp->AdvancePosition(_currentTimeStep);
         }
 
@@ -952,7 +952,7 @@ void neSimulator::ClearCollisionBodySensors() {
         cb = activeCB.GetNext(cb);
     }
 
-    neRigidBody_ *rp = activeRP.GetHead();
+    neRigidBody *rp = activeRP.GetHead();
 
     while (rp) {
         if (rp->sensors)
@@ -972,14 +972,14 @@ void neSimulator::ClearCollisionBodySensors() {
 }
 
 void neSimulator::UpdateAABB() {
-    neRigidBody_ *rb = activeRB.GetHead();
+    neRigidBody *rb = activeRB.GetHead();
 
     while (rb) {
         rb->UpdateAABB();
 
         rb = activeRB.GetNext(rb);
     }
-    neRigidBody_ *rp = activeRP.GetHead();
+    neRigidBody *rp = activeRP.GetHead();
 
     while (rp) {
         rp->UpdateAABB();
@@ -1022,8 +1022,8 @@ void neSimulator::CheckCollision() {
         bodyA = (*oiter)->bodyA;
         bodyB = (*oiter)->bodyB;
 
-        neRigidBody_ *ra = bodyA->AsRigidBody();
-        neRigidBody_ *rb = bodyB->AsRigidBody();
+        neRigidBody *ra = bodyA->AsRigidBody();
+        neRigidBody *rb = bodyB->AsRigidBody();
 
         neCollisionBody_ *ca = bodyA->AsCollisionBody();
         neCollisionBody_ *cb = bodyB->AsCollisionBody();
@@ -1041,7 +1041,7 @@ void neSimulator::CheckCollision() {
         result.penetrate = false;
 
         if (ca) {
-            if (rb->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+            if (rb->status != neRigidBody::NE_RBSTATUS_IDLE ||
                 rb->isShifted ||
                 ca->moved) {
                 if ((rb->isCustomCD || ca->isCustomCD)) {
@@ -1087,7 +1087,7 @@ void neSimulator::CheckCollision() {
             }
         } else {
             if (cb) {
-                if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                if (ra->status != neRigidBody::NE_RBSTATUS_IDLE ||
                     ra->isShifted ||
                     cb->moved) {
                     if ((ra->isCustomCD || cb->isCustomCD)) {
@@ -1138,14 +1138,14 @@ void neSimulator::CheckCollision() {
                 if (ra->GetConstraintHeader() &&
                     (ra->GetConstraintHeader() == rb->GetConstraintHeader())) {
                     if (ra->isCollideConnected && rb->isCollideConnected) {
-                        if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-                            rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
+                        if (ra->status != neRigidBody::NE_RBSTATUS_IDLE ||
+                            rb->status != neRigidBody::NE_RBSTATUS_IDLE)
 
                             doCollision = true;
                     }
                 } else {
-                    if (ra->status != neRigidBody_::NE_RBSTATUS_IDLE ||
-                        rb->status != neRigidBody_::NE_RBSTATUS_IDLE ||
+                    if (ra->status != neRigidBody::NE_RBSTATUS_IDLE ||
+                        rb->status != neRigidBody::NE_RBSTATUS_IDLE ||
                         ra->isShifted ||
                         rb->isShifted) {
                         doCollision = true;
@@ -1209,8 +1209,8 @@ void neSimulator::CheckCollision() {
         if (result.penetrate) {
             bool bothAnimated = false;
 
-            if (ra && ra->status == neRigidBody_::NE_RBSTATUS_ANIMATED &&
-                rb && rb->status == neRigidBody_::NE_RBSTATUS_ANIMATED) {
+            if (ra && ra->status == neRigidBody::NE_RBSTATUS_ANIMATED &&
+                rb && rb->status == neRigidBody::NE_RBSTATUS_ANIMATED) {
                 bothAnimated = true;
             }
             bool response = true;
@@ -1271,19 +1271,19 @@ void neSimulator::CheckTerrainCollision() {
     neV3 backupVector;
 
     for (s32 mop = 0; mop < 2; mop++) {
-        neList<neRigidBody_> *activeList = &activeRB;
+        neList<neRigidBody> *activeList = &activeRB;
 
         if (mop == 1) {
             activeList = &activeRP;
 
         }
-        neRigidBody_ *rb = activeList->GetHead();
+        neRigidBody *rb = activeList->GetHead();
 
         //for (riter = rbHeap.BeginUsed(); riter.Valid(); riter++)
         while (rb) {
-            neRigidBody_ *bodyA = (rb);
+            neRigidBody *bodyA = (rb);
 
-            if (bodyA->status == neRigidBody_::NE_RBSTATUS_IDLE &&
+            if (bodyA->status == neRigidBody::NE_RBSTATUS_IDLE &&
                 !bodyA->isShifted) {
                 rb = activeList->GetNext(rb);
 
@@ -1334,7 +1334,7 @@ void neSimulator::CheckTerrainCollision() {
 
                 triCol.convex = &triCol.obb;
 
-                CollisionTest(result, bodyA->col, ((neRigidBody_ *) bodyA)->State().b2w,
+                CollisionTest(result, bodyA->col, ((neRigidBody *) bodyA)->State().b2w,
                               triCol, identity, backupVector);
 
                 if (bodyA->sensors) {
@@ -1372,7 +1372,7 @@ void neSimulator::CheckTerrainCollision() {
 
                 triCol.convex = &triCol.obb;
 
-                CollisionTest(result, bodyA->col, ((neRigidBody_ *) bodyA)->State().b2w,
+                CollisionTest(result, bodyA->col, ((neRigidBody *) bodyA)->State().b2w,
                               triCol, identity, backupVector);
 
                 if (bodyA->sensors) {
@@ -1392,7 +1392,7 @@ void neSimulator::CheckTerrainCollision() {
                 neCollisionTable::neReponseBitFlag collisionflag = colTable.Get(bodyA->cid, -1); //-1 is terrain
 
                 if ((collisionflag & neCollisionTable::RESPONSE_IMPULSE) &&
-                    bodyA->status != neRigidBody_::NE_RBSTATUS_ANIMATED) {
+                    bodyA->status != neRigidBody::NE_RBSTATUS_ANIMATED) {
                     result.bodyA = bodyA;
                     result.bodyB = &fakeCollisionBody;
 
@@ -1425,13 +1425,13 @@ void neSimulator::CheckTerrainCollision() {
     }//mop
 
     for (s32 mop2 = 0; mop2 < 2; mop2++) {
-        neList<neRigidBody_> *activeList = &activeRB;
+        neList<neRigidBody> *activeList = &activeRB;
 
         if (mop2 == 1) {
             activeList = &activeRP;
 
         }
-        neRigidBody_ *rb = activeList->GetHead();
+        neRigidBody *rb = activeList->GetHead();
 
         while (rb) {
             if (rb->isShifted2) {
@@ -1489,9 +1489,9 @@ void neSimulator::SolveConstrain()
 
 		while (bodyHandle)
 		{
-			neRigidBody_ * rb = bodyHandle->thing->AsRigidBody();
+			neRigidBody * rb = bodyHandle->thing->AsRigidBody();
 
-			if (rb && rb->status != neRigidBody_::NE_RBSTATUS_IDLE)
+			if (rb && rb->status != neRigidBody::NE_RBSTATUS_IDLE)
 			{
 				allIdle = false;
 
@@ -1530,9 +1530,9 @@ void neSimulator::SolveConstrain()
 
 void neSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB,
                                                    neCollisionResult &cresult) {
-    neRigidBody_ *ba = bodyA->AsRigidBody();
+    neRigidBody *ba = bodyA->AsRigidBody();
 
-    neRigidBody_ *bb = bodyB->AsRigidBody();
+    neRigidBody *bb = bodyB->AsRigidBody();
 
     neRestRecord rc;
 
@@ -1631,7 +1631,7 @@ void neSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *b
     } else // not resting collision, resolve now
     {
         if (ba && bb) {
-            if (!ba->isShifted && ba->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+            if (!ba->isShifted && ba->status == neRigidBody::NE_RBSTATUS_IDLE) {
                 neReal e = ba->Derive().linearVel.Dot(ba->Derive().linearVel);
 
                 e += ba->Derive().angularVel.Dot(ba->Derive().angularVel);
@@ -1643,7 +1643,7 @@ void neSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *b
 
                     bb->isShifted2 = true;
                 }
-            } else if (!bb->isShifted && bb->status == neRigidBody_::NE_RBSTATUS_IDLE) {
+            } else if (!bb->isShifted && bb->status == neRigidBody::NE_RBSTATUS_IDLE) {
                 neReal e = bb->Derive().linearVel.Dot(bb->Derive().linearVel);
 
                 e += bb->Derive().angularVel.Dot(bb->Derive().angularVel);
@@ -1667,7 +1667,7 @@ void neSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *b
     }
 }
 
-void neSimulator::CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult) {
+void neSimulator::CollisionRigidParticle(neRigidBody *ba, neRigidBody *bb, neCollisionResult &cresult) {
     cresult.PrepareForSolver();
 
     HandleCollision(ba, bb, cresult, IMPULSE_NORMAL, 1.0f);
@@ -1689,9 +1689,9 @@ void neSimulator::SimpleShift(const neCollisionResult &cresult) {
 
     neRigidBodyBase *bodyB = cresult.bodyB;
 
-    neRigidBody_ *ba = bodyA->AsRigidBody();
+    neRigidBody *ba = bodyA->AsRigidBody();
 
-    neRigidBody_ *bb = bodyB->AsRigidBody();
+    neRigidBody *bb = bodyB->AsRigidBody();
 
     if (!ba) {
         aratio = 0.0f;
@@ -1751,7 +1751,7 @@ bool neSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, 
 
     breakImpulse *= convex->breakInfo.breakMagnitude / impulseMag;
 
-    neRigidBody_ *newBody = nullptr;
+    neRigidBody *newBody = nullptr;
 
     neV3 newImpulse, newContactPoint;
 
@@ -1887,12 +1887,12 @@ void neSimulator::UpdateConstraintControllers() {
 }
 
 void neSimulator::FreeAllBodies() {
-    neRigidBody_ *rb = activeRB.GetHead();
+    neRigidBody *rb = activeRB.GetHead();
 
     while (rb) {
         rb->Free();
 
-        neRigidBody_ *rbNext = activeRB.GetNext(rb);
+        neRigidBody *rbNext = activeRB.GetNext(rb);
 
         activeRB.Remove(rb);
 
@@ -1905,7 +1905,7 @@ void neSimulator::FreeAllBodies() {
     while (rb) {
         rb->Free();
 
-        neRigidBody_ *rbNext = inactiveRB.GetNext(rb);
+        neRigidBody *rbNext = inactiveRB.GetNext(rb);
 
         inactiveRB.Remove(rb);
 
@@ -1924,12 +1924,12 @@ void neSimulator::FreeAllBodies() {
 
     ///////////////////////////////////////////////////////////
 
-    neRigidBody_ *rp = activeRP.GetHead();
+    neRigidBody *rp = activeRP.GetHead();
 
     while (rp) {
         rp->Free();
 
-        neRigidBody_ *rpNext = activeRP.GetNext(rp);
+        neRigidBody *rpNext = activeRP.GetNext(rp);
 
         activeRP.Remove(rp);
 
@@ -1942,7 +1942,7 @@ void neSimulator::FreeAllBodies() {
     while (rp) {
         rp->Free();
 
-        neRigidBody_ *rpNext = inactiveRP.GetNext(rp);
+        neRigidBody *rpNext = inactiveRP.GetNext(rp);
 
         inactiveRP.Remove(rp);
 
@@ -2021,9 +2021,9 @@ void neSimulator::FreeAllBodies() {
 void neSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
     memoryAllocated = 0;
 
-    memoryAllocated += rigidBodyHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
+    memoryAllocated += rigidBodyHeap.Size() * sizeof(neFreeListItem<neRigidBody>);
 
-    memoryAllocated += rigidParticleHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);
+    memoryAllocated += rigidParticleHeap.Size() * sizeof(neFreeListItem<neRigidBody>);
 
     memoryAllocated += collisionBodyHeap.Size() * sizeof(neFreeListItem<neCollisionBody_>);
 
