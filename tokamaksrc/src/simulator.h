@@ -319,6 +319,11 @@ public:
 };
 
 class neSimulator {
+private:
+    neSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = nullptr,
+                const neV3 *grav = nullptr);
+    ~neSimulator();
+
 public:
     friend class neRegion;
 
@@ -332,10 +337,9 @@ public:
         LOG_OUTPUT_LEVEL_FULL,
     } LOG_OUTPUT_LEVEL;
 
-    neSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = nullptr,
-                             const neV3 *grav = nullptr);
-
-    ~neSimulator();
+    static neSimulator *CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc = nullptr,
+                                        const neV3 *grav = nullptr);
+    static void DestroySimulator(neSimulator *sim);
 
     void Initialise(const neV3 &gravity);
 

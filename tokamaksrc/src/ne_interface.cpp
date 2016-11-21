@@ -1800,31 +1800,6 @@ bool neRigidBody::IsIdle() {
 
 /****************************************************************************
 *
-*	neSimulator::CreateSimulator
-*
-****************************************************************************/
-//
-//neSimulator *
-//neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc, const neV3 *grav) {
-//    auto *s = new neSimulator(sizeInfo, alloc, grav);
-//
-//    return reinterpret_cast<neSimulator *>(s);
-//}
-
-/****************************************************************************
-*
-*	neSimulator::DestroySimulator(neSimulator * sim);
-*
-****************************************************************************/
-
-//void neSimulator::DestroySimulator(neSimulator *sim) {
-//    neSimulator *s = reinterpret_cast<neSimulator *>(sim);
-//
-//    delete s;
-//}
-
-/****************************************************************************
-*
 *	neSimulator::Gravity
 *
 ****************************************************************************/

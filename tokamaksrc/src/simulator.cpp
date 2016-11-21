@@ -40,6 +40,26 @@ void ChooseAxis(neV3 &x, neV3 &y, const neV3 &normal);
 
 /****************************************************************************
 *
+*	neSimulator::CreateSimulator
+*
+****************************************************************************/
+
+neSimulator * neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc, const neV3 *grav) {
+    return new neSimulator(sizeInfo, alloc, grav);
+}
+
+/****************************************************************************
+*
+*	neSimulator::DestroySimulator(neSimulator * sim);
+*
+****************************************************************************/
+
+void neSimulator::DestroySimulator(neSimulator *sim) {
+    delete sim;
+}
+
+/****************************************************************************
+*
 *	neFixedTimeStepSimulator::neFixedTimeStepSimulator(
 *
 ****************************************************************************/
