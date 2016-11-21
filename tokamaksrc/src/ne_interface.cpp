@@ -1809,13 +1809,13 @@ bool neRigidBody::IsIdle() {
 *	neSimulator::CreateSimulator
 *
 ****************************************************************************/
-
-neSimulator *
-neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc, const neV3 *grav) {
-    auto *s = new neFixedTimeStepSimulator(sizeInfo, alloc, grav);
-
-    return reinterpret_cast<neSimulator *>(s);
-}
+//
+//neSimulator *
+//neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbstract *alloc, const neV3 *grav) {
+//    auto *s = new neSimulator(sizeInfo, alloc, grav);
+//
+//    return reinterpret_cast<neSimulator *>(s);
+//}
 
 /****************************************************************************
 *
@@ -1823,23 +1823,11 @@ neSimulator::CreateSimulator(const neSimulatorSizeInfo &sizeInfo, neAllocatorAbs
 *
 ****************************************************************************/
 
-void neSimulator::DestroySimulator(neSimulator *sim) {
-    neFixedTimeStepSimulator *s = reinterpret_cast<neFixedTimeStepSimulator *>(sim);
-
-    delete s;
-}
-
-/****************************************************************************
-*
-*	neSimulator::Gravity
-*
-****************************************************************************/
-
-neV3 neSimulator::Gravity() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.gravity;
-}
+//void neSimulator::DestroySimulator(neSimulator *sim) {
+//    neSimulator *s = reinterpret_cast<neSimulator *>(sim);
+//
+//    delete s;
+//}
 
 /****************************************************************************
 *
@@ -1847,18 +1835,30 @@ neV3 neSimulator::Gravity() {
 *
 ****************************************************************************/
 
-void neSimulator::Gravity(const neV3 &g) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
+//neV3 neSimulator::Gravity() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.gravity;
+//}
 
-    sim.SetGravity(g);
-/*
-	sim.gravity = g;
+/****************************************************************************
+*
+*	neSimulator::Gravity
+*
+****************************************************************************/
 
-	sim.gravityVector = g;
-
-	sim.gravityVector.Normalize();
-*/
-}
+//void neSimulator::Gravity(const neV3 &g) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.SetGravity(g);
+///*
+//	sim.gravity = g;
+//
+//	sim.gravityVector = g;
+//
+//	sim.gravityVector.Normalize();
+//*/
+//}
 
 /****************************************************************************
 *
@@ -1866,13 +1866,13 @@ void neSimulator::Gravity(const neV3 &g) {
 *
 ****************************************************************************/
 
-neRigidBody *neSimulator::CreateRigidBody() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    neRigidBody_ *ret = sim.CreateRigidBody();
-
-    return reinterpret_cast<neRigidBody *>(ret);
-}
+//neRigidBody *neSimulator::CreateRigidBody() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    neRigidBody_ *ret = sim.CreateRigidBody();
+//
+//    return reinterpret_cast<neRigidBody *>(ret);
+//}
 
 /****************************************************************************
 *
@@ -1880,13 +1880,13 @@ neRigidBody *neSimulator::CreateRigidBody() {
 *
 ****************************************************************************/
 
-neRigidBody *neSimulator::CreateRigidParticle() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    neRigidBody_ *ret = sim.CreateRigidBody(true);
-
-    return reinterpret_cast<neRigidBody *>(ret);
-}
+//neRigidBody *neSimulator::CreateRigidParticle() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    neRigidBody_ *ret = sim.CreateRigidBody(true);
+//
+//    return reinterpret_cast<neRigidBody *>(ret);
+//}
 
 /****************************************************************************
 *
@@ -1894,13 +1894,13 @@ neRigidBody *neSimulator::CreateRigidParticle() {
 *
 ****************************************************************************/
 
-neAnimatedBody *neSimulator::CreateAnimatedBody() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    neCollisionBody_ *ret = sim.CreateCollisionBody();
-
-    return reinterpret_cast<neAnimatedBody *>(ret);
-}
+//neAnimatedBody *neSimulator::CreateAnimatedBody() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    neCollisionBody_ *ret = sim.CreateCollisionBody();
+//
+//    return reinterpret_cast<neAnimatedBody *>(ret);
+//}
 
 /****************************************************************************
 *
@@ -1908,11 +1908,11 @@ neAnimatedBody *neSimulator::CreateAnimatedBody() {
 *
 ****************************************************************************/
 
-void neSimulator::FreeRigidBody(neRigidBody *body) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
-}
+//void neSimulator::FreeRigidBody(neRigidBody *body) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
+//}
 
 /****************************************************************************
 *
@@ -1920,11 +1920,11 @@ void neSimulator::FreeRigidBody(neRigidBody *body) {
 *
 ****************************************************************************/
 
-void neSimulator::FreeAnimatedBody(neAnimatedBody *body) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
-}
+//void neSimulator::FreeAnimatedBody(neAnimatedBody *body) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.Free(reinterpret_cast<neRigidBody_ *>(body));
+//}
 
 /****************************************************************************
 *
@@ -1932,23 +1932,11 @@ void neSimulator::FreeAnimatedBody(neAnimatedBody *body) {
 *
 ****************************************************************************/
 
-neCollisionTable *neSimulator::GetCollisionTable() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return (neCollisionTable *) (&sim.colTable);
-}
-
-/****************************************************************************
-*
-*	neSimulator::GetMaterial
-*
-****************************************************************************/
-
-bool neSimulator::SetMaterial(s32 index, neReal friction, neReal restitution) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.SetMaterial(index, friction, restitution, 0.0f);
-}
+//neCollisionTable *neSimulator::GetCollisionTable() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return (neCollisionTable *) (&sim.colTable);
+//}
 
 /****************************************************************************
 *
@@ -1956,13 +1944,25 @@ bool neSimulator::SetMaterial(s32 index, neReal friction, neReal restitution) {
 *
 ****************************************************************************/
 
-bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
+//bool neSimulator::SetMaterial(s32 index, neReal friction, neReal restitution) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.SetMaterial(index, friction, restitution, 0.0f);
+//}
 
-    neReal density;
+/****************************************************************************
+*
+*	neSimulator::GetMaterial
+*
+****************************************************************************/
 
-    return sim.GetMaterial(index, friction, restitution, density);
-}
+//bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    neReal density;
+//
+//    return sim.GetMaterial(index, friction, restitution, density);
+//}
 
 /****************************************************************************
 *
@@ -1970,76 +1970,41 @@ bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution) 
 *
 ****************************************************************************/
 
-void neSimulator::Advance(neReal sec, s32 step, nePerformanceReport *perfReport) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.Advance(sec, step, perfReport);
-}
-
-void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *perfReport) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.Advance(sec, minTimeStep, maxTimeStep, perfReport);
-}
-
-void neSimulator::ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-    sim.ForeachActiveRB(std::move(rbCallback));
-}
+//void neSimulator::Advance(neReal sec, s32 step, nePerformanceReport *perfReport) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.Advance(sec, step, perfReport);
+//}
+//
+//void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *perfReport) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.Advance(sec, minTimeStep, maxTimeStep, perfReport);
+//}
+//
+//void neSimulator::ForeachActiveRB(std::function<bool(neRigidBody&)> rbCallback) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//    sim.ForeachActiveRB(std::move(rbCallback));
+//}
 
 /****************************************************************************
 *
 *	neSimulator::SetTerrainMesh
 *
 ****************************************************************************/
-
-void neSimulator::SetTerrainMesh(neTriangleMesh *tris) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.SetTerrainMesh(tris);
-}
-
-void neSimulator::FreeTerrainMesh() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.FreeTerrainMesh();
-
-}
-
-/****************************************************************************
-*
-*	 neSimulator::CreateJoint
-*
-****************************************************************************/
-
-neJoint *neSimulator::CreateJoint(neRigidBody *bodyA) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    if (!bodyA)
-        return nullptr;
-
-    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
-
-    if (!constr) {
-        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
-
-        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-
-        return nullptr;
-    }
-
-    constr->Reset();
-
-    constr->sim = &sim;
-
-    constr->bodyA = (neRigidBody_ *) bodyA;
-
-    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
-
-    ba->constraintCollection.Add(&constr->bodyAHandle);
-
-    return reinterpret_cast<neJoint *>(constr);
-}
+//
+//void neSimulator::SetTerrainMesh(neTriangleMesh *tris) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.SetTerrainMesh(tris);
+//}
+//
+//void neSimulator::FreeTerrainMesh() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.FreeTerrainMesh();
+//
+//}
 
 /****************************************************************************
 *
@@ -2047,43 +2012,34 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA) {
 *
 ****************************************************************************/
 
-neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    if (!bodyA)
-        return nullptr;
-
-    if (!bodyB)
-        return nullptr;
-
-    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
-
-    if (!constr) {
-        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
-
-        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-
-        return nullptr;
-    }
-
-    constr->Reset();
-
-    constr->sim = &sim;
-
-    constr->bodyA = (neRigidBody_ *) bodyA;
-
-    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
-
-    ba->constraintCollection.Add(&constr->bodyAHandle);
-
-    constr->bodyB = (neRigidBodyBase *) bodyB;
-
-    neRigidBody_ *bb = (neRigidBody_ *) bodyB;
-
-    bb->constraintCollection.Add(&constr->bodyBHandle);
-
-    return reinterpret_cast<neJoint *>(constr);
-}
+//neJoint *neSimulator::CreateJoint(neRigidBody *bodyA) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    if (!bodyA)
+//        return nullptr;
+//
+//    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
+//
+//    if (!constr) {
+//        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
+//
+//        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+//
+//        return nullptr;
+//    }
+//
+//    constr->Reset();
+//
+//    constr->sim = &sim;
+//
+//    constr->bodyA = (neRigidBody_ *) bodyA;
+//
+//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//
+//    ba->constraintCollection.Add(&constr->bodyAHandle);
+//
+//    return reinterpret_cast<neJoint *>(constr);
+//}
 
 /****************************************************************************
 *
@@ -2091,43 +2047,87 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB) {
 *
 ****************************************************************************/
 
-neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
+//neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neRigidBody *bodyB) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    if (!bodyA)
+//        return nullptr;
+//
+//    if (!bodyB)
+//        return nullptr;
+//
+//    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
+//
+//    if (!constr) {
+//        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
+//
+//        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+//
+//        return nullptr;
+//    }
+//
+//    constr->Reset();
+//
+//    constr->sim = &sim;
+//
+//    constr->bodyA = (neRigidBody_ *) bodyA;
+//
+//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//
+//    ba->constraintCollection.Add(&constr->bodyAHandle);
+//
+//    constr->bodyB = (neRigidBodyBase *) bodyB;
+//
+//    neRigidBody_ *bb = (neRigidBody_ *) bodyB;
+//
+//    bb->constraintCollection.Add(&constr->bodyBHandle);
+//
+//    return reinterpret_cast<neJoint *>(constr);
+//}
 
-    if (!bodyA)
-        return nullptr;
+/****************************************************************************
+*
+*	 neSimulator::CreateJoint
+*
+****************************************************************************/
 
-    if (!bodyB)
-        return nullptr;
-
-    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
-
-    if (!constr) {
-        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
-
-        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
-
-        return nullptr;
-    }
-
-    constr->Reset();
-
-    constr->sim = &sim;
-
-    constr->bodyA = (neRigidBody_ *) bodyA;
-
-    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
-
-    ba->constraintCollection.Add(&constr->bodyAHandle);
-
-    constr->bodyB = (neRigidBodyBase *) bodyB;
-
-    neRigidBodyBase *bb = (neRigidBodyBase *) bodyB;
-
-    bb->constraintCollection.Add(&constr->bodyBHandle);
-
-    return reinterpret_cast<neJoint *>(constr);
-}
+//neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    if (!bodyA)
+//        return nullptr;
+//
+//    if (!bodyB)
+//        return nullptr;
+//
+//    _neConstraint *constr = sim.constraintHeap.Alloc(1); // 1 means make it solo
+//
+//    if (!constr) {
+//        sprintf(sim.logBuffer, MSG_CONSTRAINT_FULL);
+//
+//        sim.LogOutput(neSimulator::LOG_OUTPUT_LEVEL_ONE);
+//
+//        return nullptr;
+//    }
+//
+//    constr->Reset();
+//
+//    constr->sim = &sim;
+//
+//    constr->bodyA = (neRigidBody_ *) bodyA;
+//
+//    neRigidBody_ *ba = (neRigidBody_ *) bodyA;
+//
+//    ba->constraintCollection.Add(&constr->bodyAHandle);
+//
+//    constr->bodyB = (neRigidBodyBase *) bodyB;
+//
+//    neRigidBodyBase *bb = (neRigidBodyBase *) bodyB;
+//
+//    bb->constraintCollection.Add(&constr->bodyBHandle);
+//
+//    return reinterpret_cast<neJoint *>(constr);
+//}
 
 /****************************************************************************
 *
@@ -2135,38 +2135,38 @@ neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
 *
 ****************************************************************************/
 
-void neSimulator::FreeJoint(neJoint *constraint) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    _neConstraint *c = (_neConstraint *) constraint;
-
-    ASSERT(sim.constraintHeap.CheckBelongAndInUse(c));
-
-    if (c->bodyA) {
-        c->bodyA->constraintCollection.Remove(&c->bodyAHandle);
-
-        if (c->bodyB)
-            c->bodyB->constraintCollection.Remove(&c->bodyBHandle);
-
-        neConstraintHeader *h = c->bodyA->GetConstraintHeader();
-
-        if (h) {
-            h->Remove(c);
-
-            h->flag = neConstraintHeader::FLAG_NEED_REORG;
-        }
-        sim.constraintHeap.Dealloc(c, 1);
-
-        if (c->bodyA->constraintCollection.count == 0)
-            c->bodyA->RemoveConstraintHeader();
-
-        if (c->bodyB &&
-            c->bodyB->constraintCollection.count == 0)
-            c->bodyB->RemoveConstraintHeader();
-    } else {
-        sim.constraintHeap.Dealloc(c, 1);
-    }
-}
+//void neSimulator::FreeJoint(neJoint *constraint) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    _neConstraint *c = (_neConstraint *) constraint;
+//
+//    ASSERT(sim.constraintHeap.CheckBelongAndInUse(c));
+//
+//    if (c->bodyA) {
+//        c->bodyA->constraintCollection.Remove(&c->bodyAHandle);
+//
+//        if (c->bodyB)
+//            c->bodyB->constraintCollection.Remove(&c->bodyBHandle);
+//
+//        neConstraintHeader *h = c->bodyA->GetConstraintHeader();
+//
+//        if (h) {
+//            h->Remove(c);
+//
+//            h->flag = neConstraintHeader::FLAG_NEED_REORG;
+//        }
+//        sim.constraintHeap.Dealloc(c, 1);
+//
+//        if (c->bodyA->constraintCollection.count == 0)
+//            c->bodyA->RemoveConstraintHeader();
+//
+//        if (c->bodyB &&
+//            c->bodyB->constraintCollection.count == 0)
+//            c->bodyB->RemoveConstraintHeader();
+//    } else {
+//        sim.constraintHeap.Dealloc(c, 1);
+//    }
+//}
 
 /****************************************************************************
 *
@@ -2174,11 +2174,11 @@ void neSimulator::FreeJoint(neJoint *constraint) {
 *
 ****************************************************************************/
 
-void neSimulator::SetCollisionCallback(neCollisionCallback *fn) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.SetCollisionCallback(fn);
-}
+//void neSimulator::SetCollisionCallback(neCollisionCallback *fn) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.SetCollisionCallback(fn);
+//}
 
 /****************************************************************************
 *
@@ -2186,11 +2186,11 @@ void neSimulator::SetCollisionCallback(neCollisionCallback *fn) {
 *
 ****************************************************************************/
 
-neCollisionCallback *neSimulator::GetCollisionCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.collisionCallback;
-}
+//neCollisionCallback *neSimulator::GetCollisionCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.collisionCallback;
+//}
 
 
 /****************************************************************************
@@ -2199,11 +2199,11 @@ neCollisionCallback *neSimulator::GetCollisionCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetBreakageCallback(neBreakageCallback *cb) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.breakageCallback = cb;
-}
+//void neSimulator::SetBreakageCallback(neBreakageCallback *cb) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.breakageCallback = cb;
+//}
 
 /****************************************************************************
 *
@@ -2211,11 +2211,11 @@ void neSimulator::SetBreakageCallback(neBreakageCallback *cb) {
 *
 ****************************************************************************/
 
-neBreakageCallback *neSimulator::GetBreakageCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.breakageCallback;
-}
+//neBreakageCallback *neSimulator::GetBreakageCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.breakageCallback;
+//}
 
 /****************************************************************************
 *
@@ -2223,11 +2223,11 @@ neBreakageCallback *neSimulator::GetBreakageCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetTerrainTriangleQueryCallback(neTerrainTriangleQueryCallback *cb) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.terrainQueryCallback = cb;
-}
+//void neSimulator::SetTerrainTriangleQueryCallback(neTerrainTriangleQueryCallback *cb) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.terrainQueryCallback = cb;
+//}
 
 /****************************************************************************
 *
@@ -2235,11 +2235,11 @@ void neSimulator::SetTerrainTriangleQueryCallback(neTerrainTriangleQueryCallback
 *
 ****************************************************************************/
 
-neTerrainTriangleQueryCallback *neSimulator::GetTerrainTriangleQueryCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.terrainQueryCallback;
-}
+//neTerrainTriangleQueryCallback *neSimulator::GetTerrainTriangleQueryCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.terrainQueryCallback;
+//}
 
 /****************************************************************************
 *
@@ -2247,11 +2247,11 @@ neTerrainTriangleQueryCallback *neSimulator::GetTerrainTriangleQueryCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetCustomCDRB2RBCallback(neCustomCDRB2RBCallback *cb) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.customCDRB2RBCallback = cb;
-}
+//void neSimulator::SetCustomCDRB2RBCallback(neCustomCDRB2RBCallback *cb) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.customCDRB2RBCallback = cb;
+//}
 
 /****************************************************************************
 *
@@ -2259,11 +2259,11 @@ void neSimulator::SetCustomCDRB2RBCallback(neCustomCDRB2RBCallback *cb) {
 *
 ****************************************************************************/
 
-neCustomCDRB2RBCallback *neSimulator::GetCustomCDRB2RBCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.customCDRB2RBCallback;
-}
+//neCustomCDRB2RBCallback *neSimulator::GetCustomCDRB2RBCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.customCDRB2RBCallback;
+//}
 
 /****************************************************************************
 *
@@ -2271,11 +2271,11 @@ neCustomCDRB2RBCallback *neSimulator::GetCustomCDRB2RBCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetCustomCDRB2ABCallback(neCustomCDRB2ABCallback *cb) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.customCDRB2ABCallback = cb;
-}
+//void neSimulator::SetCustomCDRB2ABCallback(neCustomCDRB2ABCallback *cb) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.customCDRB2ABCallback = cb;
+//}
 
 /****************************************************************************
 *
@@ -2283,11 +2283,11 @@ void neSimulator::SetCustomCDRB2ABCallback(neCustomCDRB2ABCallback *cb) {
 *
 ****************************************************************************/
 
-neCustomCDRB2ABCallback *neSimulator::GetCustomCDRB2ABCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.customCDRB2ABCallback;
-}
+//neCustomCDRB2ABCallback *neSimulator::GetCustomCDRB2ABCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.customCDRB2ABCallback;
+//}
 
 /****************************************************************************
 *
@@ -2295,15 +2295,15 @@ neCustomCDRB2ABCallback *neSimulator::GetCustomCDRB2ABCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.SetLogOutputCallback(fn);
-}
+//void neSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.SetLogOutputCallback(fn);
+//}
 /*
 neReal neSimulator::GetMagicNumber()
 {
-	CAST_THIS(neFixedTimeStepSimulator, sim);
+	CAST_THIS(neSimulator, sim);
 
 	return sim.magicNumber;
 }
@@ -2314,11 +2314,11 @@ neReal neSimulator::GetMagicNumber()
 *
 ****************************************************************************/
 
-neLogOutputCallback *neSimulator::GetLogOutputCallback() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.logCallback;
-}
+//neLogOutputCallback *neSimulator::GetLogOutputCallback() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.logCallback;
+//}
 
 /****************************************************************************
 *
@@ -2326,11 +2326,11 @@ neLogOutputCallback *neSimulator::GetLogOutputCallback() {
 *
 ****************************************************************************/
 
-void neSimulator::SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.SetLogOutputLevel(lvl);
-}
+//void neSimulator::SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.SetLogOutputLevel(lvl);
+//}
 
 /****************************************************************************
 *
@@ -2338,28 +2338,28 @@ void neSimulator::SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl) {
 *
 ****************************************************************************/
 
-neSimulatorSizeInfo neSimulator::GetCurrentSizeInfo() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    neSimulatorSizeInfo ret;
-
-    ret.rigidBodiesCount = sim.rigidBodyHeap.GetUsedCount();
-    ret.animatedBodiesCount = sim.collisionBodyHeap.GetUsedCount();
-    ret.rigidParticleCount = sim.rigidParticleHeap.GetUsedCount();
-    ret.controllersCount = sim.controllerHeap.GetUsedCount();
-    ret.overlappedPairsCount = sim.region.overlappedPairs.GetUsedCount();
-    ret.geometriesCount = sim.geometryHeap.GetUsedCount();
-
-    ret.constraintsCount = sim.constraintHeap.GetUsedCount();
-    ret.constraintSetsCount = sim.constraintHeaders.GetUsedCount();
-//	ret.constraintBufferSize = sim.miniConstraintHeap.GetUsedCount();
-    ret.sensorsCount = sim.sensorHeap.GetUsedCount();
-
-    ret.terrainNodesStartCount = sim.region.terrainTree.nodes.GetUsedCount();
-    ret.terrainNodesGrowByCount = sim.sizeInfo.terrainNodesGrowByCount;
-
-    return ret;
-}
+//neSimulatorSizeInfo neSimulator::GetCurrentSizeInfo() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    neSimulatorSizeInfo ret;
+//
+//    ret.rigidBodiesCount = sim.rigidBodyHeap.GetUsedCount();
+//    ret.animatedBodiesCount = sim.collisionBodyHeap.GetUsedCount();
+//    ret.rigidParticleCount = sim.rigidParticleHeap.GetUsedCount();
+//    ret.controllersCount = sim.controllerHeap.GetUsedCount();
+//    ret.overlappedPairsCount = sim.region.overlappedPairs.GetUsedCount();
+//    ret.geometriesCount = sim.geometryHeap.GetUsedCount();
+//
+//    ret.constraintsCount = sim.constraintHeap.GetUsedCount();
+//    ret.constraintSetsCount = sim.constraintHeaders.GetUsedCount();
+////	ret.constraintBufferSize = sim.miniConstraintHeap.GetUsedCount();
+//    ret.sensorsCount = sim.sensorHeap.GetUsedCount();
+//
+//    ret.terrainNodesStartCount = sim.region.terrainTree.nodes.GetUsedCount();
+//    ret.terrainNodesGrowByCount = sim.sizeInfo.terrainNodesGrowByCount;
+//
+//    return ret;
+//}
 
 /****************************************************************************
 *
@@ -2367,11 +2367,11 @@ neSimulatorSizeInfo neSimulator::GetCurrentSizeInfo() {
 *
 ****************************************************************************/
 
-neSimulatorSizeInfo neSimulator::GetStartSizeInfo() {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    return sim.sizeInfo;
-}
+//neSimulatorSizeInfo neSimulator::GetStartSizeInfo() {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    return sim.sizeInfo;
+//}
 
 /****************************************************************************
 *
@@ -2379,11 +2379,11 @@ neSimulatorSizeInfo neSimulator::GetStartSizeInfo() {
 *
 ****************************************************************************/
 
-void neSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
-    CAST_THIS(neFixedTimeStepSimulator, sim);
-
-    sim.GetMemoryAllocated(memoryAllocated);
-}
+//void neSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
+//    CAST_THIS(neFixedTimeStepSimulator, sim);
+//
+//    sim.GetMemoryAllocated(memoryAllocated);
+//}
 
 /****************************************************************************
 *

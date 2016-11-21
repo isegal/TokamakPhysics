@@ -141,7 +141,7 @@ public:
         SORT_DIMENSION_Z = 4,
     };
 
-    void Initialise(neFixedTimeStepSimulator *s, neByte sortD = (SORT_DIMENSION_X | SORT_DIMENSION_Y));
+    void Initialise(neSimulator *s, neByte sortD = (SORT_DIMENSION_X | SORT_DIMENSION_Y));
 
     bool AddBody(neRigidBodyBase *bb, neRigidBodyBase *hint);
 
@@ -170,7 +170,7 @@ public:
 public:
     neByte sortDimension;
 
-    neFixedTimeStepSimulator *sim;
+    neSimulator *sim;
 
     s32 maxRigidBodies;
 
@@ -317,7 +317,7 @@ public:
     s32 overheadTicks;   // overhead  in calling timer
 };
 
-class neFixedTimeStepSimulator {
+class neSimulator {
 public:
     friend class neRegion;
 
@@ -325,10 +325,16 @@ public:
         MAX_MATERIAL = 256,
     };
 
-    neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = nullptr,
+    typedef enum {
+        LOG_OUTPUT_LEVEL_NONE = 0,
+        LOG_OUTPUT_LEVEL_ONE,
+        LOG_OUTPUT_LEVEL_FULL,
+    } LOG_OUTPUT_LEVEL;
+
+    neSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc = nullptr,
                              const neV3 *grav = nullptr);
 
-    ~neFixedTimeStepSimulator();
+    ~neSimulator();
 
     void Initialise(const neV3 &gravity);
 
@@ -378,9 +384,9 @@ public:
 
     neCollisionCallback *SetCollisionCallback(neCollisionCallback *fn);
 
-    void LogOutput(neSimulator::LOG_OUTPUT_LEVEL);
+    void LogOutput(LOG_OUTPUT_LEVEL);
 
-    void SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl);
+    void SetLogOutputLevel(LOG_OUTPUT_LEVEL lvl);
 
     void UpdateConstraintControllers();
 
@@ -471,7 +477,7 @@ public:
 
     neSimpleArray<neByte *> pointerBuffer2;
 
-    neSimulator::LOG_OUTPUT_LEVEL logLevel;
+    LOG_OUTPUT_LEVEL logLevel;
 
     s32 solverStage;
 

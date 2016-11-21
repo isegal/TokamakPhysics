@@ -24,7 +24,7 @@ class neRigidBodyBase;
 
 class neRigidBody_;
 
-class neFixedTimeStepSimulator;
+class neSimulator;
 
 class neConstraintSolver;
 
@@ -258,7 +258,7 @@ public:
 
     neFreeListItem<neRigidBodyBase *> *regionHandle;
 
-    neFixedTimeStepSimulator *sim;
+    neSimulator *sim;
 
     neT3 obb;
 
@@ -430,7 +430,7 @@ public:
 
     bool CanConsiderOtherBodyIdle();
 
-    bool CheckOtherBody(neFixedTimeStepSimulator *sim);
+    bool CheckOtherBody(neSimulator *sim);
 
     void SetInvalid();
 
@@ -487,7 +487,7 @@ public:
 class neRigidBody_ : public neRigidBodyBase {
 PLACEMENT_MAGIC
 
-    friend class neFixedTimeStepSimulator;
+    friend class neSimulator;
 
 public:
 

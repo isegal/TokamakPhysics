@@ -369,30 +369,30 @@ public:
 
     void CalcCollisionMatrix3(neRigidBody_ *ba, neRigidBody_ *bb);
 
-    neReal SolveContact(neFixedTimeStepSimulator *sim);
+    neReal SolveContact(neSimulator *sim);
 
-    neReal SolveConstraint(neFixedTimeStepSimulator *sim);
+    neReal SolveConstraint(neSimulator *sim);
 
-    neReal SolveSlider(neFixedTimeStepSimulator *sim);
+    neReal SolveSlider(neSimulator *sim);
 
-    neReal SolveSliderLimit(neFixedTimeStepSimulator *sim);
+    neReal SolveSliderLimit(neSimulator *sim);
 
-    neReal SolveAngularPrimary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularPrimary(neSimulator *sim);
 
-    neReal SolveAngularSecondary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularSecondary(neSimulator *sim);
 
-    neReal SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim);
+    neReal SolveAngularMotorPrimary(neSimulator *sim);
 
-    neReal SolveRelativeLinear(neFixedTimeStepSimulator *sim);
+    neReal SolveRelativeLinear(neSimulator *sim);
 
-    neReal SolveAngular(neReal depth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim);
+    neReal SolveAngular(neReal depth, const neV3 &axis, neReal relAV, neSimulator *sim);
 
     neReal SolveAngular2(const neV3 &axisA, const neV3 &axisB, neReal relAV, neReal desireAV, neReal depth,
-                      neFixedTimeStepSimulator *sim);
+                      neSimulator *sim);
 
-    neReal SolveAngular3(neReal depth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim);
+    neReal SolveAngular3(neReal depth, const neV3 &axis, neReal relAV, neSimulator *sim);
 
-    void CalcError(neFixedTimeStepSimulator *sim);
+    void CalcError(neSimulator *sim);
 //	void AddToBodies();
 
     neReal Value() {

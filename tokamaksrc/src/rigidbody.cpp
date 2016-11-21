@@ -1032,7 +1032,7 @@ bool neRestRecord::CanConsiderOtherBodyIdle() {
     return (!cb->moved);
 }
 
-bool neRestRecord::CheckOtherBody(neFixedTimeStepSimulator *sim) {
+bool neRestRecord::CheckOtherBody(neSimulator *sim) {
     ASSERT(otherBody);
 
     if (otherBody != sim->GetTerrainBody() &&

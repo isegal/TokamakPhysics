@@ -74,13 +74,13 @@ ApplyCollisionImpulseFast(neRigidBody_ *rb, const neV3 &impulse, const neV3 &con
 }
 
 
-void neFixedTimeStepSimulator::AddCollisionResult(neCollisionResult &cresult) {
+void neSimulator::AddCollisionResult(neCollisionResult &cresult) {
     neCollisionResult *newcr = cresultHeap2.Alloc(0);
 
     *newcr = cresult;
 }
 
-neReal neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveConstraint(neSimulator *sim) {
     neV3 impulse;
 
     neReal ret = 0.0f;
@@ -124,7 +124,7 @@ neReal neCollisionResult::SolveConstraint(neFixedTimeStepSimulator *sim) {
     return ret;
 }
 
-neReal neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveSlider(neSimulator *sim) {
     neV3 impulse;
 
     if (neIsConsiderZero(finalRelativeSpeed)) {
@@ -168,7 +168,7 @@ neReal neCollisionResult::SolveSlider(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveSliderLimit(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveSliderLimit(neSimulator *sim) {
     ASSERT(depth >= 0.0f);
 
     neV3 impulse;
@@ -203,7 +203,7 @@ neReal neCollisionResult::SolveSliderLimit(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveContact(neSimulator *sim) {
     neV3 impulse1;
     impulse1.SetZero();
     neV3 impulse2;
@@ -266,7 +266,7 @@ neReal neCollisionResult::SolveContact(neFixedTimeStepSimulator *sim) {
     return ret;
 }
 
-neReal neCollisionResult::SolveAngular(neReal pdepth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngular(neReal pdepth, const neV3 &axis, neReal relAV, neSimulator *sim) {
     neV3 deltaL;
 
     neReal threshold = 0.00f;
@@ -369,7 +369,7 @@ neReal neCollisionResult::SolveAngular(neReal pdepth, const neV3 &axis, neReal r
 }
 
 neReal neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, neReal relAV, neReal desireAV, neReal maxTorque,
-                                     neFixedTimeStepSimulator *sim) {
+                                     neSimulator *sim) {
     neReal deltaAng = desireAV - relAV;
 
     //deltaAng *= 0.5f;
@@ -422,7 +422,7 @@ neReal neCollisionResult::SolveAngular2(const neV3 &axisA, const neV3 &axisB, ne
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal relAV, neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal relAV, neSimulator *sim) {
     neV3 deltaL;
 
     neReal threshold = 0.00f;
@@ -539,7 +539,7 @@ neReal neCollisionResult::SolveAngular3(neReal pdepth, const neV3 &axis, neReal 
     return 0;
 }
 
-neReal neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularPrimary(neSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
@@ -560,7 +560,7 @@ neReal neCollisionResult::SolveAngularPrimary(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularSecondary(neSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
@@ -601,7 +601,7 @@ neReal neCollisionResult::SolveAngularSecondary(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveAngularMotorPrimary(neSimulator *sim) {
     neRigidBody_ *ba = nullptr;
 
     neRigidBody_ *bb = nullptr;
@@ -624,7 +624,7 @@ neReal neCollisionResult::SolveAngularMotorPrimary(neFixedTimeStepSimulator *sim
     return 0.0f;
 }
 
-neReal neCollisionResult::SolveRelativeLinear(neFixedTimeStepSimulator *sim) {
+neReal neCollisionResult::SolveRelativeLinear(neSimulator *sim) {
     neReal velA = 0.0f, velB = 0.0f;
 
     neRigidBody_ *ba, *bb;
@@ -668,7 +668,7 @@ neReal neCollisionResult::SolveRelativeLinear(neFixedTimeStepSimulator *sim) {
     return 0.0f;
 }
 
-void neFixedTimeStepSimulator::SolveContactConstrain() {
+void neSimulator::SolveContactConstrain() {
 // first solve all single object to terrain/animated body contacts
 
     cresultHeap2.Clear();
@@ -793,7 +793,7 @@ void neFixedTimeStepSimulator::SolveContactConstrain() {
     cresultHeap2.Clear();
 }
 
-neReal neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
+neReal neSimulator::SolveLocal(neCollisionResult *cr) {
     neReal ret = 0.0f;
 
     neV3 velA;
@@ -946,7 +946,7 @@ neReal neFixedTimeStepSimulator::SolveLocal(neCollisionResult *cr) {
     return ret;
 }
 
-void neFixedTimeStepSimulator::CheckIfStationary() {
+void neSimulator::CheckIfStationary() {
     bool allStationary = true;
     s32 jj;
 
@@ -993,7 +993,7 @@ void neFixedTimeStepSimulator::CheckIfStationary() {
 *	neFixedTimeStepSimulator::ResolvePenetration
 *
 ****************************************************************************/
-void neFixedTimeStepSimulator::ResolvePenetration() {
+void neSimulator::ResolvePenetration() {
     //CheckStackHeader();
 
     neStackInfoItem *sitem = (neStackInfoItem *) stackHeaderX.head;
@@ -1151,7 +1151,7 @@ void neFixedTimeStepSimulator::ResolvePenetration() {
 *
 ****************************************************************************/
 
-neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, bool isContact) {
+neV3 neSimulator::CalcNormalImpulse(neCollisionResult &cresult, bool isContact) {
     neV3 pI, pII, impulse;
 
     pI.Set(0.0f, 0.0f, -cresult.initRelVel[2] / cresult.k[2][2]);
@@ -1235,7 +1235,7 @@ neV3 neFixedTimeStepSimulator::CalcNormalImpulse(neCollisionResult &cresult, boo
     return impulse;
 }
 
-neReal neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
+neReal neSimulator::HandleCollision(neRigidBodyBase *bodyA,
                                               neRigidBodyBase *bodyB,
                                               neCollisionResult &cresult, neImpulseType impulseType,
                                               neReal scale) {
@@ -1409,7 +1409,7 @@ neReal neFixedTimeStepSimulator::HandleCollision(neRigidBodyBase *bodyA,
 
 #define AUTO_SLEEP_ON
 
-void neFixedTimeStepSimulator::SolveAllConstrain() {
+void neSimulator::SolveAllConstrain() {
     if (constraintHeaders.GetUsedCount() == 0)
         return;
 
@@ -1478,7 +1478,7 @@ void neFixedTimeStepSimulator::SolveAllConstrain() {
     contactConstraintHeader.RemoveAll();
 }
 
-void neFixedTimeStepSimulator::SolveOneConstrainChain(neReal epsilon, s32 iteration) {
+void neSimulator::SolveOneConstrainChain(neReal epsilon, s32 iteration) {
     solverStage = 0;
 
     if (cresultHeap.GetUsedCount() == 0 && cresultHeap2.GetUsedCount() == 0) {
@@ -1597,7 +1597,7 @@ void neFixedTimeStepSimulator::SolveOneConstrainChain(neReal epsilon, s32 iterat
     ASSERT(cresultHeap.GetUsedCount() == 0);
 }
 
-void neFixedTimeStepSimulator::AddContactConstraint(neReal &epsilon, s32 &iteration) {
+void neSimulator::AddContactConstraint(neReal &epsilon, s32 &iteration) {
     for (s32 i = 0; i < pointerBuffer2.GetUsedCount(); i++) {
         neStackHeader *sheader = (neStackHeader *) pointerBuffer2[i];
 

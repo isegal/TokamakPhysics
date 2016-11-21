@@ -31,7 +31,7 @@
 #include <windows.h>
 #endif
 
-char neFixedTimeStepSimulator::logBuffer[256];
+char neSimulator::logBuffer[256];
 
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
 
@@ -47,7 +47,7 @@ void ChooseAxis(neV3 &x, neV3 &y, const neV3 &normal);
 *
 ****************************************************************************/
 
-neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc,
+neSimulator::neSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstract *alloc,
                                                    const neV3 *grav) {
     sizeInfo = _sizeInfo;
 
@@ -63,7 +63,7 @@ neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo &_s
     else
         g.SetZero();
 
-    neFixedTimeStepSimulator::Initialise(g);
+    neSimulator::Initialise(g);
 
     for (auto & material : materials) {
         material.density = 1.0f;
@@ -148,7 +148,7 @@ neFixedTimeStepSimulator::neFixedTimeStepSimulator(const neSimulatorSizeInfo &_s
 *	neFixedTimeStepSimulator::Initialise
 *
 ****************************************************************************/
-void neFixedTimeStepSimulator::SetGravity(const neV3 &g) {
+void neSimulator::SetGravity(const neV3 &g) {
     gravity = g;
 
     gravityVector = gravity;
@@ -168,7 +168,7 @@ void neFixedTimeStepSimulator::SetGravity(const neV3 &g) {
     }
 }
 
-void neFixedTimeStepSimulator::Initialise(const neV3 &_gravity) {
+void neSimulator::Initialise(const neV3 &_gravity) {
     buildCoordList = true;
 
     SetGravity(_gravity);
@@ -222,7 +222,7 @@ void neFixedTimeStepSimulator::Initialise(const neV3 &_gravity) {
 *
 ****************************************************************************/
 
-neCollisionCallback *neFixedTimeStepSimulator::SetCollisionCallback(neCollisionCallback *fn) {
+neCollisionCallback *neSimulator::SetCollisionCallback(neCollisionCallback *fn) {
     neCollisionCallback *ret = collisionCallback;
 
     collisionCallback = fn;
@@ -236,7 +236,7 @@ neCollisionCallback *neFixedTimeStepSimulator::SetCollisionCallback(neCollisionC
 *
 ****************************************************************************/
 
-neLogOutputCallback *neFixedTimeStepSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
+neLogOutputCallback *neSimulator::SetLogOutputCallback(neLogOutputCallback *fn) {
     neLogOutputCallback *ret = logCallback;
 
     logCallback = fn;
@@ -250,7 +250,7 @@ neLogOutputCallback *neFixedTimeStepSimulator::SetLogOutputCallback(neLogOutputC
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl) {
+void neSimulator::SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL lvl) {
     logLevel = lvl;
 }
 
@@ -260,7 +260,7 @@ void neFixedTimeStepSimulator::SetLogOutputLevel(neSimulator::LOG_OUTPUT_LEVEL l
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl) {
+void neSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl) {
     if (!logCallback)
         return;
 
@@ -274,7 +274,7 @@ void neFixedTimeStepSimulator::LogOutput(neSimulator::LOG_OUTPUT_LEVEL lvl) {
 *
 ****************************************************************************/
 
-bool neFixedTimeStepSimulator::SetMaterial(s32 index, neReal friction, neReal restitution, neReal density) {
+bool neSimulator::SetMaterial(s32 index, neReal friction, neReal restitution, neReal density) {
     if (index < 0)
         return false;
 
@@ -294,7 +294,7 @@ bool neFixedTimeStepSimulator::SetMaterial(s32 index, neReal friction, neReal re
 *
 ****************************************************************************/
 
-bool neFixedTimeStepSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution, neReal &density) {
+bool neSimulator::GetMaterial(s32 index, neReal &friction, neReal &restitution, neReal &density) {
     if (index < 0)
         return false;
 
@@ -314,7 +314,7 @@ bool neFixedTimeStepSimulator::GetMaterial(s32 index, neReal &friction, neReal &
 *
 ****************************************************************************/
 
-neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBody(bool isParticle) {
+neRigidBody_ *neSimulator::CreateRigidBody(bool isParticle) {
     neRigidBody_ *ret;
 
     if (!isParticle) {
@@ -367,7 +367,7 @@ neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBody(bool isParticle) {
     return ret;
 }
 
-neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody) {
+neRigidBody_ *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody) {
     //make sure convex belong to this body and
     //this convex is not the only convex on this body
 
@@ -452,7 +452,7 @@ neRigidBody_ *neFixedTimeStepSimulator::CreateRigidBodyFromConvex(TConvex *conve
 *
 ****************************************************************************/
 
-neCollisionBody_ *neFixedTimeStepSimulator::CreateCollisionBody() {
+neCollisionBody_ *neSimulator::CreateCollisionBody() {
     neCollisionBody_ *ret = collisionBodyHeap.Alloc(1);
 
     //ASSERT(ret);
@@ -482,7 +482,7 @@ neCollisionBody_ *neFixedTimeStepSimulator::CreateCollisionBody() {
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::Free(neRigidBodyBase *bb) {
+void neSimulator::Free(neRigidBodyBase *bb) {
     if (bb->AsCollisionBody()) {
         neCollisionBody_ *cb = reinterpret_cast<neCollisionBody_ *>(bb);
 
@@ -541,7 +541,7 @@ void neFixedTimeStepSimulator::Free(neRigidBodyBase *bb) {
 *
 ****************************************************************************/
 
-neFixedTimeStepSimulator::~neFixedTimeStepSimulator() {
+neSimulator::~neSimulator() {
     FreeAllBodies();
 
     if (perf)
@@ -558,7 +558,7 @@ neFixedTimeStepSimulator::~neFixedTimeStepSimulator() {
 #define UPDATE_PERF_REPORT(n)
 #endif
 
-void neFixedTimeStepSimulator::Advance(nePerformanceReport *_perfReport) {
+void neSimulator::Advance(nePerformanceReport *_perfReport) {
     ClearCollisionBodySensors();
 
     UpdateAABB();
@@ -612,7 +612,7 @@ void neFixedTimeStepSimulator::Advance(nePerformanceReport *_perfReport) {
     UPDATE_PERF_REPORT(UpdateControllerCallback);
 }
 
-void neFixedTimeStepSimulator::Advance(neReal time, size_t nStep, nePerformanceReport *_perfReport) {
+void neSimulator::Advance(neReal time, size_t nStep, nePerformanceReport *_perfReport) {
     _currentTimeStep = time / (neReal) nStep;
 
     oneOnCurrentTimeStep = 1.0f / _currentTimeStep;
@@ -700,7 +700,7 @@ void neFixedTimeStepSimulator::Advance(neReal time, size_t nStep, nePerformanceR
     stepSoFar++;
 }
 
-void neFixedTimeStepSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *_perfReport) {
+void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, nePerformanceReport *_perfReport) {
     perfReport = _perfReport;
 
 #ifdef _WIN32
@@ -813,7 +813,7 @@ void neFixedTimeStepSimulator::Advance(neReal sec, neReal minTimeStep, neReal ma
     }
 }
 
-void neFixedTimeStepSimulator::ForeachActiveRB(const std::function<bool(neRigidBody &)>& rbCallback) {
+void neSimulator::ForeachActiveRB(const std::function<bool(neRigidBody &)>& rbCallback) {
     neRigidBody_ *rb = activeRB.GetHead();
     while (rb) {
         if(!rbCallback(*(reinterpret_cast<neRigidBody*>(rb)))) {
@@ -823,7 +823,7 @@ void neFixedTimeStepSimulator::ForeachActiveRB(const std::function<bool(neRigidB
     }
 }
 
-void neFixedTimeStepSimulator::ResetTotalForce() {
+void neSimulator::ResetTotalForce() {
     neRigidBody_ *rb = activeRB.GetHead();
 
     while (rb) {
@@ -844,7 +844,7 @@ void neFixedTimeStepSimulator::ResetTotalForce() {
     }
 }
 
-void neFixedTimeStepSimulator::AdvanceDynamicRigidBodies() {
+void neSimulator::AdvanceDynamicRigidBodies() {
     neRigidBody_ *rb = activeRB.GetHead();
 
     idleBodyCount = 0;
@@ -856,7 +856,7 @@ void neFixedTimeStepSimulator::AdvanceDynamicRigidBodies() {
     }
 }
 
-void neFixedTimeStepSimulator::AdvanceDynamicParticles() {
+void neSimulator::AdvanceDynamicParticles() {
     neRigidBody_ *rp = activeRP.GetHead();
 
     while (rp) {
@@ -866,7 +866,7 @@ void neFixedTimeStepSimulator::AdvanceDynamicParticles() {
     }
 }
 
-void neFixedTimeStepSimulator::AdvancePositionRigidBodies() {
+void neSimulator::AdvancePositionRigidBodies() {
     neRigidBody_ *rb = activeRB.GetHead();
 
     while (rb) {
@@ -885,7 +885,7 @@ void neFixedTimeStepSimulator::AdvancePositionRigidBodies() {
     }
 }
 
-void neFixedTimeStepSimulator::AdvancePositionParticles() {
+void neSimulator::AdvancePositionParticles() {
     neRigidBody_ *rp = activeRP.GetHead();
 
     while (rp) {
@@ -904,7 +904,7 @@ void neFixedTimeStepSimulator::AdvancePositionParticles() {
     }
 }
 
-void neFixedTimeStepSimulator::ApplyJointDamping() {
+void neSimulator::ApplyJointDamping() {
     neFreeListItem<neConstraintHeader> *hitem = (neFreeListItem<neConstraintHeader> *) (*constraintHeaders.BeginUsed());
 
     while (hitem) {
@@ -925,7 +925,7 @@ void neFixedTimeStepSimulator::ApplyJointDamping() {
     }
 }
 
-void neFixedTimeStepSimulator::ClearCollisionBodySensors() {
+void neSimulator::ClearCollisionBodySensors() {
     neCollisionBody_ *cb = activeCB.GetHead();
 
     while (cb) {
@@ -954,7 +954,7 @@ void neFixedTimeStepSimulator::ClearCollisionBodySensors() {
     }
 }
 
-void neFixedTimeStepSimulator::UpdateAABB() {
+void neSimulator::UpdateAABB() {
     neRigidBody_ *rb = activeRB.GetHead();
 
     while (rb) {
@@ -985,7 +985,7 @@ void neFixedTimeStepSimulator::UpdateAABB() {
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::CheckCollision() {
+void neSimulator::CheckCollision() {
     //OutputDebugString("region.Update\n");/////////////////////////////////
 
     neDLinkList<neOverlappedPair>::iterator oiter;
@@ -1236,7 +1236,7 @@ void neFixedTimeStepSimulator::CheckCollision() {
 }
 //OutputDebugString("terrain test\n");/////////////////////////////////
 
-void neFixedTimeStepSimulator::CheckTerrainCollision() {
+void neSimulator::CheckTerrainCollision() {
     neCollisionResult result;
 
     neTreeNode &rootNode = region.GetTriangleTree().GetRoot();
@@ -1457,7 +1457,7 @@ void RecalcRelative(neCollisionResult * cresult)
 }
 */
 /*
-void neFixedTimeStepSimulator::SolveConstrain()
+void neSimulator::SolveConstrain()
 {
 	neDLinkList<neConstraintHeader>::iterator chiter;
 	
@@ -1511,7 +1511,7 @@ void neFixedTimeStepSimulator::SolveConstrain()
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB,
+void neSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRigidBodyBase *bodyB,
                                                    neCollisionResult &cresult) {
     neRigidBody_ *ba = bodyA->AsRigidBody();
 
@@ -1650,7 +1650,7 @@ void neFixedTimeStepSimulator::RegisterPenetration(neRigidBodyBase *bodyA, neRig
     }
 }
 
-void neFixedTimeStepSimulator::CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult) {
+void neSimulator::CollisionRigidParticle(neRigidBody_ *ba, neRigidBody_ *bb, neCollisionResult &cresult) {
     cresult.PrepareForSolver();
 
     HandleCollision(ba, bb, cresult, IMPULSE_NORMAL, 1.0f);
@@ -1662,7 +1662,7 @@ void neFixedTimeStepSimulator::CollisionRigidParticle(neRigidBody_ *ba, neRigidB
     bb->SetPos(bb->GetPos() - shift);
 }
 
-void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
+void neSimulator::SimpleShift(const neCollisionResult &cresult) {
     neV3 shift;
     shift = cresult.collisionFrame[2] * cresult.depth;
 
@@ -1708,7 +1708,7 @@ void neFixedTimeStepSimulator::SimpleShift(const neCollisionResult &cresult) {
 }
 
 
-bool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
+bool neSimulator::CheckBreakage(neRigidBodyBase *originalBody, TConvex *convex, const neV3 &contactPoint,
                                                neV3 &impulse) {
     neReal impulseMag;
 
@@ -1787,7 +1787,7 @@ bool neFixedTimeStepSimulator::CheckBreakage(neRigidBodyBase *originalBody, TCon
 }
 
 
-void neFixedTimeStepSimulator::ResetStackHeaderFlag() {
+void neSimulator::ResetStackHeaderFlag() {
     neStackHeaderItem *hitem = (neStackHeaderItem *) (*stackHeaderHeap.BeginUsed());
 
     while (hitem) {
@@ -1805,15 +1805,15 @@ void neFixedTimeStepSimulator::ResetStackHeaderFlag() {
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::SetTerrainMesh(neTriangleMesh *tris) {
+void neSimulator::SetTerrainMesh(neTriangleMesh *tris) {
     region.MakeTerrain(tris);
 }
 
-void neFixedTimeStepSimulator::FreeTerrainMesh() {
+void neSimulator::FreeTerrainMesh() {
     region.FreeTerrain();
 }
 
-neStackHeader *neFixedTimeStepSimulator::NewStackHeader(neStackInfo *sinfo) {
+neStackHeader *neSimulator::NewStackHeader(neStackInfo *sinfo) {
     neStackHeader *n = stackHeaderHeap.Alloc();
 
     //ASSERT(n);
@@ -1828,7 +1828,7 @@ neStackHeader *neFixedTimeStepSimulator::NewStackHeader(neStackInfo *sinfo) {
     return n;
 }
 
-neConstraintHeader *neFixedTimeStepSimulator::NewConstraintHeader() {
+neConstraintHeader *neSimulator::NewConstraintHeader() {
     neConstraintHeader *ret = constraintHeaders.Alloc();
 
     ret->Reset();
@@ -1836,7 +1836,7 @@ neConstraintHeader *neFixedTimeStepSimulator::NewConstraintHeader() {
     return ret;
 }
 
-void neFixedTimeStepSimulator::CheckStackHeader() {
+void neSimulator::CheckStackHeader() {
     neStackHeaderItem *item = (neStackHeaderItem *) (*stackHeaderHeap.BeginUsed());
 
     while (item) {
@@ -1848,7 +1848,7 @@ void neFixedTimeStepSimulator::CheckStackHeader() {
     }
 }
 
-void neFixedTimeStepSimulator::UpdateConstraintControllers() {
+void neSimulator::UpdateConstraintControllers() {
     neFreeListItem<neConstraintHeader> *hitem = (neFreeListItem<neConstraintHeader> *) (*constraintHeaders.BeginUsed());
 
     while (hitem) {
@@ -1869,7 +1869,7 @@ void neFixedTimeStepSimulator::UpdateConstraintControllers() {
     }
 }
 
-void neFixedTimeStepSimulator::FreeAllBodies() {
+void neSimulator::FreeAllBodies() {
     neRigidBody_ *rb = activeRB.GetHead();
 
     while (rb) {
@@ -2001,7 +2001,7 @@ void neFixedTimeStepSimulator::FreeAllBodies() {
 *
 ****************************************************************************/
 
-void neFixedTimeStepSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
+void neSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
     memoryAllocated = 0;
 
     memoryAllocated += rigidBodyHeap.Size() * sizeof(neFreeListItem<neRigidBody_>);

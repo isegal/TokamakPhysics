@@ -56,7 +56,7 @@ using neStackInfoItem = neFreeListItem<neStackInfo>;
 
 class neStackHeader {
 public:
-    neFixedTimeStepSimulator *sim;
+    neSimulator *sim;
 
     neStackInfo *head;
     neStackInfo *tail;

@@ -16,7 +16,7 @@
 
 class neTriangleTree;
 
-class neFixedTimeStepSimulator;
+class neSimulator;
 
 /****************************************************************************
 *
@@ -140,7 +140,7 @@ public:
 
     neTreeNode root;
 
-    neFixedTimeStepSimulator *sim;
+    neSimulator *sim;
 };
 
 #endif //NE_SCENERY_H

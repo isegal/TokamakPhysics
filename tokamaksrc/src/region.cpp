@@ -46,7 +46,7 @@ neRegion::~neRegion() {
 *
 ****************************************************************************/
 
-void neRegion::Initialise(neFixedTimeStepSimulator *s, neByte sortD) {
+void neRegion::Initialise(neSimulator *s, neByte sortD) {
     sim = s;
 
     maxRigidBodies = s->maxRigidBodies;

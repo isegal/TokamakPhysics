@@ -19,7 +19,7 @@ class neRigidBody_;
 
 class neJointSolver;
 
-class neFixedTimeStepSimulator;
+class neSimulator;
 
 /****************************************************************************
 *
@@ -141,7 +141,7 @@ public:
     neT3 frameAWorld;
     neT3 frameBWorld;
 
-    neFixedTimeStepSimulator *sim;
+    neSimulator *sim;
 
     neController *controllers;
 
@@ -206,7 +206,7 @@ public:
 
     void UpdateConstraintPoint();
 
-//	neReal ApplyConstraintImpulse(neFixedTimeStepSimulator & sim);
+//	neReal ApplyConstraintImpulse(neSimulator & sim);
 
     void InfiniteMassB(bool yes);
 
@@ -305,7 +305,7 @@ public:
         }
         item->Remove();
     }
-    //void Purge(neFixedTimeStepSimulator * sim);
+    //void Purge(neSimulator * sim);
 
     void TraverseApplyConstraint(bool autoSleep);
 
