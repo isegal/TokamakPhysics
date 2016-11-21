@@ -78,14 +78,14 @@ public:
         usedMem = 0;
     }
 
-    neByte *Alloc(s32 size, s32 alignment = 0) {
+    neByte *Alloc(s32 size, s32 alignment = 0) override {
 
         usedMem += size;
 
         return (neByte *) malloc(size);
     }
 
-    void Free(neByte *ptr) {
+    void Free(neByte *ptr) override {
 
         free(ptr);
     }
