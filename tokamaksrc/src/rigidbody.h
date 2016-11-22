@@ -645,6 +645,7 @@ public:
 
     NEINLINE void SetPos(const neV3 &newPos) {
         State().b2w.pos = newPos;
+        WakeUp();
     }
 
     NEINLINE neV3 GetPos() {
@@ -769,11 +770,7 @@ public:
 
     bool AllRestRecordInvalid();
 
-    NEINLINE neQ GetRotationQ() {
-        return State().q;
-    }
-
-protected:
+public:
 
     void AdvanceDynamic(neReal tStep);
 
@@ -782,6 +779,165 @@ protected:
     void IsCollideWith(neRigidBody &rb);
 
     void UpdateController();
+
+    void SetInertiaTensor(const neM3 &tensor);
+
+    void SetInertiaTensor(const neV3 &tensor);
+
+    void SetCollisionID(s32 cid) {
+        cid = cid;
+    }
+
+    s32 GetCollisionID() {
+        return cid;
+    }
+
+    void SetUserData(void * userData) {
+        cookies = userData;
+    }
+
+    void * GetUserData() {
+        return cookies;
+    }
+
+    s32 GetGeometryCount() {
+        return col.convexCount;
+    }
+
+    void SetLinearDamping(neReal damp) {
+        linearDamp = neAbs(damp);
+    }
+
+    neReal GetLinearDamping() {
+        return linearDamp;
+    }
+
+    void SetAngularDamping(neReal damp) {
+        angularDamp = neAbs(damp);
+    }
+
+    neReal GetAngularDamping() {
+        return angularDamp;
+    }
+
+    void SetSleepingParameter(neReal sleepingParam) {
+        this->sleepingParam = sleepingParam;
+    }
+
+    neReal GetSleepingParameter() {
+        return sleepingParam;
+    }
+
+    bool Active() {
+        return isActive;
+    }
+
+    bool IsIdle() {
+        return (status == neRigidBody::NE_RBSTATUS_IDLE);
+    }
+
+    neM3 GetRotationM3() {
+        return State().rot();
+    }
+
+    NEINLINE neQ GetRotationQ() {
+        return State().q;
+    }
+
+    void SetRotation(const neQ &q) {
+        State().q = q;
+        State().rot() = q.BuildMatrix3();
+        WakeUp();
+    }
+
+    void SetRotation(const neM3 &m) {
+        ASSERT(m.IsOrthogonalNormal());
+
+        State().rot() = m;
+        State().q.SetupFromMatrix3(m);
+        WakeUp();
+    }
+
+    neT3 GetTransform() {
+
+        State().b2w.rot[0].v[3] = 0.0f;
+        State().b2w.rot[1].v[3] = 0.0f;
+        State().b2w.rot[2].v[3] = 0.0f;
+        State().b2w.pos.v[3] = 1.0f;
+        return State().b2w;
+    }
+
+    neV3 GetAngularVelocity() {
+        return Derive().angularVel;
+    }
+
+    neV3 GetAngularMomentum() {
+        return State().angularMom;
+    }
+
+    void SetAngularMomentum(const neV3 &am) {
+        SetAngMom(am);
+        WakeUpAllJoint();
+    }
+
+    neV3 GetVelocityAtPoint(const neV3 &pt) {
+        return VelocityAtPoint(pt);
+    }
+
+    void UpdateBoundingInfo() {
+        RecalcBB();
+    }
+
+    void UpdateInertiaTensor() {
+        RecalcInertiaTensor();
+    }
+
+    void SetForce(const neV3 &force, const neV3 &pos);
+
+
+    void SetTorque(const neV3 &torque);
+
+    void SetForce(const neV3 &force);
+
+    neV3 GetForce() {
+        return force;
+    }
+    neV3 GetTorque() {
+        return torque;
+    }
+    void ApplyImpulse(const neV3 &impulse);
+
+    void ApplyImpulse(const neV3 &impulse, const neV3 &pos);
+
+    void ApplyTwist(const neV3 &twist);
+
+    bool RemoveController(neRigidBodyController *rbController);
+
+    void CollideDirectlyConnected(bool yes) {
+        isCollideDirectlyConnected = yes;
+    }
+
+    bool CollideDirectlyConnected() {
+        return isCollideDirectlyConnected;
+    }
+
+    neGeometry *AddGeometry();
+
+    bool RemoveGeometry(neGeometry *g);
+
+    neRigidBody *BreakGeometry(neGeometry *g);
+
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius);
+
+    bool UseCustomCollisionDetection() {
+        return isCustomCD;
+    }
+
+    neSensor *AddSensor();
+
+    bool RemoveSensor(neSensor *s);
+
+    neSensor *GetNextSensor();
 };
 
 NEINLINE neV3 neRigidBodyBase::GetLinearVelocity() {

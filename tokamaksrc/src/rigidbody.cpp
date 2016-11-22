@@ -729,6 +729,9 @@ void neRigidBody::UpdateAABB() {
 }
 
 void neRigidBody::WakeUp() {
+    if(status == neRigidBody::NE_RBSTATUS_NORMAL) {
+        return;
+    }
     status = neRigidBody::NE_RBSTATUS_NORMAL;
 
     lowEnergyCounter = 0;
@@ -1103,3 +1106,331 @@ void neRestRecord::SetInvalid() {
     }
     otherBody = nullptr;
 }
+
+/****************************************************************************
+*
+*	neRigidBody::SetInertiaTensor
+*
+****************************************************************************/
+
+void neRigidBody::SetInertiaTensor(const neM3 &tensor) {
+    Ibody = tensor;
+    IbodyInv.SetInvert(tensor);
+
+    //ASSERT(tensor.Invert(rb.IbodyInv));
+}
+
+/****************************************************************************
+*
+*	neRigidBody::SetInertiaTensor
+*
+****************************************************************************/
+
+void neRigidBody::SetInertiaTensor(const neV3 &tensor) {
+    neM3 i;
+
+    i.SetIdentity();
+
+    i[0][0] = tensor[0];
+    i[1][1] = tensor[1];
+    i[2][2] = tensor[2];
+
+    Ibody = i;
+
+    IbodyInv.SetInvert(Ibody);
+}
+
+
+/*
+neGeometry * neRigidBody::GetGeometry(s32 index)
+{
+	return reinterpret_cast<neGeometry*>(rb.GetConvex(index));
+}
+*/
+/****************************************************************************
+*
+*	neRigidBody::SetGeometry
+*
+****************************************************************************/
+/*
+void neRigidBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
+{
+	//todo
+}
+*/
+
+
+void neRigidBody::SetForce(const neV3 &force, const neV3 &pos) {
+
+    if (force.IsConsiderZero()) {
+        this->force = force;
+
+        torque = ((pos - GetPos()).Cross(force));
+
+        return;
+    }
+
+    this->force = force;
+
+    torque = ((pos - GetPos()).Cross(force));
+
+    WakeUp();
+}
+
+void neRigidBody::SetTorque(const neV3 &torque) {
+
+    if (torque.IsConsiderZero()) {
+        this->torque = torque;
+
+        return;
+    }
+    this->torque = torque;
+
+    WakeUp();
+}
+
+void neRigidBody::SetForce(const neV3 &force) {
+
+    if (force.IsConsiderZero()) {
+        this->force = force;
+        return;
+    }
+    this->force = force;
+
+    WakeUp();
+}
+
+void neRigidBody::ApplyImpulse(const neV3 &impulse) {
+    neV3 dv = impulse * oneOnMass;
+    Derive().linearVel += dv;
+    WakeUpAllJoint();
+}
+
+/****************************************************************************
+*
+*	neRigidBody::AddImpulseWithTwist
+*
+****************************************************************************/
+
+void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
+
+
+    neV3 dv = impulse * oneOnMass;
+
+    neV3 da = (pos - GetPos()).Cross(impulse);
+
+    Derive().linearVel += dv;
+
+    neV3 newAM = State().angularMom + da;
+
+    SetAngMom(newAM);
+
+    WakeUp();
+}
+
+/****************************************************************************
+*
+*	neRigidBody::ApplyTwist
+*
+****************************************************************************/
+
+void neRigidBody::ApplyTwist(const neV3 &twist) {
+
+    neV3 newAM = twist;
+
+    SetAngMom(newAM);
+
+    WakeUp();
+}
+
+/****************************************************************************
+*
+*	neRigidBody::AddController
+*
+****************************************************************************/
+
+//neRigidBodyController *neRigidBody::AddController(neRigidBodyControllerCallback *controller, s32 period) {
+//
+//
+//    return (neRigidBodyController *) AddController(controller, period);
+//}
+
+/****************************************************************************
+*
+*	neRigidBody::RemoveController
+*
+****************************************************************************/
+
+bool neRigidBody::RemoveController(neRigidBodyController *rbController) {
+
+
+    if (!controllers)
+        return false;
+
+    neControllerItem *ci = (neControllerItem *) controllers;
+
+    while (ci) {
+        neController *con = reinterpret_cast<neController *>(ci);
+
+        ci = ci->next;
+
+        if (con == reinterpret_cast<neController *>(rbController)) {
+            //reinterpret_cast<neControllerItem *>(con)->Remove();
+
+            sim->controllerHeap.Dealloc(con, 1);
+
+            return true;
+        }
+    }
+    return false;
+}
+
+neGeometry *neRigidBody::AddGeometry() {
+
+    TConvex *g = neRigidBodyBase::AddGeometry();
+
+    return reinterpret_cast<neGeometry *>(g);
+}
+
+bool neRigidBody::RemoveGeometry(neGeometry *g) {
+
+
+    if (!col.convex)
+        return false;
+
+    TConvexItem *gi = (TConvexItem *) col.convex;
+
+    while (gi) {
+        TConvex *convex = reinterpret_cast<TConvex *>(gi);
+
+        gi = gi->next;
+
+        if (convex == reinterpret_cast<TConvex *>(g)) {
+            if (col.convex == convex) {
+                col.convex = (TConvex *) gi;
+            }
+            sim->geometryHeap.Dealloc(convex, 1);
+
+            col.convexCount--;
+
+            if (col.convexCount == 0) {
+                col.convex = nullptr;
+
+                if (IsInRegion() && !isCustomCD)
+                    sim->region.RemoveBody(this);
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+/****************************************************************************
+*
+*	neRigidBody::BreakGeometry
+*
+****************************************************************************/
+neRigidBody *neRigidBody::BreakGeometry(neGeometry *g) {
+    neRigidBody *newBody = sim->CreateRigidBodyFromConvex((TConvex *) g, this);
+    return (neRigidBody *) newBody;
+}
+
+/****************************************************************************
+*
+*	neRigidBody::UseCustomCollisionDetection
+*
+****************************************************************************/
+
+void neRigidBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
+
+
+    if (yes) {
+        this->obb = *obb;
+
+        col.boundingRadius = boundingRadius;
+
+        isCustomCD = yes;
+
+        if (isActive && !IsInRegion()) {
+            sim->region.AddBody(this, nullptr);
+        }
+    } else {
+        isCustomCD = yes;
+
+        this->UpdateBoundingInfo();
+
+        if (IsInRegion() && GetGeometryCount() == 0) {
+            sim->region.RemoveBody(this);
+        }
+    }
+}
+
+neSensor *neRigidBody::AddSensor() {
+    neSensor_ *s = neRigidBodyBase::AddSensor();
+    return reinterpret_cast<neSensor *>(s);
+}
+
+/****************************************************************************
+*
+*	neRigidBody::RemoveSensor
+*
+****************************************************************************/
+
+bool neRigidBody::RemoveSensor(neSensor *s) {
+
+
+    if (!sensors)
+        return false;
+
+    neSensorItem *si = (neSensorItem *) sensors;
+
+    while (si) {
+        neSensor_ *sensor = reinterpret_cast<neSensor_ *>(si);
+
+        si = si->next;
+
+        if (sensor == reinterpret_cast<neSensor_ *>(s)) {
+            //reinterpret_cast<neSensorItem *>(s)->Remove();
+
+            sim->sensorHeap.Dealloc(sensor, 1);
+
+            return true;
+        }
+    }
+    return false;
+}
+
+/****************************************************************************
+*
+*	neRigidBody::GetNextSensor
+*
+****************************************************************************/
+
+neSensor *neRigidBody::GetNextSensor() {
+    return reinterpret_cast<neSensor *>(neRigidBodyBase::GetNextSensor());
+}
+
+/****************************************************************************
+*
+*	neRigidBody::Active
+*
+****************************************************************************/
+
+//void neRigidBody::Active(bool yes, neRigidBody *hint) {
+//    CAST_THIS(neRigidBodyBase, ab);
+//
+//    ab.Active(yes, (neRigidBodyBase *) hint);
+//}
+
+/****************************************************************************
+*
+*	neRigidBody::Active
+*
+****************************************************************************/
+
+//void neRigidBody::Active(bool yes, neAnimatedBody *hint) {
+//    CAST_THIS(neRigidBodyBase, ab);
+//
+//    ab.Active(yes, (neRigidBodyBase *) hint);
+//}
+
