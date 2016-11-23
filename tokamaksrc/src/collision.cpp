@@ -166,35 +166,35 @@ void neCollisionResult::CalcCollisionMatrix(neRigidBody *ba, neRigidBody *bb, bo
 
     neM3 *IinvAW;
 
-    neReal oneOnMassA;
+    neReal inverseMassA;
 
     if (!ba) {
-        oneOnMassA = 0.0f;
+        inverseMassA = 0.0f;
 
         IinvAW = &zero;//.SetZero();
     } else {
         IinvAW = &ba->Derive().Iinv;
 
-        oneOnMassA = ba->oneOnMass;
+        inverseMassA = ba->inverseMass;
     }
     neM3 *IinvBW;
 
-    neReal oneOnMassB;
+    neReal inverseMassB;
 
     if (!bb) {
-        oneOnMassB = 0.0f;
+        inverseMassB = 0.0f;
 
         IinvBW = &zero;//.SetZero();
     } else {
         IinvBW = &bb->Derive().Iinv;
 
-        oneOnMassB = bb->oneOnMass;
+        inverseMassB = bb->inverseMass;
     }
 
     k.SetIdentity();
 
-    //k *= (oneOnMassA + oneOnMassB);
-    neReal oom = oneOnMassA + oneOnMassB;
+    //k *= (inverseMassA + inverseMassB);
+    neReal oom = inverseMassA + inverseMassB;
 
     k[0][0] = oom;
     k[1][1] = oom;
@@ -315,19 +315,19 @@ void neCollisionResult::PrepareForSolver(bool aIdle, bool bIdle) {
             break;
 
         case IMPULSE_RELATIVE_LINEAR_VELOCITY: {
-            neReal oneOnMassA, oneOnMassB;
+            neReal inverseMassA, inverseMassB;
 
             if (!ba) {
-                oneOnMassA = 0.0f;
+                inverseMassA = 0.0f;
             } else {
-                oneOnMassA = ba->oneOnMass;
+                inverseMassA = ba->inverseMass;
             }
             if (!bb) {
-                oneOnMassB = 0.0f;
+                inverseMassB = 0.0f;
             } else {
-                oneOnMassB = bb->oneOnMass;
+                inverseMassB = bb->inverseMass;
             }
-            kInv[0][0] = 1.0f / (oneOnMassA + oneOnMassB);
+            kInv[0][0] = 1.0f / (inverseMassA + inverseMassB);
         }
             break;
         case IMPULSE_IGNORE: {

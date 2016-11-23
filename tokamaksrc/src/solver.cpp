@@ -38,7 +38,7 @@ ApplyCollisionImpulseFast(neRigidBody *rb, const neV3 &impulse, const neV3 &cont
                           bool immediate = true) {
     neV3 dv, da;
 
-    dv = impulse * rb->oneOnMass;
+    dv = impulse * rb->inverseMass;
 
     da = contactPoint.Cross(impulse);
 

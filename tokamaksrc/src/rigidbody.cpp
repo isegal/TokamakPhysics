@@ -81,13 +81,13 @@ neRigidBody::neRigidBody() {
 
     mass = ne_Default_Mass;
 
-    oneOnMass = 1.0f / ne_Default_Mass;
+    inverseMass = 1.0f / ne_Default_Mass;
 
     IbodyInv.SetZero();
 
-    IbodyInv.M[0][0] = oneOnMass;
-    IbodyInv.M[1][1] = oneOnMass;
-    IbodyInv.M[2][2] = oneOnMass;
+    IbodyInv.M[0][0] = inverseMass;
+    IbodyInv.M[1][1] = inverseMass;
+    IbodyInv.M[2][2] = inverseMass;
 
     Ibody.SetZero();
 
@@ -243,7 +243,7 @@ void neRigidBody::RecalcInertiaTensor() {
 
         mass = _mass;
     }
-    oneOnMass = 1.0f / mass;
+    inverseMass = 1.0f / mass;
 
     cogShift = cogShift * (1.0f / mass);
 
@@ -438,9 +438,9 @@ void neRigidBody::AdvanceDynamic(neReal tStep) {
 
     totalForce += (force + gforce + cforce);
 
-    dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] = totalForce * oneOnMass * tStep;
+    dvRecord[sim->stepSoFar % NE_RB_MAX_PAST_RECORDS] = totalForce * inverseMass * tStep;
 
-    acc = totalForce * oneOnMass;
+    acc = totalForce * inverseMass;
 
     derive.linearVel += acc * tStep;
 
@@ -782,7 +782,7 @@ void neRigidBody::ZeroMotion() {
 bool neRigidBody::ApplyCollisionImpulse(const neV3 &impulse, const neV3 &contactPoint, neImpulseType itype) {
     neV3 dv, da, newAM;
 
-    dv = impulse * oneOnMass;
+    dv = impulse * inverseMass;
 
     da = contactPoint.Cross(impulse);
 
@@ -1201,7 +1201,7 @@ void neRigidBody::SetForce(const neV3 &force) {
 }
 
 void neRigidBody::ApplyImpulse(const neV3 &impulse) {
-    neV3 dv = impulse * oneOnMass;
+    neV3 dv = impulse * inverseMass;
     Derive().linearVel += dv;
     WakeUpAllJoint();
 }
@@ -1215,7 +1215,7 @@ void neRigidBody::ApplyImpulse(const neV3 &impulse) {
 void neRigidBody::ApplyImpulse(const neV3 &impulse, const neV3 &pos) {
 
 
-    neV3 dv = impulse * oneOnMass;
+    neV3 dv = impulse * inverseMass;
 
     neV3 da = (pos - GetPos()).Cross(impulse);
 

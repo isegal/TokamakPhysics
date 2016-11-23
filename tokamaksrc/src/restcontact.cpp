@@ -1656,7 +1656,7 @@ void neRigidBody::CorrectPenetrationDrift2(s32 index, bool slide, s32 flag)
 neReal neRigidBody::TestImpulse(neV3 & dir, neV3 & pt, neReal & linear, neReal & angular) {
     neV3 point = pt - GetPos();
 
-    neV3 dv = dir * oneOnMass;
+    neV3 dv = dir * inverseMass;
 
     neV3 da = point.Cross(dir);
 

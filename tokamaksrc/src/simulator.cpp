@@ -422,7 +422,7 @@ neRigidBody *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBody
 
     newBody->mass = convex->breakInfo.mass;
 
-    newBody->oneOnMass = 1.0f / convex->breakInfo.mass;
+    newBody->inverseMass = 1.0f / convex->breakInfo.mass;
 
     newBody->Ibody.SetIdentity();
 

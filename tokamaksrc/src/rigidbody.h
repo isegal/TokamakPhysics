@@ -497,7 +497,7 @@ public:
         NE_RBSTATUS_ANIMATED,
     };
     neReal mass;
-    neReal oneOnMass;
+    neReal inverseMass;
     neM3 IbodyInv;
     neM3 Ibody;
     neV3 force;
@@ -614,7 +614,7 @@ public:
 
     NEINLINE void SetMass(neReal newMass) {
         mass = newMass;
-        oneOnMass = 1.0f / newMass;
+        inverseMass = 1.0f / newMass;
     }
 
     NEINLINE neReal GetMass() const {
