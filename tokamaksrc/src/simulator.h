@@ -577,9 +577,9 @@ public:
 
     neTerrainTriangleQueryCallback *terrainQueryCallback;
 
-    neCustomCDRB2RBCallback *customCDRB2RBCallback;
+    neCustomCDRB2RBCallback customCDRB2RBCallback;
 
-    neCustomCDRB2ABCallback *customCDRB2ABCallback;
+    neCustomCDRB2ABCallback customCDRB2ABCallback;
 
     s32 idleBodyCount;
 };
