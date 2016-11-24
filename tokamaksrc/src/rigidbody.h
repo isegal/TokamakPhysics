@@ -351,6 +351,12 @@ public:
     neT3 b2w;
 
     bool moved;
+
+    void SetPos(const neV3 &p) {
+        b2w.pos = p;
+        UpdateAABB();
+        moved = true;
+    }
 };
 
 class neStackInfo;
