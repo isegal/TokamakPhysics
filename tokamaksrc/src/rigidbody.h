@@ -332,12 +332,16 @@ PLACEMENT_MAGIC
 public:
     neT3 b2w;
 
-    bool moved = false;
+    u64 lastStepWhenMoved = 0;
+
+    bool Moved() const;
+
+    void SetMoved();
 
     void SetPos(const neV3 &p) {
         b2w.pos = p;
         UpdateAABB();
-        moved = true;
+        SetMoved();
     }
 
     neV3 GetPos() const {
@@ -357,12 +361,12 @@ public:
 
     void SetRotation(const neM3 &m) {
         b2w.rot = m;
-        moved = true;
+        SetMoved();
     }
 
     void SetRotation(const neQ &q) {
         b2w.rot = q.BuildMatrix3();
-        moved = true;
+        SetMoved();
     }
 
     neT3 GetTransform() const {

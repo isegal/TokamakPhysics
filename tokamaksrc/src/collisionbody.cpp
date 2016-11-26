@@ -176,3 +176,11 @@ bool neCollisionBody::RemoveSensor(neSensor *s) {
     }
     return false;
 }
+
+bool neCollisionBody::Moved() const {
+    return(lastStepWhenMoved == sim->stepSoFar);
+}
+
+void neCollisionBody::SetMoved() {
+    lastStepWhenMoved = sim->stepSoFar;
+}

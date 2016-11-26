@@ -135,7 +135,6 @@ neSimulator::neSimulator(const neSimulatorSizeInfo &_sizeInfo, neAllocatorAbstra
 
 //	solver.sim = this;
 
-    fakeCollisionBody.moved = false;
 
     fakeCollisionBody.sim = this;
 
@@ -655,13 +654,6 @@ void neSimulator::Advance(neReal time, size_t nStep, nePerformanceReport *_perfR
         Advance(perfReport);
     }
 
-    neCollisionBody *cb = activeCB.GetHead();
-
-    while (cb) {
-        cb->moved = false;
-
-        cb = activeCB.GetNext(cb);
-    }
     if (perfReport) {
         if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
             neReal totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
@@ -770,13 +762,6 @@ void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, ne
     }
     timeFromLastFrame = timeLeft;
 
-    neCollisionBody *cb = activeCB.GetHead();
-
-    while (cb) {
-        cb->moved = false;
-
-        cb = activeCB.GetNext(cb);
-    }
     if (perfReport) {
         if (perfReport->reportType == nePerformanceReport::NE_PERF_SAMPLE) {
             neReal totalTime = perfReport->time[nePerformanceReport::NE_PERF_TOTAL_TIME] = perf->GetTotalTime();
@@ -989,7 +974,7 @@ void neSimulator::UpdateAABB() {
     neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
-        if (cb->moved)
+        if (cb->Moved())
             cb->UpdateAABB();
 
         cb = activeCB.GetNext(cb);
@@ -1043,7 +1028,7 @@ void neSimulator::CheckCollision() {
         if (ca) {
             if (rb->status != neRigidBody::NE_RBSTATUS_IDLE ||
                 rb->isShifted ||
-                ca->moved) {
+                ca->Moved()) {
                 if ((rb->isCustomCD || ca->isCustomCD)) {
                     if (customCDRB2ABCallback) {
                         isCustomeCD = true;
@@ -1089,7 +1074,7 @@ void neSimulator::CheckCollision() {
             if (cb) {
                 if (ra->status != neRigidBody::NE_RBSTATUS_IDLE ||
                     ra->isShifted ||
-                    cb->moved) {
+                    cb->Moved()) {
                     if ((ra->isCustomCD || cb->isCustomCD)) {
                         if (customCDRB2ABCallback) {
                             isCustomeCD = true;

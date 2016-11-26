@@ -1008,7 +1008,7 @@ bool neRestRecord::CanConsiderOtherBodyIdle() {
 
     ASSERT(cb);
 
-    return (!cb->moved);
+    return (!cb->Moved());
 }
 
 bool neRestRecord::CheckOtherBody(neSimulator *sim) {
