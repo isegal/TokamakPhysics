@@ -31,8 +31,6 @@
 #include "simulator.h"
 #include "message.h"
 
-#define ne_Default_Mass 1.0f
-
 //extern void DrawLine(const neV3 & colour, neV3 * startpoint, s32 count);
 
 
@@ -95,8 +93,6 @@ neRigidBody::neRigidBody() {
     IbodyInv.M[1][1] = ne_Default_Mass;
     IbodyInv.M[2][2] = ne_Default_Mass;
 
-    cookies = nullptr;
-
     force.SetZero();
     torque.SetZero();
 
@@ -118,17 +114,7 @@ neRigidBody::neRigidBody() {
         davRecord[i].SetZero();
     }
 
-    stackInfo = nullptr;
-
-    lowEnergyCounter = 0;
-
     GetRestHull().htype = neRestHull::NONE;
-
-    isShifted = isShifted2 = false;
-
-    controllers = nullptr;
-
-    controllerCursor = nullptr;
 
     gforce.SetZero();
 
@@ -136,15 +122,7 @@ neRigidBody::neRigidBody() {
 
     ctorque.SetZero();
 
-    subType = NE_RIGID_NORMAL;
-
     acc.SetZero();
-
-    angularDamp = 0.0f;
-
-    linearDamp = 0.0f;
-
-    sleepingParam = 0.2f;
 
     SyncOldState();
 }

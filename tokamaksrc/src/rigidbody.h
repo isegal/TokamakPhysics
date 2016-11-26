@@ -20,6 +20,8 @@
 #define MAX_RB_IMPULSE_RECORDS 4
 #define MAX_RB_CONTROLLERS 5
 
+#define ne_Default_Mass 1.0f
+
 class neRigidBodyBase;
 
 class neRigidBody;
@@ -562,14 +564,14 @@ public:
         NE_RBSTATUS_IDLE,
         NE_RBSTATUS_ANIMATED,
     };
-    neReal mass;
-    neReal inverseMass;
+    neReal mass = ne_Default_Mass;
+    neReal inverseMass = 1.0f / ne_Default_Mass;
     neM3 IbodyInv;
     neM3 Ibody;
     neV3 force;
     neV3 torque;
-    s32 status;
-    bool gravityOn;
+    s32 status = NE_RBSTATUS_NORMAL;
+    bool gravityOn = true;
     neV3 gforce;
     neV3 cforce;
     neV3 ctorque;
@@ -577,27 +579,27 @@ public:
     neV3 totalForce;
     neV3 acc;
 
-    neReal linearDamp;
-    neReal angularDamp;
+    neReal linearDamp = 0;
+    neReal angularDamp = 0;
 
-    uint32_t curState;
+    uint32_t curState = 0;
 
     neRigidBodyState stateBuffer[MAX_RB_STATES];
 
     neRigidBodyDerive derive;
 
-    s32 lowEnergyCounter;
+    s32 lowEnergyCounter = 0;
 
     // constraints
-    neStackInfo *stackInfo;
+    neStackInfo *stackInfo = nullptr;
 
-    bool isShifted;
+    bool isShifted = false;
 
-    bool isShifted2;
+    bool isShifted2 = false;
 
-    neController *controllers;
+    neController *controllers = nullptr;
 
-    neControllerItem *controllerCursor;
+    neControllerItem *controllerCursor = nullptr;
 
     bool needRecalc;
 
@@ -607,7 +609,7 @@ public:
 
     neRBExtra eggs;
 
-    neRigidType subType;
+    neRigidType subType = NE_RIGID_NORMAL;
 
     neQ totalRot;
 
@@ -640,7 +642,7 @@ public:
 
     neCollisionResult *maxErrCResult;
 
-    neReal sleepingParam;
+    neReal sleepingParam = 0.2f;
 
     neV3 oldPosition;
 
