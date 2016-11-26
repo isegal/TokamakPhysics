@@ -504,7 +504,6 @@ public:
 
     neReal lastTimeStep;
 
-protected:
     void CheckCollision();
 
     void CheckTerrainCollision();
