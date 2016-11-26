@@ -210,9 +210,9 @@ neReal neCollisionResult::SolveContact(neSimulator *sim) {
 
     if (initRelVel[2] < 0.0f) {
         if (sim->solverStage == 0)
-            impulse1 = sim->CalcNormalImpulse(*this, FALSE);
+            impulse1 = sim->CalcNormalImpulse(*this, false);
         else
-            impulse1 = sim->CalcNormalImpulse(*this, TRUE);
+            impulse1 = sim->CalcNormalImpulse(*this, true);
 
         initRelVel[2] = 0.0f;
     }
@@ -953,12 +953,12 @@ void neSimulator::CheckIfStationary() {
         neConstraintHeader *ch = (neConstraintHeader *) pointerBuffer1[jj];
 
         if (!ch->StationaryCheck()) {
-            allStationary = FALSE;
+            allStationary = false;
         }
     }// next jj, next constraint
 
     if (!contactConstraintHeader.StationaryCheck()) {
-        allStationary = FALSE;
+        allStationary = false;
     }
     if (allStationary) {
         //make everything idle
@@ -1295,7 +1295,7 @@ neReal neSimulator::HandleCollision(neRigidBodyBase *bodyA,
                 return 0.0f;
             }
 
-            impulse = CalcNormalImpulse(cresult, FALSE);
+            impulse = CalcNormalImpulse(cresult, false);
         }
             break;
 

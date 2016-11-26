@@ -18,27 +18,7 @@
 #include <cstdarg>
 //#include <tchar.h>
 //#include <strsafe.h>
-///////////////////////////////////////////////////////////////////////////
-// DEFINES
-///////////////////////////////////////////////////////////////////////////
 
-#ifdef NULL
-#undef NULL
-#endif
-
-#ifdef TRUE
-#undef TRUE
-#endif
-
-#ifdef FALSE
-#undef FALSE
-#endif
-
-///////////////////////////////////////////////////////////////////////////
-
-#define FALSE       0                   // make sure that we know what false is
-#define TRUE        1                   // Make sure that we know what true is
-#define NULL        0                   // Make sure that null does have a type
 
 ///////////////////////////////////////////////////////////////////////////
 // BASIC TYPES

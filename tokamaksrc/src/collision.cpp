@@ -148,7 +148,7 @@ void neCollisionResult::UpdateConstraintRelativeSpeed() {
         solverStage = bodyB->sim->solverStage;
     }
     if (solverStage != 2) {
-        ASSERT(FALSE);
+        ASSERT(false);
 
         return;
     }

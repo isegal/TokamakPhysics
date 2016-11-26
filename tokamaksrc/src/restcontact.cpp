@@ -745,7 +745,7 @@ bool neRigidBody::CheckStationary() {
     const neReal StationaryAngAcc = 10.5f;
 
     if (oldCounter < oldCounterMax)
-        return FALSE;
+        return false;
 
     neV3 deltaPos = State().b2w.pos - oldPosition;
 
@@ -756,7 +756,7 @@ bool neRigidBody::CheckStationary() {
     if (speed > StationarySpeed) {
         SyncOldState();
 
-        return FALSE;
+        return false;
     }
 
     neV3 deltaVel = Derive().linearVel - oldVelocity;
@@ -768,7 +768,7 @@ bool neRigidBody::CheckStationary() {
     if (accMag > StationaryAcc) {
         SyncOldState();
 
-        return FALSE;
+        return false;
     }
 
     neQ oldQInvert = oldRotation;
@@ -787,7 +787,7 @@ bool neRigidBody::CheckStationary() {
     if (angularVel > StationaryW) {
         SyncOldState();
 
-        return FALSE;
+        return false;
     }
 
     neV3 deltaW = Derive().angularVel - oldAngularVelocity;
@@ -799,7 +799,7 @@ bool neRigidBody::CheckStationary() {
     if (angularAcc > StationaryAngAcc) {
         SyncOldState();
 
-        return FALSE;
+        return false;
     }
 /*	Derive().linearVel *= 0.9f;
 
