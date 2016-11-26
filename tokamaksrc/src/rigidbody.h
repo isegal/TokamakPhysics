@@ -110,27 +110,11 @@ typedef enum {
 class neRigidBodyBase {
 public:
     neRigidBodyBase() {
-        //isAnimated = true;
-        btype = NE_OBJECT_COLISION;
         col.convex = nullptr;
         col.convexCount = 0;
         col.obb.Initialise();
-        sim = nullptr;
-        cid = 0;
-        isCollideConnected = false;
-        isCollideDirectlyConnected = false;
-        sensors = nullptr;
-
-        geometryCursor = nullptr;
-        sensorCursor = nullptr;
 
         constraintHeaderItem.thing = this;
-        isActive = true;
-        regionHandle = nullptr;
-
-        _constraintHeader = nullptr;
-
-        isCustomCD = false;
 
         for (s32 i = 0; i < 3; i++) {
             maxCoord[i] = nullptr;
@@ -138,8 +122,6 @@ public:
         }
 
         backupVector.SetZero();
-
-        pendingAddToRegion = 0;
     }
 
     ~neRigidBodyBase() {
@@ -231,38 +213,38 @@ public:
 
     neCollection<_neConstraint> constraintCollection;
 
-    TConvexItem *geometryCursor;
+    TConvexItem *geometryCursor = nullptr;
 
-    neSensorItem *sensorCursor;
+    neSensorItem *sensorCursor = nullptr;
 
-    void * cookies;
+    void * cookies = nullptr;
 
     neCollision col;
 
     uint32_t id;
 
-    uint32_t cid;
+    uint32_t cid = 0;
 
-    neConstraintHeader *_constraintHeader;
+    neConstraintHeader *_constraintHeader = nullptr;
 
     //bool isAnimated;
-    neObjectType btype;
+    neObjectType btype = NE_OBJECT_COLISION;
 
-    bool isActive;
+    bool isActive = true;
 
-    bool isCollideConnected;
+    bool isCollideConnected = false;
 
-    bool isCollideDirectlyConnected;
+    bool isCollideDirectlyConnected = false;
 
-    neSensor_ *sensors;
+    neSensor_ *sensors = nullptr;
 
-    neFreeListItem<neRigidBodyBase *> *regionHandle;
+    neFreeListItem<neRigidBodyBase *> *regionHandle = nullptr;
 
-    neSimulator *sim;
+    neSimulator *sim = nullptr;
 
     neT3 obb;
 
-    bool isCustomCD;
+    bool isCustomCD = false;
 
     neV3 minBound;
     neV3 maxBound;
@@ -273,7 +255,7 @@ public:
 
     neCollection<neRestRecord> rbRestingOnMe;
 
-    s32 pendingAddToRegion;
+    s32 pendingAddToRegion = 0;
 
 //	neV3 debugMinBound;
 //	neM3 dobb;
