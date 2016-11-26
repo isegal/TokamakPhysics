@@ -321,9 +321,7 @@ class neCollisionBody : public neRigidBodyBase {
 public:
 PLACEMENT_MAGIC
 
-    neCollisionBody() {
-        moved = false;
-    }
+    neCollisionBody() = default;
 
     void UpdateAABB();
 
@@ -332,7 +330,7 @@ PLACEMENT_MAGIC
 public:
     neT3 b2w;
 
-    bool moved;
+    bool moved = false;
 
     void SetPos(const neV3 &p) {
         b2w.pos = p;
