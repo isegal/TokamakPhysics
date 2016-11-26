@@ -803,8 +803,10 @@ struct neCustomCDInfo {
     s32 materialIdB;
 };
 
+class neCollisionBody;
+
 using neCustomCDRB2RBCallback = std::function< bool (neRigidBody *, neRigidBody *, neCustomCDInfo &) >;
-using neCustomCDRB2ABCallback = std::function< bool (neRigidBody *, neAnimatedBody *, neCustomCDInfo &) >;
+using neCustomCDRB2ABCallback = std::function< bool (neRigidBody *, neCollisionBody *, neCustomCDInfo &) >;
 
 
 /****************************************************************************

@@ -1052,7 +1052,7 @@ void neSimulator::CheckCollision() {
 
                         memset(&cdInfo, 0, sizeof(cdInfo));
 
-                        if (customCDRB2ABCallback((neRigidBody *) rb, (neAnimatedBody *) ca, cdInfo)) {
+                        if (customCDRB2ABCallback(rb, ca, cdInfo)) {
                             result.penetrate = true;
                             result.bodyA = ca;
                             result.bodyB = rb;
@@ -1098,7 +1098,7 @@ void neSimulator::CheckCollision() {
 
                             memset(&cdInfo, 0, sizeof(cdInfo));
 
-                            if (customCDRB2ABCallback((neRigidBody *) ra, (neAnimatedBody *) cb, cdInfo)) {
+                            if (customCDRB2ABCallback(ra, cb, cdInfo)) {
                                 result.penetrate = true;
                                 result.bodyA = ra;
                                 result.bodyB = cb;

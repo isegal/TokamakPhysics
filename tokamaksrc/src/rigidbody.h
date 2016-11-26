@@ -357,6 +357,86 @@ public:
         UpdateAABB();
         moved = true;
     }
+
+    neV3 GetPos() const {
+        return b2w.pos;
+    }
+
+
+    neM3 GetRotationM3() const {
+        return b2w.rot;
+    }
+
+    neQ GetRotationQ() const {
+        neQ q;
+        q.SetupFromMatrix3(b2w.rot);
+        return q;
+    }
+
+    void SetRotation(const neM3 &m) {
+        b2w.rot = m;
+        moved = true;
+    }
+
+    void SetRotation(const neQ &q) {
+        b2w.rot = q.BuildMatrix3();
+        moved = true;
+    }
+
+    neT3 GetTransform() const {
+        return b2w;
+    }
+
+    void SetCollisionID(s32 cid) {
+        this->cid = cid;
+    }
+
+    s32 GetCollisionID() const {
+        return cid;
+    }
+
+    void SetUserData(void * cookies) {
+        this->cookies = cookies;
+    }
+
+    void * GetUserData() {
+        return cookies;
+    }
+
+    s32 GetGeometryCount() {
+        return col.convexCount;
+    }
+
+    void UpdateBoundingInfo() {
+        RecalcBB();
+    }
+
+    void CollideDirectlyConnected(bool yes) {
+        isCollideDirectlyConnected = yes;
+    }
+
+    bool CollideDirectlyConnected() const {
+        return isCollideDirectlyConnected;
+    }
+
+
+    bool RemoveGeometry(neGeometry *g);
+
+    neRigidBody *BreakGeometry(neGeometry *g);
+
+    void UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius);
+
+    bool UseCustomCollisionDetection() const{
+        return isCustomCD;
+    }
+
+    bool RemoveSensor(neSensor *s);
+
+    bool Active() const {
+        return isActive;
+    }
+
+
 };
 
 class neStackInfo;

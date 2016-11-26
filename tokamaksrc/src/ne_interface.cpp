@@ -421,273 +421,50 @@ neReal neGeometry::GetBreakageNeighbourRadius() {
 
 /****************************************************************************
 *
-*	neAnimatedBody::GetPos
+*	neCollisionBody::GetGeometryCount
 *
 ****************************************************************************/
 
-neV3 neAnimatedBody::GetPos() {
-    CAST_THIS(neCollisionBody, cb);
 
-    return cb.b2w.pos;
-}
 
 /****************************************************************************
 *
-*	neAnimatedBody::SetPos
-*
-****************************************************************************/
-
-void neAnimatedBody::SetPos(const neV3 &p) {
-    CAST_THIS(neCollisionBody, cb);
-
-    cb.b2w.pos = p;
-
-    cb.UpdateAABB();
-
-    cb.moved = true;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetRotationM3
-*
-****************************************************************************/
-
-neM3 neAnimatedBody::GetRotationM3() {
-    CAST_THIS(neCollisionBody, cb);
-
-    return cb.b2w.rot;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetRotationQ
-*
-****************************************************************************/
-
-neQ neAnimatedBody::GetRotationQ() {
-    CAST_THIS(neCollisionBody, cb);
-
-    neQ q;
-
-    q.SetupFromMatrix3(cb.b2w.rot);
-
-    return q;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::SetRotation
-*
-****************************************************************************/
-
-void neAnimatedBody::SetRotation(const neM3 &m) {
-    CAST_THIS(neCollisionBody, cb);
-
-    cb.b2w.rot = m;
-
-    cb.moved = true;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::SetRotation
-*
-****************************************************************************/
-
-void neAnimatedBody::SetRotation(const neQ &q) {
-    CAST_THIS(neCollisionBody, cb);
-
-    cb.b2w.rot = q.BuildMatrix3();
-
-    cb.moved = true;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetTransform
-*
-****************************************************************************/
-
-neT3 neAnimatedBody::GetTransform() {
-    CAST_THIS(neCollisionBody, cb);
-
-    return cb.b2w;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::SetCollisionID
-*
-****************************************************************************/
-
-void neAnimatedBody::SetCollisionID(s32 cid) {
-    CAST_THIS(neCollisionBody, cb);
-
-    cb.cid = cid;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetCollisionID
-*
-****************************************************************************/
-
-s32 neAnimatedBody::GetCollisionID() {
-    CAST_THIS(neCollisionBody, cb);
-
-    return cb.cid;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::SetUserData
-*
-****************************************************************************/
-
-void neAnimatedBody::SetUserData(void * cookies) {
-    CAST_THIS(neCollisionBody, cb);
-
-    cb.cookies = cookies;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetUserData
-*
-****************************************************************************/
-
-void * neAnimatedBody::GetUserData() {
-    CAST_THIS(neCollisionBody, cb);
-
-    return cb.cookies;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetGeometryCount
-*
-****************************************************************************/
-
-s32 neAnimatedBody::GetGeometryCount() {
-    CAST_THIS(neCollisionBody, cb);
-
-    return cb.col.convexCount;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetGeometry
+*	neCollisionBody::GetGeometry
 *
 ****************************************************************************/
 /*
-neGeometry * neAnimatedBody::GetGeometry(s32 index)
+neGeometry * neCollisionBody::GetGeometry(s32 index)
 {
-	CAST_THIS(neCollisionBody, cb);
+
 
 	return reinterpret_cast<neGeometry*>(cb.GetConvex(index));
 }
 */
 /****************************************************************************
 *
-*	neAnimatedBody::SetGeometry
+*	neCollisionBody::SetGeometry
 *
 ****************************************************************************/
 /*
-void neAnimatedBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
+void neCollisionBody::SetGeometry(s32 geometryCount, neGeometry * geometryArray)
 {
-	CAST_THIS(neCollisionBody, cb);
+
 
 	//todo
 }
 */
-/****************************************************************************
-*
-*	neAnimatedBody::UpdateBoundingInfo
-*
-****************************************************************************/
-
-void neAnimatedBody::UpdateBoundingInfo() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.RecalcBB();
-}
 
 /****************************************************************************
 *
-*	neAnimatedBody::CollideConnected
+*	neCollisionBody::RemoveGeometry
 *
 ****************************************************************************/
 
-void neAnimatedBody::CollideConnected(bool yes) {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.CollideConnected(yes);
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::IsCollideConnected
-*
-****************************************************************************/
-
-bool neAnimatedBody::CollideConnected() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    return rb.CollideConnected();
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::CollideDirectlyConnected
-*
-****************************************************************************/
-
-void neAnimatedBody::CollideDirectlyConnected(bool yes) {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    rb.isCollideDirectlyConnected = yes;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::CollideDirectlyConnected
-*
-****************************************************************************/
-
-bool neAnimatedBody::CollideDirectlyConnected() {
-    CAST_THIS(neRigidBodyBase, rb);
-
-    return rb.isCollideDirectlyConnected;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::AddGeometry
-*
-****************************************************************************/
-
-neGeometry *neAnimatedBody::AddGeometry() {
-    CAST_THIS(neCollisionBody, ab);
-
-    TConvex *g = ab.AddGeometry();
-
-    return reinterpret_cast<neGeometry *>(g);
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::RemoveGeometry
-*
-****************************************************************************/
-
-bool neAnimatedBody::RemoveGeometry(neGeometry *g) {
-    CAST_THIS(neCollisionBody, ab);
-
-    if (!ab.col.convex)
+bool neCollisionBody::RemoveGeometry(neGeometry *g) {
+    if (!col.convex)
         return false;
 
-    TConvexItem *gi = (TConvexItem *) ab.col.convex;
+    TConvexItem *gi = (TConvexItem *) col.convex;
 
     while (gi) {
         TConvex *convex = reinterpret_cast<TConvex *>(gi);
@@ -695,19 +472,19 @@ bool neAnimatedBody::RemoveGeometry(neGeometry *g) {
         gi = gi->next;
 
         if (convex == reinterpret_cast<TConvex *>(g)) {
-            if (ab.col.convex == convex) {
-                ab.col.convex = (TConvex *) gi;
+            if (col.convex == convex) {
+                col.convex = (TConvex *) gi;
             }
 
-            ab.sim->geometryHeap.Dealloc(convex, 1);
+            sim->geometryHeap.Dealloc(convex, 1);
 
-            ab.col.convexCount--;
+            col.convexCount--;
 
-            if (ab.col.convexCount == 0) {
-                ab.col.convex = nullptr;
+            if (col.convexCount == 0) {
+                col.convex = nullptr;
 
-                if (ab.IsInRegion() && !ab.isCustomCD)
-                    ab.sim->region.RemoveBody(&ab);
+                if (IsInRegion() && !isCustomCD)
+                    sim->region.RemoveBody(this);
             }
 
             return true;
@@ -718,111 +495,55 @@ bool neAnimatedBody::RemoveGeometry(neGeometry *g) {
 
 /****************************************************************************
 *
-*	neAnimatedBody::BeginIterateGeometry
+*	neCollisionBody::BreakGeometry
 *
 ****************************************************************************/
 
-void neAnimatedBody::BeginIterateGeometry() {
-    CAST_THIS(neCollisionBody, ab);
-
-    ab.BeginIterateGeometry();
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetNextGeometry
-*
-****************************************************************************/
-
-neGeometry *neAnimatedBody::GetNextGeometry() {
-    CAST_THIS(neCollisionBody, ab);
-
-    return reinterpret_cast<neGeometry *>(ab.GetNextGeometry());
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::BreakGeometry
-*
-****************************************************************************/
-
-neRigidBody *neAnimatedBody::BreakGeometry(neGeometry *g) {
-    CAST_THIS(neCollisionBody, ab);
-
-    neRigidBody *newBody = ab.sim->CreateRigidBodyFromConvex((TConvex *) g, &ab);
-
+neRigidBody *neCollisionBody::BreakGeometry(neGeometry *g) {
+    neRigidBody *newBody = sim->CreateRigidBodyFromConvex((TConvex *) g, this);
     return (neRigidBody *) newBody;
 }
 
 /****************************************************************************
 *
-*	neAnimatedBody::UseCustomCollisionDetection
+*	neCollisionBody::UseCustomCollisionDetection
 *
 ****************************************************************************/
 
-void neAnimatedBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
-    CAST_THIS(neCollisionBody, ab);
-
+void neCollisionBody::UseCustomCollisionDetection(bool yes, const neT3 *obb, neReal boundingRadius) {
     if (yes) {
-        ab.obb = *obb;
+        this->obb = *obb;
 
-        ab.col.boundingRadius = boundingRadius;
+        col.boundingRadius = boundingRadius;
 
-        ab.isCustomCD = yes;
+        isCustomCD = yes;
 
-        if (ab.isActive && !ab.IsInRegion()) {
-            ab.sim->region.AddBody(&ab, nullptr);
+        if (isActive && !IsInRegion()) {
+            sim->region.AddBody(this, nullptr);
         }
     } else {
-        ab.isCustomCD = yes;
+        isCustomCD = yes;
 
         this->UpdateBoundingInfo();
 
-        if (ab.IsInRegion() && GetGeometryCount() == 0) {
-            ab.sim->region.RemoveBody(&ab);
+        if (IsInRegion() && GetGeometryCount() == 0) {
+            sim->region.RemoveBody(this);
         }
     }
 }
 
-/****************************************************************************
-*
-*	neAnimatedBody::UseCustomCollisionDetection
-*
-****************************************************************************/
-
-bool neAnimatedBody::UseCustomCollisionDetection() {
-    CAST_THIS(neCollisionBody, ab);
-
-    return ab.isCustomCD;
-}
 
 /****************************************************************************
 *
-*	neAnimatedBody::AddSensor
+*	neCollisionBody::RemoveSensor
 *
 ****************************************************************************/
 
-neSensor *neAnimatedBody::AddSensor() {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    neSensor_ *s = ab.AddSensor();
-
-    return reinterpret_cast<neSensor *>(s);
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::RemoveSensor
-*
-****************************************************************************/
-
-bool neAnimatedBody::RemoveSensor(neSensor *s) {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    if (!ab.sensors)
+bool neCollisionBody::RemoveSensor(neSensor *s) {
+    if (!sensors)
         return false;
 
-    neSensorItem *si = (neSensorItem *) ab.sensors;
+    neSensorItem *si = (neSensorItem *) sensors;
 
     while (si) {
         neSensor_ *sensor = (neSensor_ *) si;
@@ -832,72 +553,12 @@ bool neAnimatedBody::RemoveSensor(neSensor *s) {
         if (sensor == reinterpret_cast<neSensor_ *>(s)) {
             //reinterpret_cast<neSensorItem *>(s)->Remove();
 
-            ab.sim->sensorHeap.Dealloc(sensor, 1);
+            sim->sensorHeap.Dealloc(sensor, 1);
 
             return true;
         }
     }
     return false;
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::BeginIterateSensor
-*
-****************************************************************************/
-
-void neAnimatedBody::BeginIterateSensor() {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    ab.BeginIterateSensor();
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::GetNextSensor
-*
-****************************************************************************/
-
-neSensor *neAnimatedBody::GetNextSensor() {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    return reinterpret_cast<neSensor *>(ab.GetNextSensor());
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::Active
-*
-****************************************************************************/
-
-void neAnimatedBody::Active(bool yes, neRigidBody *hint) {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    ab.Active(yes, (neRigidBodyBase *) hint);
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::Active
-*
-****************************************************************************/
-
-void neAnimatedBody::Active(bool yes, neAnimatedBody *hint) {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    ab.Active(yes, (neRigidBodyBase *) hint);
-}
-
-/****************************************************************************
-*
-*	neAnimatedBody::IsActive
-*
-****************************************************************************/
-
-bool neAnimatedBody::Active() {
-    CAST_THIS(neRigidBodyBase, ab);
-
-    return ab.isActive;
 }
 
 /****************************************************************************
@@ -965,12 +626,12 @@ bool neAnimatedBody::Active() {
 *
 ****************************************************************************/
 
-//neAnimatedBody *neSimulator::CreateAnimatedBody() {
+//neCollisionBody *neSimulator::CreateAnimatedBody() {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
 //    neCollisionBody *ret = sim.CreateCollisionBody();
 //
-//    return reinterpret_cast<neAnimatedBody *>(ret);
+//    return reinterpret_cast<neCollisionBody *>(ret);
 //}
 
 /****************************************************************************
@@ -991,7 +652,7 @@ bool neAnimatedBody::Active() {
 *
 ****************************************************************************/
 
-//void neSimulator::FreeAnimatedBody(neAnimatedBody *body) {
+//void neSimulator::FreeAnimatedBody(neCollisionBody *body) {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
 //    sim.Free(reinterpret_cast<neRigidBody *>(body));
@@ -1162,7 +823,7 @@ bool neAnimatedBody::Active() {
 *
 ****************************************************************************/
 
-//neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neAnimatedBody *bodyB) {
+//neJoint *neSimulator::CreateJoint(neRigidBody *bodyA, neCollisionBody *bodyB) {
 //    CAST_THIS(neFixedTimeStepSimulator, sim);
 //
 //    if (!bodyA)
