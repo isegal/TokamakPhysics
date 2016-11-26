@@ -344,6 +344,12 @@ public:
         SetMoved();
     }
 
+    void SetPos(neReal x, neReal y, neReal z) {
+        b2w.pos.Set(x,y,z);
+        UpdateAABB();
+        SetMoved();
+    }
+
     neV3 GetPos() const {
         return b2w.pos;
     }
