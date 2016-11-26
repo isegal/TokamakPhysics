@@ -450,7 +450,7 @@ public:
 
     neReal restingSpeed;
 
-    s32 stepSoFar;
+    u64 stepSoFar;
 
     neReal _currentTimeStep;
 
