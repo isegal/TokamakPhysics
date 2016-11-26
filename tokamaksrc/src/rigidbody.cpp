@@ -1026,7 +1026,7 @@ bool neRestRecord::CanConsiderOtherBodyIdle() {
     if (rb != nullptr) {
         return (rb->status == neRigidBody::NE_RBSTATUS_IDLE);
     }
-    neCollisionBody_ *cb = otherBody->AsCollisionBody();
+    neCollisionBody *cb = otherBody->AsCollisionBody();
 
     ASSERT(cb);
 
@@ -1046,7 +1046,7 @@ bool neRestRecord::CheckOtherBody(neSimulator *sim) {
 neV3 neRestRecord::GetOtherBodyPoint() {
     ASSERT(otherBody);
 
-    neCollisionBody_ *cb = otherBody->AsCollisionBody();
+    neCollisionBody *cb = otherBody->AsCollisionBody();
 
     neV3 ret;
 

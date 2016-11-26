@@ -37,7 +37,7 @@ void neRestRecord::Update() {
 
     neRigidBody *rb = otherBody->AsRigidBody();
 
-    neCollisionBody_ *cb = otherBody->AsCollisionBody();
+    neCollisionBody *cb = otherBody->AsCollisionBody();
 
     if (cb) {
         normalWorld = cb->b2w.rot * normalBody;

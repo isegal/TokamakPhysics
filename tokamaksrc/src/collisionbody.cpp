@@ -33,7 +33,7 @@
 *
 ****************************************************************************/
 
-void neCollisionBody_::UpdateAABB() {
+void neCollisionBody::UpdateAABB() {
     if (col.convexCount == 0 && !isCustomCD)
         return;
 /*
@@ -63,7 +63,7 @@ void neCollisionBody_::UpdateAABB() {
     }
 };
 
-void neCollisionBody_::Free() {
+void neCollisionBody::Free() {
     neRigidBodyBase::Free();
 
     RemoveConstraintHeader();

@@ -183,7 +183,7 @@ void _neConstraint::AddToRigidBody() {
 
     neRigidBody *rb = bodyB ? bodyB->AsRigidBody() : nullptr;
 
-    neCollisionBody_ *cb = bodyB ? bodyB->AsCollisionBody() : nullptr;
+    neCollisionBody *cb = bodyB ? bodyB->AsCollisionBody() : nullptr;
 
     if (bodyA->GetConstraintHeader()) {
         header = bodyA->GetConstraintHeader();
@@ -455,7 +455,7 @@ void _neConstraint::UpdateConstraintPoint() {
 
     neRigidBody *rbodyB = nullptr;
 
-    neCollisionBody_ *cbodyB = nullptr;
+    neCollisionBody *cbodyB = nullptr;
 
     if (bodyB) {
         rbodyB = bodyB->AsRigidBody();
@@ -494,7 +494,7 @@ void _neConstraint::UpdateConstraintPoint() {
 void _neConstraint::FindGreatest() {
     neRigidBody *rbodyB = nullptr;
 
-    neCollisionBody_ *cbodyB = nullptr;
+    neCollisionBody *cbodyB = nullptr;
 
     if (bodyB) {
         rbodyB = bodyB->AsRigidBody();
@@ -588,7 +588,7 @@ void _neConstraint::SetupLimitCollision()
 {
 	neRigidBody * rbodyB = NULL;
 	
-	neCollisionBody_ * cbodyB = NULL;
+	neCollisionBody * cbodyB = NULL;
 
 	if (bodyB)
 	{

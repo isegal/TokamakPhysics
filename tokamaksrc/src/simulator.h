@@ -347,7 +347,7 @@ public:
 
     neRigidBody *CreateRigidBodyFromConvex(TConvex *convex, neRigidBodyBase *originalBody);
 
-    neCollisionBody_ *CreateCollisionBody();
+    neCollisionBody *CreateCollisionBody();
 
     void Free(neRigidBodyBase *bb);
 
@@ -431,7 +431,7 @@ public:
 
     void AddCollisionResult(neCollisionResult &cresult);
 
-    neCollisionBody_ *GetTerrainBody() {
+    neCollisionBody *GetTerrainBody() {
         return &fakeCollisionBody;
     }
 
@@ -537,7 +537,7 @@ public:
 
     neDLinkList<neRigidBody> rigidBodyHeap;
 
-    neDLinkList<neCollisionBody_> collisionBodyHeap;
+    neDLinkList<neCollisionBody> collisionBodyHeap;
 
     neDLinkList<neRigidBody> rigidParticleHeap;
 
@@ -545,9 +545,9 @@ public:
 
     neList<neRigidBody> inactiveRB;
 
-    neList<neCollisionBody_> activeCB;
+    neList<neCollisionBody> activeCB;
 
-    neList<neCollisionBody_> inactiveCB;
+    neList<neCollisionBody> inactiveCB;
 
     neList<neRigidBody> activeRP;
 
@@ -563,7 +563,7 @@ public:
 
     neSimpleArray<s32> triangleIndex;
 
-    neCollisionBody_ fakeCollisionBody;
+    neCollisionBody fakeCollisionBody;
 
 //state
     bool buildCoordList;

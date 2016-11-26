@@ -198,7 +198,7 @@ void neRegion::Rebuild() {
     rb = sim->activeRB.GetHead();
 
     while (rb) {
-        neCollisionBody_ *cb = sim->activeCB.GetHead();
+        neCollisionBody *cb = sim->activeCB.GetHead();
 
         while (cb) {
             ResetOverlapStatus(rb, cb);

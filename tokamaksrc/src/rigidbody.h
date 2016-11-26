@@ -91,7 +91,7 @@ class _neConstraint;
 
 using neSensorItem = neFreeListItem<neSensor_>;
 
-class neCollisionBody_;
+class neCollisionBody;
 
 using neBodyHandle = neCollection<neRigidBodyBase>::itemType;
 
@@ -195,11 +195,11 @@ public:
 
     void Active(bool yes, neRigidBodyBase *hint);
 
-    NEINLINE neCollisionBody_ *AsCollisionBody() {
+    NEINLINE neCollisionBody *AsCollisionBody() {
         if (btype != NE_OBJECT_COLISION)
             return nullptr;
 
-        return (neCollisionBody_ *) this;
+        return (neCollisionBody *) this;
     }
 
     NEINLINE neRigidBody *AsRigidBody() {
@@ -331,15 +331,15 @@ struct neImpulseRecord {
 
 ///////////////////////////////////////////////////////////////////
 //
-//	neCollisionBody_
+//	neCollisionBody
 //
 ///////////////////////////////////////////////////////////////////
 
-class neCollisionBody_ : public neRigidBodyBase {
+class neCollisionBody : public neRigidBodyBase {
 public:
 PLACEMENT_MAGIC
 
-    neCollisionBody_() {
+    neCollisionBody() {
         moved = false;
     }
 
@@ -427,7 +427,7 @@ public:
         return otherBody->AsRigidBody();
     }
 
-    neCollisionBody_ *GetOtherCollisionBody() const {
+    neCollisionBody *GetOtherCollisionBody() const {
         if (!otherBody)
             return nullptr;
 

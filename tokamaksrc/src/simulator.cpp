@@ -469,12 +469,12 @@ neRigidBody *neSimulator::CreateRigidBodyFromConvex(TConvex *convex, neRigidBody
 *
 ****************************************************************************/
 
-neCollisionBody_ *neSimulator::CreateCollisionBody() {
-    neCollisionBody_ *ret = collisionBodyHeap.Alloc(1);
+neCollisionBody *neSimulator::CreateCollisionBody() {
+    neCollisionBody *ret = collisionBodyHeap.Alloc(1);
 
     //ASSERT(ret);
 
-    new(ret) neCollisionBody_;
+    new(ret) neCollisionBody;
 
     activeCB.Add(ret);
 
@@ -501,10 +501,10 @@ neCollisionBody_ *neSimulator::CreateCollisionBody() {
 
 void neSimulator::Free(neRigidBodyBase *bb) {
     if (bb->AsCollisionBody()) {
-        neCollisionBody_ *cb = reinterpret_cast<neCollisionBody_ *>(bb);
+        neCollisionBody *cb = reinterpret_cast<neCollisionBody *>(bb);
 
         if (collisionBodyHeap.CheckBelongAndInUse(cb)) {
-            ((neCollisionBody_ *) bb)->Free();
+            ((neCollisionBody *) bb)->Free();
 
             if (bb->isActive)
                 activeCB.Remove(cb);
@@ -655,7 +655,7 @@ void neSimulator::Advance(neReal time, size_t nStep, nePerformanceReport *_perfR
         Advance(perfReport);
     }
 
-    neCollisionBody_ *cb = activeCB.GetHead();
+    neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
         cb->moved = false;
@@ -770,7 +770,7 @@ void neSimulator::Advance(neReal sec, neReal minTimeStep, neReal maxTimeStep, ne
     }
     timeFromLastFrame = timeLeft;
 
-    neCollisionBody_ *cb = activeCB.GetHead();
+    neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
         cb->moved = false;
@@ -943,7 +943,7 @@ void neSimulator::ApplyJointDamping() {
 }
 
 void neSimulator::ClearCollisionBodySensors() {
-    neCollisionBody_ *cb = activeCB.GetHead();
+    neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
         if (cb->sensors)
@@ -986,7 +986,7 @@ void neSimulator::UpdateAABB() {
 
         rp = activeRP.GetNext(rp);
     }
-    neCollisionBody_ *cb = activeCB.GetHead();
+    neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
         if (cb->moved)
@@ -1025,8 +1025,8 @@ void neSimulator::CheckCollision() {
         neRigidBody *ra = bodyA->AsRigidBody();
         neRigidBody *rb = bodyB->AsRigidBody();
 
-        neCollisionBody_ *ca = bodyA->AsCollisionBody();
-        neCollisionBody_ *cb = bodyB->AsCollisionBody();
+        neCollisionBody *ca = bodyA->AsCollisionBody();
+        neCollisionBody *cb = bodyB->AsCollisionBody();
 
         if (ca && cb)
             continue;
@@ -1961,12 +1961,12 @@ void neSimulator::FreeAllBodies() {
 
     ///////////////////////////////////////////////////////////
 
-    neCollisionBody_ *cb = activeCB.GetHead();
+    neCollisionBody *cb = activeCB.GetHead();
 
     while (cb) {
         cb->Free();
 
-        neCollisionBody_ *cbNext = activeCB.GetNext(cb);
+        neCollisionBody *cbNext = activeCB.GetNext(cb);
 
         activeCB.Remove(cb);
 
@@ -1980,7 +1980,7 @@ void neSimulator::FreeAllBodies() {
     while (cb) {
         cb->Free();
 
-        neCollisionBody_ *cbNext = inactiveCB.GetNext(cb);
+        neCollisionBody *cbNext = inactiveCB.GetNext(cb);
 
         inactiveCB.Remove(cb);
 
@@ -2025,7 +2025,7 @@ void neSimulator::GetMemoryAllocated(s32 &memoryAllocated) {
 
     memoryAllocated += rigidParticleHeap.Size() * sizeof(neFreeListItem<neRigidBody>);
 
-    memoryAllocated += collisionBodyHeap.Size() * sizeof(neFreeListItem<neCollisionBody_>);
+    memoryAllocated += collisionBodyHeap.Size() * sizeof(neFreeListItem<neCollisionBody>);
 
     memoryAllocated += treeNodes.GetTotalSize() * sizeof(neTreeNode *);
 

@@ -327,7 +327,7 @@ void neRigidBodyBase::Free() {
 
 bool neRigidBodyBase::IsValid() {
     if (btype == NE_OBJECT_COLISION) {
-        return ((neList<neCollisionBody_>::itemType *) this)->state;// sim->abHeap.IsInUse((neCollisionBody_*)this);
+        return ((neList<neCollisionBody>::itemType *) this)->state;// sim->abHeap.IsInUse((neCollisionBody*)this);
     } else {
         return ((neList<neRigidBody>::itemType *) this)->state;//sim->rbHeap.IsInUse((neRigidBody*)this);
     }
@@ -397,8 +397,8 @@ void neRigidBodyBase::Active(bool
                 AsCollisionBody()
 
                 ) {
-            sim->activeCB.Remove((neCollisionBody_ *) this);
-            sim->inactiveCB.Add((neCollisionBody_ *) this);
+            sim->activeCB.Remove((neCollisionBody *) this);
+            sim->inactiveCB.Add((neCollisionBody *) this);
         } else {
             if (AsRigidBody()->IsParticle()) {
                 sim->activeRP.Remove((neRigidBody *) this);
@@ -419,9 +419,9 @@ void neRigidBodyBase::Active(bool
     } else {
         // make active
         if (AsCollisionBody()) {
-            sim->inactiveCB.Remove((neCollisionBody_*) this);
+            sim->inactiveCB.Remove((neCollisionBody*) this);
 
-            sim->activeCB.Add((neCollisionBody_ *) this);
+            sim->activeCB.Add((neCollisionBody *) this);
         } else {
             if (AsRigidBody()->IsParticle()) {
                 sim->inactiveRP.Remove((neRigidBody *) this);
